@@ -1,5 +1,6 @@
 package com.billkeeper.billkeeperbackend.bill.persistence.model;
 
+import com.billkeeper.billkeeperbackend.beneficiary.model.Beneficiary;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -26,4 +27,6 @@ public class Bill {
     private String provider;
     private Status status;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Beneficiary beneficiary;
 }
