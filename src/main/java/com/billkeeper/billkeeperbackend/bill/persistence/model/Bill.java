@@ -16,6 +16,10 @@ public class Bill {
         TO_FILE, FILED, REIMBURSED
     }
 
+    public enum Currency {
+        CHF, EURO
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -23,6 +27,7 @@ public class Bill {
     private OffsetDateTime dateTime;
     private String name;
     private Double amount;
+    private Currency currency;
     private OffsetDateTime paidDateTime;
     private String provider;
     private Status status;

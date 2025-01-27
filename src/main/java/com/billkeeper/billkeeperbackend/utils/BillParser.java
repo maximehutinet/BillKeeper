@@ -1,0 +1,11 @@
+package com.billkeeper.billkeeperbackend.utils;
+
+import com.billkeeper.billkeeperbackend.beneficiary.model.Beneficiary;
+
+import java.util.Optional;
+
+public interface BillParser {
+    Optional<String> getBillName();
+    Optional<Double> getBillAmount();
+    Optional<Beneficiary> getBillBeneficiary();
+}
