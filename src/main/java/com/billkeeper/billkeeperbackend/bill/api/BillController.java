@@ -3,6 +3,7 @@ package com.billkeeper.billkeeperbackend.bill.api;
 import com.billkeeper.billkeeperbackend.AppConfig;
 import com.billkeeper.billkeeperbackend.beneficiary.BeneficiaryRepository;
 import com.billkeeper.billkeeperbackend.beneficiary.model.Beneficiary;
+import com.billkeeper.billkeeperbackend.document.api.model.DocumentResponse;
 import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
 import com.billkeeper.billkeeperbackend.utils.BillParser;
@@ -59,8 +60,8 @@ public class BillController {
         return billRepository.save(bill);
     }
 
-    @PostMapping("/bills/{id}/document")
-    public void uploadBillDocument(@PathVariable UUID id, @RequestParam("file") MultipartFile multipartFile) {
+    @PostMapping("/bills/{id}/documents")
+    public void uploadBillDocument(@PathVariable UUID id, @RequestParam("file") MultipartFile multipartFile, @RequestParam(required = false) Boolean parse) {
         try {
             Bill bill = billRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("Bill not found"));
@@ -68,11 +69,30 @@ public class BillController {
             Path destination = Paths.get(appConfig.getDocumentsDirectory()).resolve(filename);
             multipartFile.transferTo(destination);
             createDocument(filename, bill);
-            String text = pdfParser.extractTextFromFile(destination.toFile());
-            updateBillValues(bill, text);
+            if (parse != null && parse) {
+                String text = pdfParser.extractTextFromFile(destination.toFile());
+                updateBillValues(bill, text);
+            }
         } catch (IOException | RuntimeException e) {
             throw new InternalServerErrorException("Error while uploading file");
         }
+    }
+
+    @GetMapping("/bills/{id}/documents")
+    public List<DocumentResponse> getBillDocuments(@PathVariable UUID id) {
+        if (!billRepository.existsById(id)) {
+            throw new NotFoundException("Bill not found");
+        }
+        return documentRepository.findByBillIdAndActive(id, true)
+                .stream()
+                .map(document -> {
+                    return DocumentResponse
+                            .builder()
+                            .id(document.getId())
+                            .url(appConfig.getServerUrl() + "/documents/" + document.getId())
+                            .build();
+                })
+                .toList();
     }
 
     private void createDocument(String fileName, Bill bill) {
