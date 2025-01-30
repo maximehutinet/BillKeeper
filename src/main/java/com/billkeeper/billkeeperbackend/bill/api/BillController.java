@@ -3,6 +3,8 @@ package com.billkeeper.billkeeperbackend.bill.api;
 import com.billkeeper.billkeeperbackend.AppConfig;
 import com.billkeeper.billkeeperbackend.beneficiary.BeneficiaryRepository;
 import com.billkeeper.billkeeperbackend.beneficiary.model.Beneficiary;
+import com.billkeeper.billkeeperbackend.bill.BillDeletion;
+import com.billkeeper.billkeeperbackend.bill.BillUpdate;
 import com.billkeeper.billkeeperbackend.document.api.model.DocumentResponse;
 import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
@@ -32,18 +34,22 @@ public class BillController {
     private final AppConfig appConfig;
     private final PDFParser pdfParser;
     private final BeneficiaryRepository beneficiaryRepository;
+    private final BillUpdate billUpdate;
+    private final BillDeletion billDeletion;
 
-    public BillController(BillRepository billRepository, DocumentRepository documentRepository, AppConfig appConfig, PDFParser pdfParser, BeneficiaryRepository beneficiaryRepository) {
+    public BillController(BillRepository billRepository, DocumentRepository documentRepository, AppConfig appConfig, PDFParser pdfParser, BeneficiaryRepository beneficiaryRepository, BillUpdate billUpdate, BillDeletion billDeletion) {
         this.billRepository = billRepository;
         this.documentRepository = documentRepository;
         this.appConfig = appConfig;
         this.pdfParser = pdfParser;
         this.beneficiaryRepository = beneficiaryRepository;
+        this.billUpdate = billUpdate;
+        this.billDeletion = billDeletion;
     }
 
     @GetMapping("/bills")
     public Iterable<Bill> findAllBills() {
-        return billRepository.findAllByOrderByDateTimeDesc();
+        return billRepository.findAllByActiveTrueOrderByDateTimeDesc();
     }
 
     @GetMapping("/bills/{id}")
@@ -58,6 +64,20 @@ public class BillController {
         bill.setDateTime(OffsetDateTime.now());
         bill.setStatus(Bill.Status.TO_FILE);
         return billRepository.save(bill);
+    }
+
+    @PostMapping("/bills/{id}")
+    public void updateBill(@PathVariable UUID id, @RequestBody Bill updatedBill) {
+        Bill bill = billRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Bill not found"));
+        billUpdate.update(bill, updatedBill);
+    }
+
+    @DeleteMapping("/bills/{id}")
+    public void deleteBill(@PathVariable UUID id) {
+        Bill bill = billRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Bill not found"));
+        billDeletion.delete(bill);
     }
 
     @PostMapping("/bills/{id}/documents")

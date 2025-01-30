@@ -7,6 +7,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface BillRepository extends CrudRepository<Bill, UUID> {
-
-    List<Bill> findAllByOrderByDateTimeDesc();
+    List<Bill> findAllByActiveTrueOrderByDateTimeDesc();
 }
