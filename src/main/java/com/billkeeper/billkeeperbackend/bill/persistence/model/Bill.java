@@ -1,6 +1,6 @@
 package com.billkeeper.billkeeperbackend.bill.persistence.model;
 
-import com.billkeeper.billkeeperbackend.beneficiary.model.Beneficiary;
+import com.billkeeper.billkeeperbackend.beneficiary.persistence.model.Beneficiary;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,7 +17,7 @@ public class Bill {
     }
 
     public enum Currency {
-        CHF, EURO
+        CHF, EUR
     }
 
     @Id

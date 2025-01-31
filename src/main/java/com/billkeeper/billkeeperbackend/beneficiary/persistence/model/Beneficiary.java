@@ -1,4 +1,4 @@
-package com.billkeeper.billkeeperbackend.beneficiary.model;
+package com.billkeeper.billkeeperbackend.beneficiary.persistence.model;
 
 import jakarta.persistence.*;
 import lombok.Data;

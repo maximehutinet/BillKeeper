@@ -2,7 +2,7 @@ package com.billkeeper.billkeeperbackend.bill.api;
 
 import com.billkeeper.billkeeperbackend.AppConfig;
 import com.billkeeper.billkeeperbackend.beneficiary.BeneficiaryRepository;
-import com.billkeeper.billkeeperbackend.beneficiary.model.Beneficiary;
+import com.billkeeper.billkeeperbackend.beneficiary.persistence.model.Beneficiary;
 import com.billkeeper.billkeeperbackend.bill.BillDeletion;
 import com.billkeeper.billkeeperbackend.bill.BillUpdate;
 import com.billkeeper.billkeeperbackend.document.api.model.DocumentResponse;
@@ -139,7 +139,7 @@ public class BillController {
         if (text.contains("Justificatif de remboursement") || text.contains("CHF") || text.contains("Payable par")) {
             return Bill.Currency.CHF;
         }
-        return Bill.Currency.EURO;
+        return Bill.Currency.EUR;
     }
 
 }

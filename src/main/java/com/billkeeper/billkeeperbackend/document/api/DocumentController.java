@@ -3,6 +3,7 @@ package com.billkeeper.billkeeperbackend.document.api;
 import com.billkeeper.billkeeperbackend.AppConfig;
 import com.billkeeper.billkeeperbackend.document.persistence.DocumentRepository;
 import com.billkeeper.billkeeperbackend.document.persistence.model.Document;
+import com.billkeeper.billkeeperbackend.exception.BadRequestException;
 import com.billkeeper.billkeeperbackend.exception.InternalServerErrorException;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import com.billkeeper.billkeeperbackend.utils.PDFMerger;
@@ -34,14 +35,15 @@ public class DocumentController {
 
     @GetMapping("/documents/bills/{ids}")
     public ResponseEntity<Resource> getMergedBillsDocuments(@PathVariable("ids") List<UUID> ids) {
+        //TODO: Move this method to the billController and change the URL
         try {
             List<Document> documents = new ArrayList<>();
             ids.forEach(id -> {
                 documents.addAll(documentRepository.findByBillId(id));
             });
-            documents.forEach(document -> {
-                System.out.println("document.getName() = " + document.getName());
-            });
+            if (documents.isEmpty()) {
+                throw new BadRequestException("No documents found");
+            }
             List<File> files = documents
                     .stream()
                     .map(document -> {

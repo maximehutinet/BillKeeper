@@ -1,6 +1,6 @@
 package com.billkeeper.billkeeperbackend.utils;
 
-import com.billkeeper.billkeeperbackend.beneficiary.model.Beneficiary;
+import com.billkeeper.billkeeperbackend.beneficiary.persistence.model.Beneficiary;
 
 import java.util.*;
 import java.util.regex.Matcher;

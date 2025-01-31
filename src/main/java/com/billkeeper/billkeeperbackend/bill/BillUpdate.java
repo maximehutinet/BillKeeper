@@ -1,5 +1,6 @@
 package com.billkeeper.billkeeperbackend.bill;
 
+import com.billkeeper.billkeeperbackend.beneficiary.BeneficiaryRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
 import org.springframework.stereotype.Service;
@@ -8,9 +9,11 @@ import org.springframework.stereotype.Service;
 public class BillUpdate {
 
     private final BillRepository billRepository;
+    private final BeneficiaryRepository beneficiaryRepository;
 
-    public BillUpdate(BillRepository billRepository) {
+    public BillUpdate(BillRepository billRepository, BeneficiaryRepository beneficiaryRepository) {
         this.billRepository = billRepository;
+        this.beneficiaryRepository = beneficiaryRepository;
     }
 
     public void update(Bill bill, Bill updatedBill) {
@@ -30,11 +33,9 @@ public class BillUpdate {
             bill.setStatus(updatedBill.getStatus());
         }
         if (updatedBill.getBeneficiary() != null && !updatedBill.getBeneficiary().equals(bill.getBeneficiary())) {
-            bill.setBeneficiary(updatedBill.getBeneficiary());
+            beneficiaryRepository.findById(updatedBill.getBeneficiary().getId()).ifPresent(bill::setBeneficiary);
         }
-        if (updatedBill.getPaidDateTime() != null && !updatedBill.getPaidDateTime().equals(bill.getPaidDateTime())) {
-            bill.setPaidDateTime(updatedBill.getPaidDateTime());
-        }
+        bill.setPaidDateTime(updatedBill.getPaidDateTime());
         billRepository.save(bill);
     }
 }
