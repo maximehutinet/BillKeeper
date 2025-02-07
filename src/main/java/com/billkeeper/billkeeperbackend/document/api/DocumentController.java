@@ -11,10 +11,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,13 +30,12 @@ public class DocumentController {
         this.appConfig = appConfig;
     }
 
-    @GetMapping("/documents/bills/{ids}")
-    public ResponseEntity<Resource> getMergedBillsDocuments(@PathVariable("ids") List<UUID> ids) {
-        //TODO: Move this method to the billController and change the URL
+    @GetMapping("/documents")
+    public ResponseEntity<Resource> getMergedBillsDocuments(@RequestParam("billIds") List<UUID> billIds) {
         try {
             List<Document> documents = new ArrayList<>();
-            ids.forEach(id -> {
-                documents.addAll(documentRepository.findByBillId(id));
+            billIds.forEach(id -> {
+                documents.addAll(documentRepository.findByBillIdAndActive(id, true));
             });
             if (documents.isEmpty()) {
                 throw new BadRequestException("No documents found");
