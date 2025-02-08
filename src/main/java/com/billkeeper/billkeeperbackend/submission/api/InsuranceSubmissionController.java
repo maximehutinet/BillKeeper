@@ -56,9 +56,9 @@ public class InsuranceSubmissionController {
         }
         List<Bill> bills = request.getBillIds()
                 .stream()
-                .map(id -> billRepository.findById(id).orElse(null))
+                .map(id -> billRepository.findByIdAndSubmissionNull(id).orElse(null))
                 .toList();
-        if (bills.size() != request.getBillIds().size()) {
+        if (bills.contains(null)) {
             throw new BadRequestException("");
         }
         InsuranceSubmission submission = new InsuranceSubmission();
@@ -68,6 +68,7 @@ public class InsuranceSubmissionController {
         insuranceSubmissionRepository.save(submission);
         for (Bill bill : bills) {
             bill.setSubmission(submission);
+            bill.setStatus(Bill.Status.FILED);
             billRepository.save(bill);
         }
     }
