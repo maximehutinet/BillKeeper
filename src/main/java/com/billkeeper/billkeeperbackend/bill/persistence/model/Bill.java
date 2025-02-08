@@ -1,6 +1,7 @@
 package com.billkeeper.billkeeperbackend.bill.persistence.model;
 
 import com.billkeeper.billkeeperbackend.beneficiary.persistence.model.Beneficiary;
+import com.billkeeper.billkeeperbackend.submission.persistence.model.InsuranceSubmission;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -34,4 +35,7 @@ public class Bill {
 
     @ManyToOne(fetch = FetchType.EAGER)
     private Beneficiary beneficiary;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    private InsuranceSubmission submission;
 }
