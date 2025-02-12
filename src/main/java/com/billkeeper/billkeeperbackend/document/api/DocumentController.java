@@ -1,6 +1,7 @@
 package com.billkeeper.billkeeperbackend.document.api;
 
 import com.billkeeper.billkeeperbackend.AppConfig;
+import com.billkeeper.billkeeperbackend.document.api.model.UpdateDocumentRequest;
 import com.billkeeper.billkeeperbackend.document.persistence.DocumentRepository;
 import com.billkeeper.billkeeperbackend.document.persistence.model.Document;
 import com.billkeeper.billkeeperbackend.exception.BadRequestException;
@@ -22,7 +23,7 @@ import java.util.UUID;
 @RestController
 public class DocumentController {
 
-    private DocumentRepository documentRepository;
+    private final DocumentRepository documentRepository;
     private final AppConfig appConfig;
 
     public DocumentController(DocumentRepository documentRepository, AppConfig appConfig) {
@@ -67,6 +68,16 @@ public class DocumentController {
         } catch (IOException e) {
             throw new InternalServerErrorException("Error while fetching document");
         }
+    }
+
+    @PostMapping("/documents/{id}")
+    public void updateDocumentDescription(@RequestBody UpdateDocumentRequest request, @PathVariable("id") UUID id) {
+        Document document = documentRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Document not found"));
+        if (request.getDescription() != null) {
+            document.setDescription(request.getDescription());
+        }
+        documentRepository.save(document);
     }
 
     @DeleteMapping("/documents/{id}")

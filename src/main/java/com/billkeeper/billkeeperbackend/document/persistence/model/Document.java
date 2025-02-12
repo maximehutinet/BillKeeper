@@ -18,6 +18,7 @@ public class Document {
     private OffsetDateTime dateTime;
     private Boolean active;
     private String name;
+    private String description;
 
     @ManyToOne
     private Bill bill;

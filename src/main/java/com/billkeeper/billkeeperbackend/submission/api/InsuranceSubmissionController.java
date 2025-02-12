@@ -30,23 +30,15 @@ public class InsuranceSubmissionController {
         List<InsuranceSubmission> submissions = insuranceSubmissionRepository.findAllByActiveTrueOrderByDateTimeDesc();
         return submissions
                 .stream()
-                .map(submission -> {
-                    return InsuranceSubmissionResponse
-                            .builder()
-                            .id(submission.getId())
-                            .active(submission.getActive())
-                            .dateTime(submission.getDateTime())
-                            .name(submission.getName())
-                            .bills(billRepository.findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(submission.getId()))
-                            .build();
-                })
+                .map(this::buildSubmissionResponse)
                 .toList();
     }
 
     @GetMapping("submissions/{id}")
-    public InsuranceSubmission getSubmission(@PathVariable UUID id) {
-        return insuranceSubmissionRepository.findById(id)
+    public InsuranceSubmissionResponse getSubmission(@PathVariable UUID id) {
+        InsuranceSubmission submission = insuranceSubmissionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Submission not found"));
+        return buildSubmissionResponse(submission);
     }
 
     @PostMapping("/submissions")
@@ -87,5 +79,16 @@ public class InsuranceSubmissionController {
                 .orElseThrow(() -> new NotFoundException("Submission not found"));
         submission.setActive(false);
         insuranceSubmissionRepository.save(submission);
+    }
+
+    private InsuranceSubmissionResponse buildSubmissionResponse(InsuranceSubmission submission) {
+        return InsuranceSubmissionResponse
+                .builder()
+                .id(submission.getId())
+                .active(submission.getActive())
+                .dateTime(submission.getDateTime())
+                .name(submission.getName())
+                .bills(billRepository.findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(submission.getId()))
+                .build();
     }
 }

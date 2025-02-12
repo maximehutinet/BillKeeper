@@ -110,6 +110,7 @@ public class BillController {
                             .builder()
                             .id(document.getId())
                             .url(appConfig.getServerUrl() + "/documents/" + document.getId())
+                            .description(document.getDescription())
                             .build();
                 })
                 .toList();

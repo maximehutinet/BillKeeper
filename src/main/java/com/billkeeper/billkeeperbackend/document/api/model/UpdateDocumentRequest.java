@@ -1,16 +1,12 @@
 package com.billkeeper.billkeeperbackend.document.api.model;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Getter
 @Setter
-@Builder
-public class DocumentResponse {
-    private UUID id;
-    private String url;
+@AllArgsConstructor
+public class UpdateDocumentRequest {
     private String description;
 }
