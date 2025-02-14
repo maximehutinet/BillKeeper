@@ -90,8 +90,7 @@ public class BillController {
             multipartFile.transferTo(destination);
             createDocument(filename, bill);
             if (parse != null && parse) {
-                String text = pdfParser.extractTextFromFile(destination.toFile());
-                updateBillValues(bill, text);
+                parseAndUpdateBill(bill, destination);
             }
         } catch (IOException | RuntimeException e) {
             throw new InternalServerErrorException("Error while uploading file");
@@ -123,6 +122,15 @@ public class BillController {
         document.setName(fileName);
         document.setBill(bill);
         documentRepository.save(document);
+    }
+
+    private void parseAndUpdateBill(Bill bill, Path destination) {
+        try {
+            String text = pdfParser.extractTextFromFile(destination.toFile());
+            updateBillValues(bill, text);
+        } catch (IOException e) {
+            return;
+        }
     }
 
     private void updateBillValues(Bill bill, String text) {

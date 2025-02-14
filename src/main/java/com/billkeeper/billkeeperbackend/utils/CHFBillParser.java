@@ -52,7 +52,7 @@ public class CHFBillParser implements BillParser {
             return matches
                     .stream()
                     .findFirst()
-                    .map(value -> Double.valueOf(value.replaceAll("[^\\d\\.']+", "")));
+                    .map(value -> Double.valueOf(value.replaceAll("[^\\d\\.]+", "")));
         }
         return Optional.empty();
     }

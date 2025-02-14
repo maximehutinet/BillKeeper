@@ -58,25 +58,28 @@ public class InsuranceSubmissionController {
         submission.setDateTime(OffsetDateTime.now());
         submission.setName(request.getName());
         insuranceSubmissionRepository.save(submission);
-        for (Bill bill : bills) {
-            bill.setSubmission(submission);
-            bill.setStatus(Bill.Status.FILED);
-            billRepository.save(bill);
-        }
+        bills.forEach(bill -> addBillToSubmission(submission, bill));
     }
 
     @PostMapping("/submissions/{id}")
     public void updateSubmission(@PathVariable UUID id, @RequestBody CreateUpdateInsuranceSubmissionRequest request) {
         InsuranceSubmission submission = insuranceSubmissionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Submission not found"));
-        submission.setName(request.getName());
-        insuranceSubmissionRepository.save(submission);
+        if (request.getName() != null && !request.getName().isEmpty() && !request.getName().equals(submission.getName())) {
+            submission.setName(request.getName());
+            insuranceSubmissionRepository.save(submission);
+        }
+        if (request.getBillIds() != null) {
+            updateSubmissionBills(submission, request.getBillIds());
+        }
     }
 
     @DeleteMapping("submissions/{id}")
     public void deleteSubmission(@PathVariable UUID id) {
         InsuranceSubmission submission = insuranceSubmissionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Submission not found"));
+        billRepository.findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(submission.getId())
+                        .forEach(this::removeBillFromSubmission);
         submission.setActive(false);
         insuranceSubmissionRepository.save(submission);
     }
@@ -91,4 +94,36 @@ public class InsuranceSubmissionController {
                 .bills(billRepository.findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(submission.getId()))
                 .build();
     }
+
+    private void updateSubmissionBills(InsuranceSubmission submission, List<UUID> updatedSubmissionBills) {
+        List<Bill> submissionBills = billRepository.findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(submission.getId());
+        List<UUID> submissionsBillIds = submissionBills
+                .stream()
+                .map(Bill::getId)
+                .toList();
+        List<Bill> billsToAddToSubmission = updatedSubmissionBills
+                .stream()
+                .filter(billId -> !submissionsBillIds.contains(billId))
+                .map(billId -> billRepository.findByIdAndSubmissionNull(billId).orElseThrow(() -> new NotFoundException("Bill not found")))
+                .toList();
+        List<Bill> billsToRemoveFromSubmission = submissionBills
+                .stream()
+                .filter(bill -> !updatedSubmissionBills.contains(bill.getId()))
+                .toList();
+        billsToAddToSubmission.forEach(bill -> addBillToSubmission(submission, bill));
+        billsToRemoveFromSubmission.forEach(this::removeBillFromSubmission);
+    }
+
+    private void removeBillFromSubmission(Bill bill) {
+        bill.setSubmission(null);
+        bill.setStatus(Bill.Status.TO_FILE);
+        billRepository.save(bill);
+    }
+
+    private void addBillToSubmission(InsuranceSubmission submission, Bill bill) {
+        bill.setSubmission(submission);
+        bill.setStatus(Bill.Status.FILED);
+        billRepository.save(bill);
+    }
+
 }
