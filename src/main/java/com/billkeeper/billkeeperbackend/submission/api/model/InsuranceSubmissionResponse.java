@@ -20,4 +20,5 @@ public class InsuranceSubmissionResponse {
     private OffsetDateTime dateTime;
     private String name;
     private List<Bill> bills;
+    private Double totalUsdAmount;
 }

@@ -4,10 +4,12 @@ import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
 import com.billkeeper.billkeeperbackend.exception.BadRequestException;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
+import com.billkeeper.billkeeperbackend.settings.persistence.SettingsRepository;
 import com.billkeeper.billkeeperbackend.submission.api.model.CreateUpdateInsuranceSubmissionRequest;
 import com.billkeeper.billkeeperbackend.submission.api.model.InsuranceSubmissionResponse;
 import com.billkeeper.billkeeperbackend.submission.persistence.InsuranceSubmissionRepository;
 import com.billkeeper.billkeeperbackend.submission.persistence.model.InsuranceSubmission;
+import com.billkeeper.billkeeperbackend.utils.BillUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
@@ -19,10 +21,12 @@ public class InsuranceSubmissionController {
 
     private final InsuranceSubmissionRepository insuranceSubmissionRepository;
     private final BillRepository billRepository;
+    private final BillUtils billUtils;
 
-    public InsuranceSubmissionController(InsuranceSubmissionRepository insuranceSubmissionRepository, BillRepository billRepository) {
+    public InsuranceSubmissionController(InsuranceSubmissionRepository insuranceSubmissionRepository, BillRepository billRepository, SettingsRepository settingsRepository, BillUtils billUtils) {
         this.insuranceSubmissionRepository = insuranceSubmissionRepository;
         this.billRepository = billRepository;
+        this.billUtils = billUtils;
     }
 
     @GetMapping("submissions")
@@ -85,13 +89,15 @@ public class InsuranceSubmissionController {
     }
 
     private InsuranceSubmissionResponse buildSubmissionResponse(InsuranceSubmission submission) {
+        List<Bill> bills = billRepository.findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(submission.getId());
         return InsuranceSubmissionResponse
                 .builder()
                 .id(submission.getId())
                 .active(submission.getActive())
                 .dateTime(submission.getDateTime())
                 .name(submission.getName())
-                .bills(billRepository.findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(submission.getId()))
+                .bills(bills)
+                .totalUsdAmount(billUtils.getTotalBillsUsdAmount(bills))
                 .build();
     }
 
