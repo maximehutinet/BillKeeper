@@ -1,4 +1,4 @@
-package com.billkeeper.billkeeperbackend.settings.persistence;
+package com.billkeeper.billkeeperbackend.settings.persistence.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -16,4 +16,6 @@ public class Settings {
     public UUID id;
     private OffsetDateTime dateTime;
     private Boolean active;
+    private Double euroToUsdExchangeRate;
+    private Double chfToUsdExchangeRate;
 }
