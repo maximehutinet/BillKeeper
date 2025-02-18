@@ -8,5 +8,8 @@ import lombok.Setter;
 @Setter
 @Builder
 public class StatsResponse {
-    private Integer totalActiveBills;
+    private Double totalUsdAmountToBeReimbursed;
+    private Double totalUsdAmountToPay;
+    private Integer billToFileCount;
+    private Integer billInProgressCount;
 }

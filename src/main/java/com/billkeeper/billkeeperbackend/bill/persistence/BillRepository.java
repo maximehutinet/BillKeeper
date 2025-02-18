@@ -11,4 +11,7 @@ public interface BillRepository extends CrudRepository<Bill, UUID> {
     List<Bill> findAllByActiveTrueOrderByDateTimeDesc();
     List<Bill> findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(UUID submissionId);
     Optional<Bill> findByIdAndSubmissionNull(UUID id);
+    Integer countByActiveTrueAndStatus(Bill.Status status);
+    List<Bill> findAllByActiveTrueAndStatus(Bill.Status status);
+    List<Bill> findAllByActiveTrueAndPaidDateTimeNull();
 }
