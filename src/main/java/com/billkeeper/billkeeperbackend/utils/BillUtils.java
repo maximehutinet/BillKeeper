@@ -11,16 +11,16 @@ import java.util.List;
 public class BillUtils {
 
     private final SettingsRepository settingsRepository;
-    private final Settings settings;
+    private Settings settings;
 
     public BillUtils(SettingsRepository settingsRepository) {
         this.settingsRepository = settingsRepository;
-        this.settings = this.settingsRepository.findLatestSettings()
-                .orElse(null);
     }
 
     public Double getTotalBillsUsdAmount(List<Bill> bills) {
-        if (settings == null) {
+        this.settings = this.settingsRepository.findLatestSettings()
+                .orElse(null);
+        if (this.settings == null) {
             return null;
         }
         return bills
