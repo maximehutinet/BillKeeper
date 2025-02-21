@@ -59,11 +59,17 @@ public class BillController {
     }
 
     @PostMapping("/bills")
-    public Bill createBill(@RequestBody Bill bill) {
-        bill.setActive(true);
-        bill.setDateTime(OffsetDateTime.now());
-        bill.setStatus(Bill.Status.TO_FILE);
-        return billRepository.save(bill);
+    public void createBill(@RequestParam("file") MultipartFile multipartFile) {
+        try {
+            String filename = UUID.randomUUID() + ".pdf";
+            Path destination = Paths.get(appConfig.getDocumentsDirectory()).resolve(filename);
+            multipartFile.transferTo(destination);
+            Bill bill = createEmptyBill();
+            createDocument(filename, bill);
+            parseAndUpdateBill(bill, destination);
+        } catch (IOException | RuntimeException e) {
+            throw new InternalServerErrorException("Error while uploading file");
+        }
     }
 
     @PostMapping("/bills/{id}")
@@ -81,7 +87,7 @@ public class BillController {
     }
 
     @PostMapping("/bills/{id}/documents")
-    public void uploadBillDocument(@PathVariable UUID id, @RequestParam("file") MultipartFile multipartFile, @RequestParam(required = false) Boolean parse) {
+    public void uploadBillDocument(@PathVariable UUID id, @RequestParam("file") MultipartFile multipartFile) {
         try {
             Bill bill = billRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("Bill not found"));
@@ -89,9 +95,6 @@ public class BillController {
             Path destination = Paths.get(appConfig.getDocumentsDirectory()).resolve(filename);
             multipartFile.transferTo(destination);
             createDocument(filename, bill);
-            if (parse != null && parse) {
-                parseAndUpdateBill(bill, destination);
-            }
         } catch (IOException | RuntimeException e) {
             throw new InternalServerErrorException("Error while uploading file");
         }
@@ -115,6 +118,15 @@ public class BillController {
                 .toList();
     }
 
+    private Bill createEmptyBill() {
+        Bill bill = new Bill();
+        bill.setActive(true);
+        bill.setDateTime(OffsetDateTime.now());
+        bill.setStatus(Bill.Status.TO_FILE);
+        billRepository.save(bill);
+        return bill;
+    }
+
     private void createDocument(String fileName, Bill bill) {
         Document document = new Document();
         document.setActive(true);
@@ -128,9 +140,7 @@ public class BillController {
         try {
             String text = pdfParser.extractTextFromFile(destination.toFile());
             updateBillValues(bill, text);
-        } catch (IOException e) {
-            return;
-        }
+        } catch (IOException ignored) { }
     }
 
     private void updateBillValues(Bill bill, String text) {
@@ -141,7 +151,6 @@ public class BillController {
         billParser.getBillName().ifPresent(bill::setName);
         billParser.getBillAmount().ifPresent(bill::setAmount);
         billParser.getBillBeneficiary().ifPresent(bill::setBeneficiary);
-        billRepository.save(bill);
     }
 
     private Bill.Currency getBillCurrency(String text) {
