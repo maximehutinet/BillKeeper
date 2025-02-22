@@ -20,7 +20,7 @@ public class BillDeletion {
     }
 
     public void delete(Bill bill) {
-        List<Document> documents = documentRepository.findByBillIdAndActive(bill.getId(), true);
+        List<Document> documents = documentRepository.findByBillIdAndActiveTrue(bill.getId());
         for (Document document : documents) {
             document.setActive(false);
             documentRepository.save(document);

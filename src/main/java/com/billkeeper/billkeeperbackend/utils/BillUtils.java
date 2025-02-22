@@ -31,10 +31,12 @@ public class BillUtils {
     }
 
     private Double getBillUsdAmount(Bill bill) {
+        if (bill.getCurrency() == null) {
+            return 0.0;
+        }
         return switch (bill.getCurrency()) {
             case CHF -> bill.getAmount() * settings.getChfToUsdExchangeRate();
             case EUR -> bill.getAmount() * settings.getEuroToUsdExchangeRate();
-            default -> 0.0;
         };
 
     }

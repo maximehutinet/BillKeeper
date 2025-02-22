@@ -8,5 +8,6 @@ import java.util.UUID;
 
 public interface DocumentRepository extends CrudRepository<Document, UUID> {
 
-    List<Document> findByBillIdAndActive(UUID billId, Boolean active);
+    List<Document> findByBillIdAndActiveTrue(UUID billId);
+    List<Document> findByBillIdNullAndActiveTrue();
 }

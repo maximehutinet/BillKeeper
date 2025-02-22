@@ -7,6 +7,7 @@ import com.billkeeper.billkeeperbackend.bill.BillDeletion;
 import com.billkeeper.billkeeperbackend.bill.BillUpdate;
 import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
+import com.billkeeper.billkeeperbackend.document.api.CreateDocumentResponse;
 import com.billkeeper.billkeeperbackend.document.api.model.DocumentResponse;
 import com.billkeeper.billkeeperbackend.document.persistence.DocumentRepository;
 import com.billkeeper.billkeeperbackend.document.persistence.model.Document;
@@ -36,8 +37,9 @@ public class BillController {
     private final BeneficiaryRepository beneficiaryRepository;
     private final BillUpdate billUpdate;
     private final BillDeletion billDeletion;
+    private final CreateDocumentResponse createDocumentResponse;
 
-    public BillController(BillRepository billRepository, DocumentRepository documentRepository, AppConfig appConfig, PDFParser pdfParser, BeneficiaryRepository beneficiaryRepository, BillUpdate billUpdate, BillDeletion billDeletion) {
+    public BillController(BillRepository billRepository, DocumentRepository documentRepository, AppConfig appConfig, PDFParser pdfParser, BeneficiaryRepository beneficiaryRepository, BillUpdate billUpdate, BillDeletion billDeletion, CreateDocumentResponse createDocumentResponse) {
         this.billRepository = billRepository;
         this.documentRepository = documentRepository;
         this.appConfig = appConfig;
@@ -45,6 +47,7 @@ public class BillController {
         this.beneficiaryRepository = beneficiaryRepository;
         this.billUpdate = billUpdate;
         this.billDeletion = billDeletion;
+        this.createDocumentResponse = createDocumentResponse;
     }
 
     @GetMapping("/bills")
@@ -105,16 +108,9 @@ public class BillController {
         if (!billRepository.existsById(id)) {
             throw new NotFoundException("Bill not found");
         }
-        return documentRepository.findByBillIdAndActive(id, true)
+        return documentRepository.findByBillIdAndActiveTrue(id)
                 .stream()
-                .map(document -> {
-                    return DocumentResponse
-                            .builder()
-                            .id(document.getId())
-                            .url(appConfig.getServerUrl() + "/documents/" + document.getId())
-                            .description(document.getDescription())
-                            .build();
-                })
+                .map(createDocumentResponse::create)
                 .toList();
     }
 
@@ -127,11 +123,11 @@ public class BillController {
         return bill;
     }
 
-    private void createDocument(String fileName, Bill bill) {
+    private void createDocument(String filename, Bill bill) {
         Document document = new Document();
         document.setActive(true);
         document.setDateTime(OffsetDateTime.now());
-        document.setName(fileName);
+        document.setName(filename);
         document.setBill(bill);
         documentRepository.save(document);
     }
