@@ -19,6 +19,7 @@ public class InsuranceSubmissionResponse {
     private Boolean active;
     private OffsetDateTime dateTime;
     private String name;
+    private String eClaimId;
     private List<Bill> bills;
     private Double totalUsdAmount;
 }

@@ -12,5 +12,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CreateUpdateInsuranceSubmissionRequest {
     String name;
+    String eClaimId;
     List<UUID> billIds;
 }

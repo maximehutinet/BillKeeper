@@ -4,7 +4,6 @@ import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
 import com.billkeeper.billkeeperbackend.exception.BadRequestException;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
-import com.billkeeper.billkeeperbackend.settings.persistence.SettingsRepository;
 import com.billkeeper.billkeeperbackend.submission.api.model.CreateUpdateInsuranceSubmissionRequest;
 import com.billkeeper.billkeeperbackend.submission.api.model.InsuranceSubmissionResponse;
 import com.billkeeper.billkeeperbackend.submission.persistence.InsuranceSubmissionRepository;
@@ -23,7 +22,7 @@ public class InsuranceSubmissionController {
     private final BillRepository billRepository;
     private final BillUtils billUtils;
 
-    public InsuranceSubmissionController(InsuranceSubmissionRepository insuranceSubmissionRepository, BillRepository billRepository, SettingsRepository settingsRepository, BillUtils billUtils) {
+    public InsuranceSubmissionController(InsuranceSubmissionRepository insuranceSubmissionRepository, BillRepository billRepository, BillUtils billUtils) {
         this.insuranceSubmissionRepository = insuranceSubmissionRepository;
         this.billRepository = billRepository;
         this.billUtils = billUtils;
@@ -71,11 +70,14 @@ public class InsuranceSubmissionController {
                 .orElseThrow(() -> new NotFoundException("Submission not found"));
         if (request.getName() != null && !request.getName().isEmpty() && !request.getName().equals(submission.getName())) {
             submission.setName(request.getName());
-            insuranceSubmissionRepository.save(submission);
+        }
+        if (request.getEClaimId() != null && !request.getEClaimId().isEmpty()) {
+            submission.setEClaimId(request.getEClaimId());
         }
         if (request.getBillIds() != null) {
             updateSubmissionBills(submission, request.getBillIds());
         }
+        insuranceSubmissionRepository.save(submission);
     }
 
     @DeleteMapping("submissions/{id}")
@@ -96,6 +98,7 @@ public class InsuranceSubmissionController {
                 .active(submission.getActive())
                 .dateTime(submission.getDateTime())
                 .name(submission.getName())
+                .eClaimId(submission.getEClaimId())
                 .bills(bills)
                 .totalUsdAmount(billUtils.getTotalBillsUsdAmount(bills))
                 .build();

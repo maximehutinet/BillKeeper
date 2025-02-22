@@ -17,4 +17,5 @@ public class InsuranceSubmission {
     private Boolean active;
     private OffsetDateTime dateTime;
     private String name;
+    private String eClaimId;
 }
