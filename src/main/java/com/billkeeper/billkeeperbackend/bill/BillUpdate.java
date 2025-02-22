@@ -35,6 +35,7 @@ public class BillUpdate {
         if (updatedBill.getBeneficiary() != null && !updatedBill.getBeneficiary().equals(bill.getBeneficiary())) {
             beneficiaryRepository.findById(updatedBill.getBeneficiary().getId()).ifPresent(bill::setBeneficiary);
         }
+        bill.setServiceDateTime(updatedBill.getServiceDateTime());
         bill.setPaidDateTime(updatedBill.getPaidDateTime());
         billRepository.save(bill);
     }

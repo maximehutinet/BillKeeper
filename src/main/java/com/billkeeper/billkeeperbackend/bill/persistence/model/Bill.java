@@ -29,6 +29,7 @@ public class Bill {
     private String name;
     private Double amount;
     private Currency currency;
+    private OffsetDateTime serviceDateTime;
     private OffsetDateTime paidDateTime;
     private String provider;
     private Status status;
