@@ -147,13 +147,14 @@ public class BillController {
         billParser.getBillName().ifPresent(bill::setName);
         billParser.getBillAmount().ifPresent(bill::setAmount);
         billParser.getBillBeneficiary().ifPresent(bill::setBeneficiary);
+        billRepository.save(bill);
     }
 
     private Bill.Currency getBillCurrency(String text) {
-        if (text.contains("Justificatif de remboursement") || text.contains("CHF") || text.contains("Payable par")) {
-            return Bill.Currency.CHF;
+        if (text.contains("EURO") || text.contains("EUR") || text.contains("€")) {
+            return Bill.Currency.EUR;
         }
-        return Bill.Currency.EUR;
+        return Bill.Currency.CHF;
     }
 
 }
