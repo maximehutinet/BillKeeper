@@ -114,6 +114,11 @@ public class BillController {
                 .toList();
     }
 
+    @GetMapping("/bills/providers")
+    public List<String> getProvidersStartingWith(@RequestParam("value") String value) {
+        return billRepository.findAllProvidersMatchingValue(value);
+    }
+
     private Bill createEmptyBill() {
         Bill bill = new Bill();
         bill.setActive(true);
