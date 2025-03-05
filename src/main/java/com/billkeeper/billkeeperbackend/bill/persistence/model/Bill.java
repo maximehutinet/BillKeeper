@@ -28,10 +28,14 @@ public class Bill {
     private OffsetDateTime dateTime;
     private String name;
     private Double amount;
+
+    @Enumerated(EnumType.STRING)
     private Currency currency;
     private OffsetDateTime serviceDateTime;
     private OffsetDateTime paidDateTime;
     private String provider;
+
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @ManyToOne(fetch = FetchType.EAGER)
