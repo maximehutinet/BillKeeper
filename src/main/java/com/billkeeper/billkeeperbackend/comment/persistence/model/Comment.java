@@ -1,6 +1,7 @@
 package com.billkeeper.billkeeperbackend.comment.persistence.model;
 
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
+import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,6 +19,9 @@ public class Comment {
     private OffsetDateTime dateTime;
     private Boolean active;
     private String content;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    private User user;
 
     @ManyToOne
     private Bill bill;

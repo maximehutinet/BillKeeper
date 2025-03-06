@@ -1,19 +1,20 @@
 CREATE TABLE billkeeperuser
 (
-    id          UUID        NOT NULL
+    id                   UUID        NOT NULL
         CONSTRAINT billkeeperuser_pkey
             PRIMARY KEY,
-    keycloak_id TEXT UNIQUE NOT NULL,
-    firstname   TEXT UNIQUE NOT NULL,
-    email       TEXT UNIQUE NOT NULL
+    keycloak_id          TEXT UNIQUE NOT NULL,
+    firstname            TEXT UNIQUE NOT NULL,
+    email                TEXT UNIQUE NOT NULL,
+    profile_picture_name TEXT
 );
 
 CREATE TABLE beneficiary
 (
-    id        UUID      NOT NULL
+    id        UUID    NOT NULL
         CONSTRAINT beneficiary_pkey
             PRIMARY KEY,
-    active    BOOLEAN   NOT NULL,
+    active    BOOLEAN NOT NULL,
     firstname TEXT
 );
 
@@ -58,6 +59,8 @@ CREATE TABLE comment
     active    BOOLEAN   NOT NULL,
     date_time TIMESTAMP NOT NULL,
     content   TEXT,
+    user_id   UUID
+        CONSTRAINT fk_user_id REFERENCES billkeeperuser,
     bill_id   UUID
         CONSTRAINT fk_bill_id REFERENCES bill
 );

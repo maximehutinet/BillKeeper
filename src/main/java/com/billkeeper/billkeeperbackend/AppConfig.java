@@ -13,4 +13,5 @@ public class AppConfig {
     private String serverUrl;
     private String documentsDirectory;
     private String tesseractDataDirectory;
+    private String usersDirectory;
 }

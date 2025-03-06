@@ -6,6 +6,9 @@ import com.billkeeper.billkeeperbackend.comment.api.model.CreateUpdateCommentReq
 import com.billkeeper.billkeeperbackend.comment.persistence.CommentRepository;
 import com.billkeeper.billkeeperbackend.comment.persistence.model.Comment;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
+import com.billkeeper.billkeeperbackend.user.persistence.UserRepository;
+import com.billkeeper.billkeeperbackend.user.persistence.model.User;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
@@ -17,10 +20,12 @@ public class CommentController {
 
     private final CommentRepository commentRepository;
     private final BillRepository billRepository;
+    private final UserRepository userRepository;
 
-    public CommentController(CommentRepository commentRepository, BillRepository billRepository) {
+    public CommentController(CommentRepository commentRepository, BillRepository billRepository, UserRepository userRepository) {
         this.commentRepository = commentRepository;
         this.billRepository = billRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/comments")
@@ -32,13 +37,16 @@ public class CommentController {
     }
 
     @PostMapping("/comments")
-    public void createComment(@RequestBody CreateUpdateCommentRequest request, @RequestParam UUID billId) {
+    public void createComment(@RequestBody CreateUpdateCommentRequest request, @RequestParam UUID billId, JwtAuthenticationToken jwtAuthenticationToken) {
         Bill bill = billRepository.findById(billId)
                 .orElseThrow(() -> new NotFoundException("Bill not found"));
+        User user = userRepository.findUserByKeycloakId(jwtAuthenticationToken.getName())
+                .orElse(null);
         Comment comment = new Comment();
         comment.setDateTime(OffsetDateTime.now());
         comment.setActive(true);
         comment.setContent(request.getContent());
+        comment.setUser(user);
         comment.setBill(bill);
         commentRepository.save(comment);
     }
