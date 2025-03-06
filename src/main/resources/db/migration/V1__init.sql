@@ -1,10 +1,19 @@
+CREATE TABLE billkeeperuser
+(
+    id          UUID        NOT NULL
+        CONSTRAINT billkeeperuser_pkey
+            PRIMARY KEY,
+    keycloak_id TEXT UNIQUE NOT NULL,
+    firstname   TEXT UNIQUE NOT NULL,
+    email       TEXT UNIQUE NOT NULL
+);
+
 CREATE TABLE beneficiary
 (
     id        UUID      NOT NULL
         CONSTRAINT beneficiary_pkey
             PRIMARY KEY,
     active    BOOLEAN   NOT NULL,
-    date_time TIMESTAMP NOT NULL,
     firstname TEXT
 );
 
@@ -28,6 +37,8 @@ CREATE TABLE bill
     date_time         TIMESTAMP NOT NULL,
     name              TEXT,
     amount            DECIMAL,
+    user_id           UUID
+        CONSTRAINT fk_user_id REFERENCES billkeeperuser,
     currency          VARCHAR(255) CHECK (currency IN ('CHF', 'EUR')),
     service_date_time TIMESTAMP,
     paid_date_time    TIMESTAMP,
@@ -73,14 +84,4 @@ CREATE TABLE settings
     date_time                 TIMESTAMP NOT NULL,
     euro_to_usd_exchange_rate DECIMAL,
     chf_to_usd_exchange_rate  DECIMAL
-);
-
-CREATE TABLE billkeeperuser
-(
-    id          UUID        NOT NULL
-        CONSTRAINT billkeeperuser_pkey
-            PRIMARY KEY,
-    keycloak_id TEXT UNIQUE NOT NULL,
-    firstname   TEXT UNIQUE NOT NULL,
-    email       TEXT UNIQUE NOT NULL
 );

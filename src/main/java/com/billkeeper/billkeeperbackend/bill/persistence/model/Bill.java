@@ -2,6 +2,7 @@ package com.billkeeper.billkeeperbackend.bill.persistence.model;
 
 import com.billkeeper.billkeeperbackend.beneficiary.persistence.model.Beneficiary;
 import com.billkeeper.billkeeperbackend.submission.persistence.model.InsuranceSubmission;
+import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -28,6 +29,9 @@ public class Bill {
     private OffsetDateTime dateTime;
     private String name;
     private Double amount;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    private User user;
 
     @Enumerated(EnumType.STRING)
     private Currency currency;

@@ -13,10 +13,13 @@ import com.billkeeper.billkeeperbackend.document.persistence.DocumentRepository;
 import com.billkeeper.billkeeperbackend.document.persistence.model.Document;
 import com.billkeeper.billkeeperbackend.exception.InternalServerErrorException;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
+import com.billkeeper.billkeeperbackend.user.persistence.UserRepository;
+import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import com.billkeeper.billkeeperbackend.utils.BillParser;
 import com.billkeeper.billkeeperbackend.utils.CHFBillParser;
 import com.billkeeper.billkeeperbackend.utils.EuroBillParser;
 import com.billkeeper.billkeeperbackend.utils.PDFParser;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,6 +35,7 @@ public class BillController {
 
     private final BillRepository billRepository;
     private final DocumentRepository documentRepository;
+    private final UserRepository userRepository;
     private final AppConfig appConfig;
     private final PDFParser pdfParser;
     private final BeneficiaryRepository beneficiaryRepository;
@@ -39,9 +43,10 @@ public class BillController {
     private final BillDeletion billDeletion;
     private final CreateDocumentResponse createDocumentResponse;
 
-    public BillController(BillRepository billRepository, DocumentRepository documentRepository, AppConfig appConfig, PDFParser pdfParser, BeneficiaryRepository beneficiaryRepository, BillUpdate billUpdate, BillDeletion billDeletion, CreateDocumentResponse createDocumentResponse) {
+    public BillController(BillRepository billRepository, DocumentRepository documentRepository, UserRepository userRepository, AppConfig appConfig, PDFParser pdfParser, BeneficiaryRepository beneficiaryRepository, BillUpdate billUpdate, BillDeletion billDeletion, CreateDocumentResponse createDocumentResponse) {
         this.billRepository = billRepository;
         this.documentRepository = documentRepository;
+        this.userRepository = userRepository;
         this.appConfig = appConfig;
         this.pdfParser = pdfParser;
         this.beneficiaryRepository = beneficiaryRepository;
@@ -62,12 +67,14 @@ public class BillController {
     }
 
     @PostMapping("/bills")
-    public void createBill(@RequestParam("file") MultipartFile multipartFile) {
+    public void createBill(@RequestParam("file") MultipartFile multipartFile, JwtAuthenticationToken jwtAuthenticationToken) {
         try {
+            User user = userRepository.findUserByKeycloakId(jwtAuthenticationToken.getName())
+                    .orElse(null);
             String filename = UUID.randomUUID() + ".pdf";
             Path destination = Paths.get(appConfig.getDocumentsDirectory()).resolve(filename);
             multipartFile.transferTo(destination);
-            Bill bill = createEmptyBill();
+            Bill bill = createEmptyBill(user);
             createDocument(filename, bill);
             parseAndUpdateBill(bill, destination);
         } catch (IOException | RuntimeException e) {
@@ -119,11 +126,12 @@ public class BillController {
         return billRepository.findAllProvidersMatchingValue(value);
     }
 
-    private Bill createEmptyBill() {
+    private Bill createEmptyBill(User user) {
         Bill bill = new Bill();
         bill.setActive(true);
         bill.setDateTime(OffsetDateTime.now());
         bill.setStatus(Bill.Status.TO_FILE);
+        bill.setUser(user);
         billRepository.save(bill);
         return bill;
     }

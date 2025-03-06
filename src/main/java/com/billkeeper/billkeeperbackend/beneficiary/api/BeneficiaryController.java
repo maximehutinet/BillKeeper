@@ -26,7 +26,6 @@ public class BeneficiaryController {
 
     @PostMapping("/beneficiaries")
     public void createBeneficiary(@RequestBody CreateUpdateBeneficiaryRequest request) {
-        System.out.println("request.getFirstName() = " + request.getFirstname());
         if (request.getFirstname() == null || request.getFirstname().isEmpty()) {
             throw new BadRequestException("Firstname cannot be empty");
         }
