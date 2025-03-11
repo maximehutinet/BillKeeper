@@ -1,0 +1,52 @@
+package com.billkeeper.billkeeperbackend.utils;
+
+import com.billkeeper.billkeeperbackend.beneficiary.BeneficiaryRepository;
+import com.billkeeper.billkeeperbackend.beneficiary.persistence.model.Beneficiary;
+import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
+import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+@Service
+public class BillParsingService {
+
+    private final PDFParser pdfParser;
+    private final BeneficiaryRepository beneficiaryRepository;
+    private final BillRepository billRepository;
+
+    public BillParsingService(PDFParser pdfParser, BeneficiaryRepository beneficiaryRepository, BillRepository billRepository) {
+        this.pdfParser = pdfParser;
+        this.beneficiaryRepository = beneficiaryRepository;
+        this.billRepository = billRepository;
+    }
+
+    @Async
+    public void parseAndUpdateBill(Bill bill, File file) {
+        try {
+            String text = pdfParser.extractTextFromFile(file);
+            updateBillValues(bill, text);
+        } catch (IOException ignored) { }
+    }
+
+    private void updateBillValues(Bill bill, String text) {
+        List<Beneficiary> registeredBeneficiaries = beneficiaryRepository.findAll();
+        Bill.Currency currency = getBillCurrency(text);
+        BillParser billParser = currency == Bill.Currency.CHF ? new CHFBillParser(text, registeredBeneficiaries) : new EuroBillParser(text, registeredBeneficiaries);
+        bill.setCurrency(currency);
+        billParser.getBillName().ifPresent(bill::setName);
+        billParser.getBillAmount().ifPresent(bill::setAmount);
+        billParser.getBillBeneficiary().ifPresent(bill::setBeneficiary);
+        billRepository.save(bill);
+    }
+
+    private Bill.Currency getBillCurrency(String text) {
+        if (text.contains("EURO") || text.contains("EUR") || text.contains("€")) {
+            return Bill.Currency.EUR;
+        }
+        return Bill.Currency.CHF;
+    }
+}

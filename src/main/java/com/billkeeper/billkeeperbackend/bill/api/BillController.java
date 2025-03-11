@@ -1,8 +1,6 @@
 package com.billkeeper.billkeeperbackend.bill.api;
 
 import com.billkeeper.billkeeperbackend.AppConfig;
-import com.billkeeper.billkeeperbackend.beneficiary.BeneficiaryRepository;
-import com.billkeeper.billkeeperbackend.beneficiary.persistence.model.Beneficiary;
 import com.billkeeper.billkeeperbackend.bill.BillDeletion;
 import com.billkeeper.billkeeperbackend.bill.BillUpdate;
 import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
@@ -15,10 +13,7 @@ import com.billkeeper.billkeeperbackend.exception.InternalServerErrorException;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import com.billkeeper.billkeeperbackend.user.persistence.UserRepository;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
-import com.billkeeper.billkeeperbackend.utils.BillParser;
-import com.billkeeper.billkeeperbackend.utils.CHFBillParser;
-import com.billkeeper.billkeeperbackend.utils.EuroBillParser;
-import com.billkeeper.billkeeperbackend.utils.PDFParser;
+import com.billkeeper.billkeeperbackend.utils.BillParsingService;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,22 +29,20 @@ import java.util.UUID;
 public class BillController {
 
     private final BillRepository billRepository;
+    private final BillParsingService billParsingService;
     private final DocumentRepository documentRepository;
     private final UserRepository userRepository;
     private final AppConfig appConfig;
-    private final PDFParser pdfParser;
-    private final BeneficiaryRepository beneficiaryRepository;
     private final BillUpdate billUpdate;
     private final BillDeletion billDeletion;
     private final CreateDocumentResponse createDocumentResponse;
 
-    public BillController(BillRepository billRepository, DocumentRepository documentRepository, UserRepository userRepository, AppConfig appConfig, PDFParser pdfParser, BeneficiaryRepository beneficiaryRepository, BillUpdate billUpdate, BillDeletion billDeletion, CreateDocumentResponse createDocumentResponse) {
+    public BillController(BillRepository billRepository, DocumentRepository documentRepository, UserRepository userRepository, AppConfig appConfig, BillParsingService billParsingService, BillUpdate billUpdate, BillDeletion billDeletion, CreateDocumentResponse createDocumentResponse) {
         this.billRepository = billRepository;
         this.documentRepository = documentRepository;
         this.userRepository = userRepository;
         this.appConfig = appConfig;
-        this.pdfParser = pdfParser;
-        this.beneficiaryRepository = beneficiaryRepository;
+        this.billParsingService = billParsingService;
         this.billUpdate = billUpdate;
         this.billDeletion = billDeletion;
         this.createDocumentResponse = createDocumentResponse;
@@ -76,7 +69,7 @@ public class BillController {
             multipartFile.transferTo(destination);
             Bill bill = createEmptyBill(user);
             createDocument(filename, bill);
-            parseAndUpdateBill(bill, destination);
+            billParsingService.parseAndUpdateBill(bill, destination.toFile());
         } catch (IOException | RuntimeException e) {
             throw new InternalServerErrorException("Error while uploading file");
         }
@@ -145,29 +138,6 @@ public class BillController {
         documentRepository.save(document);
     }
 
-    private void parseAndUpdateBill(Bill bill, Path destination) {
-        try {
-            String text = pdfParser.extractTextFromFile(destination.toFile());
-            updateBillValues(bill, text);
-        } catch (IOException ignored) { }
-    }
 
-    private void updateBillValues(Bill bill, String text) {
-        List<Beneficiary> registeredBeneficiaries = beneficiaryRepository.findAll();
-        Bill.Currency currency = getBillCurrency(text);
-        BillParser billParser = currency == Bill.Currency.CHF ? new CHFBillParser(text, registeredBeneficiaries) : new EuroBillParser(text, registeredBeneficiaries);
-        bill.setCurrency(currency);
-        billParser.getBillName().ifPresent(bill::setName);
-        billParser.getBillAmount().ifPresent(bill::setAmount);
-        billParser.getBillBeneficiary().ifPresent(bill::setBeneficiary);
-        billRepository.save(bill);
-    }
-
-    private Bill.Currency getBillCurrency(String text) {
-        if (text.contains("EURO") || text.contains("EUR") || text.contains("€")) {
-            return Bill.Currency.EUR;
-        }
-        return Bill.Currency.CHF;
-    }
 
 }
