@@ -6,10 +6,12 @@ import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import net.codecrete.qrbill.generator.QRCodeText;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BillParsingService {
@@ -27,9 +29,37 @@ public class BillParsingService {
     @Async
     public void parseAndUpdateBill(Bill bill, File file) {
         try {
-            String text = pdfParser.extractTextFromFile(file);
-            updateBillValues(bill, text);
+            String qrCodeText = QRCodeDecoder.decode(file);
+            if (qrCodeText != null && !qrCodeText.isEmpty()) {
+                net.codecrete.qrbill.generator.Bill QRBill = QRCodeText.decode(qrCodeText);
+                updateBillFromQRBill(bill, QRBill);
+            } else {
+                String text = pdfParser.extractTextFromFile(file);
+                updateBillValues(bill, text);
+            }
         } catch (IOException ignored) { }
+    }
+
+    private void updateBillFromQRBill(Bill bill, net.codecrete.qrbill.generator.Bill QRBill) {
+        bill.setCurrency(Bill.Currency.valueOf(QRBill.getCurrency()));
+        bill.setName(QRBill.getCreditor().getName());
+        bill.setProvider(QRBill.getCreditor().getName());
+        bill.setAmount(QRBill.getAmountAsDouble());
+        getBeneficiaryFromQRBill(QRBill).ifPresent(bill::setBeneficiary);
+        billRepository.save(bill);
+    }
+
+    private Optional<Beneficiary> getBeneficiaryFromQRBill(net.codecrete.qrbill.generator.Bill QRBill) {
+        List<Beneficiary> registeredBeneficiaries = beneficiaryRepository.findAll();
+        for (Beneficiary beneficiary : registeredBeneficiaries) {
+            String debtorName = QRBill.getDebtor().getName() != null ? StringUtils.cleanStringForComparison(QRBill.getDebtor().getName()) : "";
+            String beneficiaryName = StringUtils.cleanStringForComparison(beneficiary.getFirstname());
+
+            if (debtorName.contains(beneficiaryName)) {
+                return Optional.of(beneficiary);
+            }
+        }
+        return Optional.empty();
     }
 
     private void updateBillValues(Bill bill, String text) {

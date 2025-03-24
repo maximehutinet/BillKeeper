@@ -41,7 +41,7 @@ public class PDFParser {
         }
     }
 
-    private File createTempImageFileFromFile(File file) throws IOException {
+    public static File createTempImageFileFromFile(File file) throws IOException {
         PDDocument document = Loader.loadPDF(file);
         PDFRenderer pdfRenderer = new PDFRenderer(document);
         BufferedImage bufferedImage = pdfRenderer.renderImageWithDPI(0, 300, ImageType.GRAY);

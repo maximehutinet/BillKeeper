@@ -31,7 +31,7 @@ public class BillUtils {
     }
 
     private Double getBillUsdAmount(Bill bill) {
-        if (bill.getCurrency() == null) {
+        if (bill.getCurrency() == null || bill.getAmount() == null) {
             return 0.0;
         }
         return switch (bill.getCurrency()) {
