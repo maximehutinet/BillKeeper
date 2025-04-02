@@ -7,6 +7,8 @@ import com.billkeeper.billkeeperbackend.user.api.model.UserResponse;
 import com.billkeeper.billkeeperbackend.user.persistence.UserRepository;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
@@ -28,6 +30,7 @@ public class UserController {
     private final UserRepository userRepository;
     private final AppConfig appConfig;
     private final CreateUserResponse createUserResponse;
+    private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     public UserController(UserRepository userRepository, AppConfig appConfig, CreateUserResponse createUserResponse) {
         this.userRepository = userRepository;
@@ -53,6 +56,7 @@ public class UserController {
             user.setProfilePictureName(filename);
             userRepository.save(user);
         } catch (IOException | RuntimeException e) {
+            logger.error(e.getMessage());
             throw new InternalServerErrorException("Error while uploading picture");
         }
     }
@@ -64,6 +68,7 @@ public class UserController {
                     .orElseThrow(() -> new NotFoundException("User not found"));
             return buildProfilePictureResponse(user);
         } catch (IOException e) {
+            logger.error(e.getMessage());
             throw new InternalServerErrorException("Error while fetching profile picture");
         }
     }
@@ -75,6 +80,7 @@ public class UserController {
                     .orElseThrow(() -> new NotFoundException("User not found"));
             return buildProfilePictureResponse(user);
         } catch (IOException e) {
+            logger.error(e.getMessage());
             throw new InternalServerErrorException("Error while fetching profile picture");
         }
     }

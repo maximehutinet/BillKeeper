@@ -11,6 +11,8 @@ import com.billkeeper.billkeeperbackend.exception.BadRequestException;
 import com.billkeeper.billkeeperbackend.exception.InternalServerErrorException;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import com.billkeeper.billkeeperbackend.utils.PDFMerger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
@@ -34,6 +36,7 @@ public class DocumentController {
     private final BillRepository billRepository;
     private final AppConfig appConfig;
     private final CreateDocumentResponse createDocumentResponse;
+    private final Logger logger = LoggerFactory.getLogger(DocumentController.class);
 
     public DocumentController(DocumentRepository documentRepository, BillRepository billRepository, AppConfig appConfig, CreateDocumentResponse createDocumentResponse) {
         this.documentRepository = documentRepository;
@@ -54,6 +57,7 @@ public class DocumentController {
             document.setName(filename);
             documentRepository.save(document);
         } catch (IOException | RuntimeException e) {
+            logger.error(e.getMessage());
             throw new InternalServerErrorException("Error while uploading file");
         }
     }
@@ -76,6 +80,7 @@ public class DocumentController {
                     .contentType(MediaType.parseMediaType("application/pdf"))
                     .body(new UrlResource(mergedFile.toURI()));
         } catch (IOException e) {
+            logger.error(e.getMessage());
             throw new InternalServerErrorException("Error while merges the bills");
         }
     }
@@ -90,6 +95,7 @@ public class DocumentController {
                     .contentType(MediaType.parseMediaType("application/pdf"))
                     .body(new UrlResource(file.toURI()));
         } catch (IOException e) {
+            logger.error(e.getMessage());
             throw new InternalServerErrorException("Error while fetching document");
         }
     }

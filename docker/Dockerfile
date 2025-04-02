@@ -1,0 +1,17 @@
+FROM eclipse-temurin:21 AS builder
+WORKDIR /opt/app
+
+COPY ../.mvn ../.mvn
+COPY ../mvnw ../pom.xml ../
+
+RUN chmod +x ./mvnw
+RUN ./mvnw -X dependency:go-offline
+COPY ../src ../src
+RUN ./mvnw package -DskipTests
+RUN mv target/*.jar target/billkeeper.jar
+
+FROM eclipse-temurin:21
+WORKDIR /opt/app
+EXPOSE 8080
+COPY --from=builder /opt/app/target/billkeeper.jar /opt/app/billkeeper.jar
+ENTRYPOINT ["java", "-jar", "/opt/app/billkeeper.jar"]

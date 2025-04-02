@@ -14,6 +14,8 @@ import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import com.billkeeper.billkeeperbackend.user.persistence.UserRepository;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import com.billkeeper.billkeeperbackend.utils.BillParsingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,6 +38,7 @@ public class BillController {
     private final BillUpdate billUpdate;
     private final BillDeletion billDeletion;
     private final CreateDocumentResponse createDocumentResponse;
+    private final Logger logger = LoggerFactory.getLogger(BillController.class);
 
     public BillController(BillRepository billRepository, DocumentRepository documentRepository, UserRepository userRepository, AppConfig appConfig, BillParsingService billParsingService, BillUpdate billUpdate, BillDeletion billDeletion, CreateDocumentResponse createDocumentResponse) {
         this.billRepository = billRepository;
@@ -71,6 +74,7 @@ public class BillController {
             createDocument(filename, bill);
             billParsingService.parseAndUpdateBill(bill, destination.toFile());
         } catch (IOException | RuntimeException e) {
+            logger.error(e.getMessage());
             throw new InternalServerErrorException("Error while uploading file");
         }
     }
@@ -99,6 +103,7 @@ public class BillController {
             multipartFile.transferTo(destination);
             createDocument(filename, bill);
         } catch (IOException | RuntimeException e) {
+            logger.error(e.getMessage());
             throw new InternalServerErrorException("Error while uploading file");
         }
     }
