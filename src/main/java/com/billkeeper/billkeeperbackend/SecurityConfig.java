@@ -32,7 +32,10 @@ public class SecurityConfig {
                 Arrays.asList(
                         "http://localhost:4200",
                         "http://127.0.0.1:4200",
-                        "http://10.0.0.23:4200"
+                        "http://10.0.0.23:4200",
+                        "http://10.0.0.23:10495",
+                        "http://127.0.0.1:10495",
+                        "https://billkeeper.hutinet.fr"
                 )
         );
         configuration.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization"));
