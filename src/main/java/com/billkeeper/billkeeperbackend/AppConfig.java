@@ -15,6 +15,7 @@ import java.util.Arrays;
 @Setter
 public class AppConfig {
     private String serverUrl;
+    private String frontUrl;
     private String documentsDirectory;
     private String tesseractDataDirectory;
     private String usersDirectory;
