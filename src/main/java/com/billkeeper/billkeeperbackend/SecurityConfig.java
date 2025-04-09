@@ -30,11 +30,6 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
                 Arrays.asList(
-                        "http://localhost:4200",
-                        "http://127.0.0.1:4200",
-                        "http://10.0.0.23:4200",
-                        "http://10.0.0.23:10495",
-                        "http://127.0.0.1:10495",
                         "https://billkeeper.hutinet.fr"
                 )
         );
