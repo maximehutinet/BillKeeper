@@ -4,6 +4,8 @@ import com.billkeeper.billkeeperbackend.beneficiary.BeneficiaryRepository;
 import com.billkeeper.billkeeperbackend.beneficiary.persistence.model.Beneficiary;
 import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
+import com.billkeeper.billkeeperbackend.parsingjob.persistence.ParsingJobRepository;
+import com.billkeeper.billkeeperbackend.parsingjob.persistence.model.ParsingJob;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import net.codecrete.qrbill.generator.QRCodeText;
@@ -19,15 +21,17 @@ public class BillParsingService {
     private final PDFParser pdfParser;
     private final BeneficiaryRepository beneficiaryRepository;
     private final BillRepository billRepository;
+    private final ParsingJobRepository parsingJobRepository;
 
-    public BillParsingService(PDFParser pdfParser, BeneficiaryRepository beneficiaryRepository, BillRepository billRepository) {
+    public BillParsingService(PDFParser pdfParser, BeneficiaryRepository beneficiaryRepository, BillRepository billRepository, ParsingJobRepository parsingJobRepository) {
         this.pdfParser = pdfParser;
         this.beneficiaryRepository = beneficiaryRepository;
         this.billRepository = billRepository;
+        this.parsingJobRepository = parsingJobRepository;
     }
 
     @Async
-    public void parseAndUpdateBill(Bill bill, File file) {
+    public void parseAndUpdateBill(Bill bill, File file, ParsingJob parsingJob) {
         try {
             String qrCodeText = QRCodeDecoder.decode(file);
             if (qrCodeText != null && !qrCodeText.isEmpty()) {
@@ -37,7 +41,12 @@ public class BillParsingService {
                 String text = pdfParser.extractTextFromFile(file);
                 updateBillValues(bill, text);
             }
-        } catch (IOException ignored) { }
+            parsingJob.setStatus(ParsingJob.Status.SUCCESS);
+            parsingJobRepository.save(parsingJob);
+        } catch (IOException ignored) {
+            parsingJob.setStatus(ParsingJob.Status.FAILED);
+            parsingJobRepository.save(parsingJob);
+        }
     }
 
     private void updateBillFromQRBill(Bill bill, net.codecrete.qrbill.generator.Bill QRBill) {

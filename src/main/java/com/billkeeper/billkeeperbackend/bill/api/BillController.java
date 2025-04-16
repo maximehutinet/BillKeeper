@@ -3,6 +3,7 @@ package com.billkeeper.billkeeperbackend.bill.api;
 import com.billkeeper.billkeeperbackend.AppConfig;
 import com.billkeeper.billkeeperbackend.bill.BillDeletion;
 import com.billkeeper.billkeeperbackend.bill.BillUpdate;
+import com.billkeeper.billkeeperbackend.bill.api.model.BillResponse;
 import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
 import com.billkeeper.billkeeperbackend.document.api.CreateDocumentResponse;
@@ -11,6 +12,8 @@ import com.billkeeper.billkeeperbackend.document.persistence.DocumentRepository;
 import com.billkeeper.billkeeperbackend.document.persistence.model.Document;
 import com.billkeeper.billkeeperbackend.exception.InternalServerErrorException;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
+import com.billkeeper.billkeeperbackend.parsingjob.persistence.ParsingJobRepository;
+import com.billkeeper.billkeeperbackend.parsingjob.persistence.model.ParsingJob;
 import com.billkeeper.billkeeperbackend.user.persistence.UserRepository;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import com.billkeeper.billkeeperbackend.utils.BillParsingService;
@@ -39,8 +42,9 @@ public class BillController {
     private final BillDeletion billDeletion;
     private final CreateDocumentResponse createDocumentResponse;
     private final Logger logger = LoggerFactory.getLogger(BillController.class);
+    private final ParsingJobRepository parsingJobRepository;
 
-    public BillController(BillRepository billRepository, DocumentRepository documentRepository, UserRepository userRepository, AppConfig appConfig, BillParsingService billParsingService, BillUpdate billUpdate, BillDeletion billDeletion, CreateDocumentResponse createDocumentResponse) {
+    public BillController(BillRepository billRepository, DocumentRepository documentRepository, UserRepository userRepository, AppConfig appConfig, BillParsingService billParsingService, BillUpdate billUpdate, BillDeletion billDeletion, CreateDocumentResponse createDocumentResponse, ParsingJobRepository parsingJobRepository) {
         this.billRepository = billRepository;
         this.documentRepository = documentRepository;
         this.userRepository = userRepository;
@@ -49,11 +53,12 @@ public class BillController {
         this.billUpdate = billUpdate;
         this.billDeletion = billDeletion;
         this.createDocumentResponse = createDocumentResponse;
+        this.parsingJobRepository = parsingJobRepository;
     }
 
     @GetMapping("/bills")
-    public Iterable<Bill> findAllBills() {
-        return billRepository.findAllByActiveTrueOrderByDateTimeDesc();
+    public List<BillResponse> findAllBills() {
+        return billRepository.findAllActiveBills();
     }
 
     @GetMapping("/bills/{id}")
@@ -72,7 +77,8 @@ public class BillController {
             multipartFile.transferTo(destination);
             Bill bill = createEmptyBill(user);
             createDocument(filename, bill);
-            billParsingService.parseAndUpdateBill(bill, destination.toFile());
+            ParsingJob parsingJob = createParsingJob(bill);
+            billParsingService.parseAndUpdateBill(bill, destination.toFile(), parsingJob);
         } catch (IOException | RuntimeException e) {
             logger.error(e.getMessage());
             throw new InternalServerErrorException("Error while uploading file");
@@ -141,5 +147,14 @@ public class BillController {
         document.setName(filename);
         document.setBill(bill);
         documentRepository.save(document);
+    }
+
+    private ParsingJob createParsingJob(Bill bill) {
+        ParsingJob parsingJob = new ParsingJob();
+        parsingJob.setDateTime(OffsetDateTime.now());
+        parsingJob.setStatus(ParsingJob.Status.IN_PROGRESS);
+        parsingJob.setBill(bill);
+        parsingJobRepository.save(parsingJob);
+        return parsingJob;
     }
 }
