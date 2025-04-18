@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface BillRepository extends CrudRepository<Bill, UUID> {
-    @Query("SELECT new com.billkeeper.billkeeperbackend.bill.api.model.BillResponse(b, p.status) FROM Bill b JOIN ParsingJob p ON p.bill = b WHERE b.active is true ORDER BY b.dateTime DESC")
+    @Query("SELECT new com.billkeeper.billkeeperbackend.bill.api.model.BillResponse(b, p.status) FROM Bill b LEFT JOIN ParsingJob p ON p.bill = b WHERE b.active is true ORDER BY b.dateTime DESC")
     List<BillResponse> findAllActiveBills();
 
     List<Bill> findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(UUID submissionId);
