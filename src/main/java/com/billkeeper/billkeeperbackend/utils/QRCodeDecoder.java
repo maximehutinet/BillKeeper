@@ -13,12 +13,10 @@ public class QRCodeDecoder {
 
     public static String decode(File file) {
         try {
-            File tmpImageFile = PDFParser.createTempImageFileFromFile(file);
-            BufferedImage bufferedImage = ImageIO.read(tmpImageFile);
+            BufferedImage bufferedImage = ImageIO.read(file);
             LuminanceSource luminanceSource = new BufferedImageLuminanceSource(bufferedImage);
             BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(luminanceSource));
             Result result = new MultiFormatReader().decode(binaryBitmap);
-            tmpImageFile.deleteOnExit();
             return result.getText();
         } catch (IOException | NotFoundException e) {
             return "";

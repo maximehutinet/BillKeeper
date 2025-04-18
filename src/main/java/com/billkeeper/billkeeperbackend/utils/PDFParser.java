@@ -14,6 +14,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -31,7 +33,7 @@ public class PDFParser {
             tesseract.setDatapath(appConfig.getTesseractDataDirectory());
             tesseract.setLanguage("fra");
             StringBuilder text = new StringBuilder();
-            File tempImageFile = createTempImageFileFromFile(file);
+            File tempImageFile = getPagesFromPDFAsTmpImages(file).getFirst();
             String result = tesseract.doOCR(tempImageFile);
             text.append(result);
             tempImageFile.delete();
@@ -41,12 +43,16 @@ public class PDFParser {
         }
     }
 
-    public static File createTempImageFileFromFile(File file) throws IOException {
+    public static List<File> getPagesFromPDFAsTmpImages(File file) throws IOException {
+        List<File> tempImageFiles = new ArrayList<>();
         PDDocument document = Loader.loadPDF(file);
         PDFRenderer pdfRenderer = new PDFRenderer(document);
-        BufferedImage bufferedImage = pdfRenderer.renderImageWithDPI(0, 300, ImageType.GRAY);
-        File tempImageFile = File.createTempFile(UUID.randomUUID().toString(), ".png");
-        ImageIO.write(bufferedImage, "png", tempImageFile);
-        return tempImageFile;
+        for (int i = 0; i < document.getNumberOfPages(); i++) {
+            BufferedImage bufferedImage = pdfRenderer.renderImageWithDPI(0, 300, ImageType.GRAY);
+            File tempImageFile = File.createTempFile(UUID.randomUUID().toString(), ".png");
+            ImageIO.write(bufferedImage, "png", tempImageFile);
+            tempImageFiles.add(tempImageFile);
+        }
+        return tempImageFiles;
     }
 }

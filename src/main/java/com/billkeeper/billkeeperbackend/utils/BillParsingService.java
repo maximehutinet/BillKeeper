@@ -33,8 +33,15 @@ public class BillParsingService {
     @Async
     public void parseAndUpdateBill(Bill bill, File file, ParsingJob parsingJob) {
         try {
-            String qrCodeText = QRCodeDecoder.decode(file);
-            if (qrCodeText != null && !qrCodeText.isEmpty()) {
+            String qrCodeText = "";
+            List<File> filePages = PDFParser.getPagesFromPDFAsTmpImages(file);
+
+            for (File filePage : filePages) {
+                qrCodeText = QRCodeDecoder.decode(filePage);
+                if (!qrCodeText.isEmpty()) break;
+            }
+
+            if (!qrCodeText.isEmpty()) {
                 net.codecrete.qrbill.generator.Bill QRBill = QRCodeText.decode(qrCodeText);
                 updateBillFromQRBill(bill, QRBill);
             } else {
