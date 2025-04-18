@@ -1,7 +1,7 @@
 name: Build and publish Docker image to GitHub packages
 on:
   push:
-    branches: ['main', 'dev']
+    branches: ['main']
 
 env:
   REGISTRY: ghcr.io
