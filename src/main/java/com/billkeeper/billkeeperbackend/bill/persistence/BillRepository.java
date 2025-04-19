@@ -13,6 +13,9 @@ public interface BillRepository extends CrudRepository<Bill, UUID> {
     @Query("SELECT new com.billkeeper.billkeeperbackend.bill.api.model.BillResponse(b, p.status) FROM Bill b LEFT JOIN ParsingJob p ON p.bill = b WHERE b.active is true ORDER BY b.dateTime DESC")
     List<BillResponse> findAllActiveBills();
 
+    @Query("SELECT new com.billkeeper.billkeeperbackend.bill.api.model.BillResponse(b, p.status) FROM Bill b LEFT JOIN ParsingJob p ON p.bill = b WHERE b.id = ?1")
+    Optional<BillResponse> findBillById(UUID id);
+
     List<Bill> findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(UUID submissionId);
 
     Optional<Bill> findByIdAndSubmissionNull(UUID id);

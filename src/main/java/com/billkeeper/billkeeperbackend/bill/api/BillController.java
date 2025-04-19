@@ -62,8 +62,8 @@ public class BillController {
     }
 
     @GetMapping("/bills/{id}")
-    public Bill findBillById(@PathVariable UUID id) {
-        return billRepository.findById(id)
+    public BillResponse findBillById(@PathVariable UUID id) {
+        return billRepository.findBillById(id)
                 .orElseThrow(() -> new NotFoundException("Bill not found"));
     }
 
