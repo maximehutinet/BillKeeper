@@ -14,6 +14,7 @@ import com.billkeeper.billkeeperbackend.exception.InternalServerErrorException;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import com.billkeeper.billkeeperbackend.parsingjob.persistence.ParsingJobRepository;
 import com.billkeeper.billkeeperbackend.parsingjob.persistence.model.ParsingJob;
+import com.billkeeper.billkeeperbackend.submission.InsuranceSubmissionUpdate;
 import com.billkeeper.billkeeperbackend.user.persistence.UserRepository;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import com.billkeeper.billkeeperbackend.utils.BillParsingService;
@@ -44,7 +45,9 @@ public class BillController {
     private final Logger logger = LoggerFactory.getLogger(BillController.class);
     private final ParsingJobRepository parsingJobRepository;
 
-    public BillController(BillRepository billRepository, DocumentRepository documentRepository, UserRepository userRepository, AppConfig appConfig, BillParsingService billParsingService, BillUpdate billUpdate, BillDeletion billDeletion, CreateDocumentResponse createDocumentResponse, ParsingJobRepository parsingJobRepository) {
+    private final InsuranceSubmissionUpdate insuranceSubmissionUpdate;
+
+    public BillController(BillRepository billRepository, DocumentRepository documentRepository, UserRepository userRepository, AppConfig appConfig, BillParsingService billParsingService, BillUpdate billUpdate, BillDeletion billDeletion, CreateDocumentResponse createDocumentResponse, ParsingJobRepository parsingJobRepository, InsuranceSubmissionUpdate insuranceSubmissionUpdate) {
         this.billRepository = billRepository;
         this.documentRepository = documentRepository;
         this.userRepository = userRepository;
@@ -54,6 +57,7 @@ public class BillController {
         this.billDeletion = billDeletion;
         this.createDocumentResponse = createDocumentResponse;
         this.parsingJobRepository = parsingJobRepository;
+        this.insuranceSubmissionUpdate = insuranceSubmissionUpdate;
     }
 
     @GetMapping("/bills")
@@ -90,6 +94,9 @@ public class BillController {
         Bill bill = billRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Bill not found"));
         billUpdate.update(bill, updatedBill);
+        if (bill.getSubmission() != null) {
+            insuranceSubmissionUpdate.updateStatus(bill.getSubmission());
+        }
     }
 
     @DeleteMapping("/bills/{id}")

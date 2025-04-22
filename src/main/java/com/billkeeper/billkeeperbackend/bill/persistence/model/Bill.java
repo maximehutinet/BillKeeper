@@ -15,7 +15,7 @@ import java.util.UUID;
 public class Bill {
 
     public enum Status {
-        TO_FILE, FILED, REIMBURSED, REJECTED
+        TO_FILE, FILED, REIMBURSEMENT_IN_PROGRESS, REIMBURSED, REJECTED
     }
 
     public enum Currency {
@@ -47,4 +47,5 @@ public class Bill {
 
     @ManyToOne(fetch = FetchType.EAGER)
     private InsuranceSubmission submission;
+
 }

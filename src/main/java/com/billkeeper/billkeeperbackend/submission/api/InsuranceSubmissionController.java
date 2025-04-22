@@ -73,6 +73,7 @@ public class InsuranceSubmissionController {
         }
         if (request.getEClaimId() != null && !request.getEClaimId().isEmpty()) {
             submission.setEClaimId(request.getEClaimId());
+            submission.setStatus(InsuranceSubmission.Status.OPEN);
         }
         if (request.getBillIds() != null) {
             updateSubmissionBills(submission, request.getBillIds());
@@ -101,6 +102,7 @@ public class InsuranceSubmissionController {
                 .eClaimId(submission.getEClaimId())
                 .bills(bills)
                 .totalUsdAmount(billUtils.getTotalBillsUsdAmount(bills))
+                .status(submission.getStatus())
                 .build();
     }
 

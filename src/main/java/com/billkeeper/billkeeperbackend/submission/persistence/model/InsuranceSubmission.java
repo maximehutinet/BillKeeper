@@ -11,6 +11,10 @@ import java.util.UUID;
 @Data
 public class InsuranceSubmission {
 
+    public enum Status {
+        OPEN, CLOSED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -18,4 +22,7 @@ public class InsuranceSubmission {
     private OffsetDateTime dateTime;
     private String name;
     private String eClaimId;
+
+    @Enumerated(EnumType.STRING)
+    private InsuranceSubmission.Status status;
 }

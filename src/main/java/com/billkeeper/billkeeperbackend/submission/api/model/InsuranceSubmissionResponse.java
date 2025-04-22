@@ -1,6 +1,7 @@
 package com.billkeeper.billkeeperbackend.submission.api.model;
 
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
+import com.billkeeper.billkeeperbackend.submission.persistence.model.InsuranceSubmission;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,4 +23,5 @@ public class InsuranceSubmissionResponse {
     private String eClaimId;
     private List<Bill> bills;
     private Double totalUsdAmount;
+    private InsuranceSubmission.Status status;
 }
