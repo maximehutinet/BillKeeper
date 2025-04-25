@@ -10,7 +10,7 @@ ALTER TABLE submission
 
 UPDATE submission
 SET status = 'OPEN'
-WHERE submission.e_claim_id IS NULL;
+WHERE submission.e_claim_id IS NOT NULL;
 
 ALTER TABLE submission
     ADD CONSTRAINT submission_status_check

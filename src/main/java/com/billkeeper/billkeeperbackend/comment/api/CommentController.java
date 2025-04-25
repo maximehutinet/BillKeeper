@@ -21,11 +21,14 @@ public class CommentController {
     private final CommentRepository commentRepository;
     private final BillRepository billRepository;
     private final UserRepository userRepository;
+    private final CommentEmailNotifier commentEmailNotifier;
 
-    public CommentController(CommentRepository commentRepository, BillRepository billRepository, UserRepository userRepository) {
+
+    public CommentController(CommentRepository commentRepository, BillRepository billRepository, UserRepository userRepository, CommentEmailNotifier commentEmailNotifier) {
         this.commentRepository = commentRepository;
         this.billRepository = billRepository;
         this.userRepository = userRepository;
+        this.commentEmailNotifier = commentEmailNotifier;
     }
 
     @GetMapping("/comments")
@@ -49,6 +52,7 @@ public class CommentController {
         comment.setUser(user);
         comment.setBill(bill);
         commentRepository.save(comment);
+        commentEmailNotifier.notifyTaggedUsers(request, comment);
     }
 
     @PostMapping("/comments/{id}")

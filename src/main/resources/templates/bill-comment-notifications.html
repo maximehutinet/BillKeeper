@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Email</title>
+</head>
+<style>
+    body {
+        background-color: #F3F4F8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: Roboto, sans-serif;
+        height: 100vh;
+    }
+
+    body, h2 {
+        margin: 0;
+    }
+
+    #content-wrapper {
+        padding: 2rem;
+        background-color: white;
+        margin: auto;
+    }
+
+    #comment-content-wrapper {
+        padding: 1rem;
+        border: 1px solid #E2E8F0;
+        border-radius: 6px;
+        font-size: 0.8rem;
+    }
+
+    a {
+        padding: 0.75rem 0.5rem;
+        background-color: #18181B;
+        color: white;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    a, a:hover, a:focus, a:active {
+        text-decoration: none;
+    }
+
+    #see-bill-button-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+</style>
+<body>
+    <div id="content-wrapper">
+        <h2>Hi <span th:text="${name}">User</span>,</h2>
+        <p>You were tagged in a comment from <span th:text="${commentAuthor}">Author</span> related to the bill <span th:text="${billName}">Bill name</span></p>
+        <div id="comment-content-wrapper">
+            <span th:text="${commentContent}">Comment content</span>
+        </div>
+        <div id="see-bill-button-wrapper">
+            <a th:href="@{${billLink}}">See bill</a>
+        </div>
+    </div>
+</body>
+</html>

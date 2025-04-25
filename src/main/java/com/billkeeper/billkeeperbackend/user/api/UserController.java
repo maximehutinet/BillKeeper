@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -83,6 +84,11 @@ public class UserController {
             logger.error(e.getMessage());
             throw new InternalServerErrorException("Error while fetching profile picture");
         }
+    }
+
+    @GetMapping("/users/suggestions")
+    public List<UserResponse> getUsersStartingWith(@RequestParam("value") String value) {
+        return userRepository.findAllUsersMatchingValue(value);
     }
 
     private ResponseEntity<Resource> buildProfilePictureResponse(User user) throws MalformedURLException {
