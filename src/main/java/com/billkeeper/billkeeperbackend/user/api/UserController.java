@@ -3,6 +3,7 @@ package com.billkeeper.billkeeperbackend.user.api;
 import com.billkeeper.billkeeperbackend.AppConfig;
 import com.billkeeper.billkeeperbackend.exception.InternalServerErrorException;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
+import com.billkeeper.billkeeperbackend.exception.UnauthorizedException;
 import com.billkeeper.billkeeperbackend.user.api.model.UserResponse;
 import com.billkeeper.billkeeperbackend.user.persistence.UserRepository;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
@@ -30,27 +31,25 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final AppConfig appConfig;
-    private final CreateUserResponse createUserResponse;
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    public UserController(UserRepository userRepository, AppConfig appConfig, CreateUserResponse createUserResponse) {
+    public UserController(UserRepository userRepository, AppConfig appConfig) {
         this.userRepository = userRepository;
         this.appConfig = appConfig;
-        this.createUserResponse = createUserResponse;
     }
 
     @GetMapping("/users/me")
     public UserResponse getCurrentUserProfile(JwtAuthenticationToken jwtAuthenticationToken) {
         User user = userRepository.findUserByKeycloakId(jwtAuthenticationToken.getName())
-                .orElseThrow(() -> new NotFoundException("User not found"));
-        return createUserResponse.create(user);
+                .orElseThrow(() -> new UnauthorizedException(""));
+        return new UserResponse(user);
     }
 
     @PostMapping("/users/me/picture")
     public void updateCurrentUserProfilePicture(@RequestParam("file") MultipartFile multipartFile, JwtAuthenticationToken jwtAuthenticationToken) {
         try {
             User user = userRepository.findUserByKeycloakId(jwtAuthenticationToken.getName())
-                    .orElseThrow(() -> new NotFoundException("User not found"));
+                    .orElseThrow(() -> new UnauthorizedException(""));
             String filename = UUID.randomUUID() + "." +  FilenameUtils.getExtension(multipartFile.getOriginalFilename());
             Path destination = Paths.get(appConfig.getUsersDirectory()).resolve(filename);
             multipartFile.transferTo(destination);
@@ -66,7 +65,7 @@ public class UserController {
     public ResponseEntity<Resource> getCurrentUserProfilePicture(JwtAuthenticationToken jwtAuthenticationToken) {
         try {
             User user = userRepository.findUserByKeycloakId(jwtAuthenticationToken.getName())
-                    .orElseThrow(() -> new NotFoundException("User not found"));
+                    .orElseThrow(() -> new UnauthorizedException(""));
             return buildProfilePictureResponse(user);
         } catch (IOException e) {
             logger.error(e.getMessage());

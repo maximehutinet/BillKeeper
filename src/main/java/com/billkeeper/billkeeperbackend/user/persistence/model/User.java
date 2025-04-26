@@ -1,5 +1,6 @@
 package com.billkeeper.billkeeperbackend.user.persistence.model;
 
+import com.billkeeper.billkeeperbackend.family.persistence.model.Family;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,4 +18,7 @@ public class User {
     private String firstname;
     private String email;
     private String profilePictureName;
+
+    @ManyToOne
+    private Family family;
 }

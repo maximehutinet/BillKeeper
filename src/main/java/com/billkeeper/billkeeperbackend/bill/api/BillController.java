@@ -12,6 +12,7 @@ import com.billkeeper.billkeeperbackend.document.persistence.DocumentRepository;
 import com.billkeeper.billkeeperbackend.document.persistence.model.Document;
 import com.billkeeper.billkeeperbackend.exception.InternalServerErrorException;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
+import com.billkeeper.billkeeperbackend.exception.UnauthorizedException;
 import com.billkeeper.billkeeperbackend.parsingjob.persistence.ParsingJobRepository;
 import com.billkeeper.billkeeperbackend.parsingjob.persistence.model.ParsingJob;
 import com.billkeeper.billkeeperbackend.submission.InsuranceSubmissionUpdate;
@@ -75,7 +76,7 @@ public class BillController {
     public void createBill(@RequestParam("file") MultipartFile multipartFile, JwtAuthenticationToken jwtAuthenticationToken) {
         try {
             User user = userRepository.findUserByKeycloakId(jwtAuthenticationToken.getName())
-                    .orElse(null);
+                    .orElseThrow(() -> new UnauthorizedException(""));
             String filename = UUID.randomUUID() + ".pdf";
             Path destination = Paths.get(appConfig.getDocumentsDirectory()).resolve(filename);
             multipartFile.transferTo(destination);

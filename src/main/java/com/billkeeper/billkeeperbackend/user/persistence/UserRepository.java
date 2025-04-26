@@ -13,6 +13,6 @@ public interface UserRepository extends CrudRepository<User, UUID> {
     Boolean existsUserByKeycloakId(String keycloakId);
     Optional<User> findUserByKeycloakId(String keycloakId);
 
-    @Query("SELECT new com.billkeeper.billkeeperbackend.user.api.model.UserResponse(u.id, u.firstname, u.email) FROM User u WHERE lower(u.firstname) LIKE lower(CONCAT(:value, '%'))")
+    @Query("SELECT new com.billkeeper.billkeeperbackend.user.api.model.UserResponse(u) FROM User u WHERE lower(u.firstname) LIKE lower(CONCAT(:value, '%'))")
     List<UserResponse> findAllUsersMatchingValue(String value);
 }

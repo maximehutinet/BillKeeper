@@ -33,12 +33,7 @@ public class BillResponse {
         this.dateTime = bill.getDateTime();
         this.name = bill.getName();
         this.amount = bill.getAmount();
-        this.user = UserResponse
-                .builder()
-                .id(bill.getUser().getId())
-                .firstname(bill.getUser().getFirstname())
-                .email(bill.getUser().getEmail())
-                .build();
+        this.user = new UserResponse(bill.getUser());
         this.currency = bill.getCurrency();
         this.serviceDateTime = bill.getServiceDateTime();
         this.paidDateTime = bill.getPaidDateTime();
@@ -47,5 +42,20 @@ public class BillResponse {
         this.beneficiary = bill.getBeneficiary();
         this.submission = bill.getSubmission();
         this.parsingJobStatus = parsingJobStatus;
+    }
+
+    public BillResponse (Bill bill) {
+        this.id = bill.getId();
+        this.dateTime = bill.getDateTime();
+        this.name = bill.getName();
+        this.amount = bill.getAmount();
+        this.user = new UserResponse(bill.getUser());
+        this.currency = bill.getCurrency();
+        this.serviceDateTime = bill.getServiceDateTime();
+        this.paidDateTime = bill.getPaidDateTime();
+        this.provider = bill.getProvider();
+        this.status = bill.getStatus();
+        this.beneficiary = bill.getBeneficiary();
+        this.submission = bill.getSubmission();
     }
 }

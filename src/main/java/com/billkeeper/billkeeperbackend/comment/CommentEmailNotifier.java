@@ -1,4 +1,4 @@
-package com.billkeeper.billkeeperbackend.comment.api;
+package com.billkeeper.billkeeperbackend.comment;
 
 import com.billkeeper.billkeeperbackend.AppConfig;
 import com.billkeeper.billkeeperbackend.comment.api.model.CreateUpdateCommentRequest;

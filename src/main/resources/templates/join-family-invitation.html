@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Email</title>
+</head>
+<style>
+    body {
+        background-color: #F3F4F8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: Roboto, sans-serif;
+        height: 100vh;
+    }
+
+    body, h2 {
+        margin: 0;
+    }
+
+    #content-wrapper {
+        padding: 2rem;
+        background-color: white;
+        margin: auto;
+    }
+
+    a {
+        padding: 0.75rem 0.5rem;
+        background-color: #18181B;
+        color: white;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    a, a:hover, a:focus, a:active {
+        text-decoration: none;
+    }
+
+    #see-bill-button-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+</style>
+<body>
+    <div id="content-wrapper">
+        <h2>Hi there,</h2>
+        <p><span th:text="${invitationAuthor}">Author</span> would like you to join <span th:text="${familyName}">Family name</span></p>
+        <div id="see-bill-button-wrapper">
+            <a th:href="@{${acceptationLink}}">Accept invitation</a>
+        </div>
+    </div>
+</body>
+</html>
