@@ -1,6 +1,7 @@
 package com.billkeeper.billkeeperbackend.bill.api;
 
 import com.billkeeper.billkeeperbackend.AppConfig;
+import com.billkeeper.billkeeperbackend.bill.BillAccessManager;
 import com.billkeeper.billkeeperbackend.bill.BillDeletion;
 import com.billkeeper.billkeeperbackend.bill.BillUpdate;
 import com.billkeeper.billkeeperbackend.bill.api.model.BillResponse;
@@ -12,8 +13,6 @@ import com.billkeeper.billkeeperbackend.document.persistence.DocumentRepository;
 import com.billkeeper.billkeeperbackend.document.persistence.model.Document;
 import com.billkeeper.billkeeperbackend.exception.InternalServerErrorException;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
-import com.billkeeper.billkeeperbackend.exception.UnauthorizedException;
-import com.billkeeper.billkeeperbackend.family.persistence.model.Family;
 import com.billkeeper.billkeeperbackend.parsingjob.persistence.ParsingJobRepository;
 import com.billkeeper.billkeeperbackend.parsingjob.persistence.model.ParsingJob;
 import com.billkeeper.billkeeperbackend.submission.InsuranceSubmissionUpdate;
@@ -97,7 +96,7 @@ public class BillController {
         User user = authentication.getCurrentUserFromToken(token);
         Bill bill = billRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Bill not found"));
-        checkIfUserCanAccessBillOrThrowException(user, bill);
+        BillAccessManager.checkIfUserCanAccessBillOrThrowException(user, bill);
         billUpdate.update(bill, updatedBill);
         if (bill.getSubmission() != null) {
             insuranceSubmissionUpdate.updateStatus(bill.getSubmission());
@@ -109,7 +108,7 @@ public class BillController {
         User user = authentication.getCurrentUserFromToken(token);
         Bill bill = billRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Bill not found"));
-        checkIfUserCanAccessBillOrThrowException(user, bill);
+        BillAccessManager.checkIfUserCanAccessBillOrThrowException(user, bill);
         billDeletion.delete(bill);
     }
 
@@ -119,7 +118,7 @@ public class BillController {
             User user = authentication.getCurrentUserFromToken(token);
             Bill bill = billRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("Bill not found"));
-            checkIfUserCanAccessBillOrThrowException(user, bill);
+            BillAccessManager.checkIfUserCanAccessBillOrThrowException(user, bill);
             String filename = UUID.randomUUID() + ".pdf";
             Path destination = Paths.get(appConfig.getDocumentsDirectory()).resolve(filename);
             multipartFile.transferTo(destination);
@@ -135,7 +134,7 @@ public class BillController {
         User user = authentication.getCurrentUserFromToken(token);
         Bill bill = billRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Bill not found"));
-        checkIfUserCanAccessBillOrThrowException(user, bill);
+        BillAccessManager.checkIfUserCanAccessBillOrThrowException(user, bill);
         return documentRepository.findByBillIdAndActiveTrue(id)
                 .stream()
                 .map(createDocumentResponse::create)
@@ -145,23 +144,6 @@ public class BillController {
     @GetMapping("/bills/providers")
     public List<String> getProvidersStartingWith(@RequestParam("value") String value) {
         return billRepository.findAllProvidersMatchingValue(value);
-    }
-
-    private void checkIfUserCanAccessBillOrThrowException(User user, Bill bill) {
-        if (!userCanAccessBill(user, bill)) {
-            throw new UnauthorizedException("You do not have permission to access the bill");
-        }
-    }
-
-    private boolean userCanAccessBill(User user, Bill bill) {
-        User billAuthor = bill.getUser();
-        Family billAuthorFamily = billAuthor.getFamily();
-        if (billAuthor.getId().equals(user.getId())) {
-            return true;
-        }
-        return user.getFamily() != null &&
-                billAuthorFamily != null &&
-                billAuthorFamily.getId().equals(user.getFamily().getId());
     }
 
     private Bill createEmptyBill(User user) {
