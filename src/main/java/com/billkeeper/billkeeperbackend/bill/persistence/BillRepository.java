@@ -22,8 +22,8 @@ public interface BillRepository extends CrudRepository<Bill, UUID> {
             "FROM Bill b " +
             "LEFT JOIN ParsingJob p ON p.bill = b " +
             "WHERE b.id = :#{#id} AND " +
-            "b.user.id = :#{#user.id} OR (:#{#user.family?.id} IS NOT NULL AND b.user.family IS NOT NULL AND b.user.family.id = :#{#user.family?.id}) " +
-            "AND b.active IS TRUE")
+            "(b.user.id = :#{#user.id} OR (:#{#user.family?.id} IS NOT NULL AND b.user.family IS NOT NULL AND b.user.family.id = :#{#user.family?.id})) AND " +
+            "b.active IS TRUE")
     Optional<BillResponse> findBillById(UUID id, User user);
 
     List<Bill> findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(UUID submissionId);
