@@ -13,11 +13,12 @@ import com.billkeeper.billkeeperbackend.document.persistence.model.Document;
 import com.billkeeper.billkeeperbackend.exception.InternalServerErrorException;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import com.billkeeper.billkeeperbackend.exception.UnauthorizedException;
+import com.billkeeper.billkeeperbackend.family.persistence.model.Family;
 import com.billkeeper.billkeeperbackend.parsingjob.persistence.ParsingJobRepository;
 import com.billkeeper.billkeeperbackend.parsingjob.persistence.model.ParsingJob;
 import com.billkeeper.billkeeperbackend.submission.InsuranceSubmissionUpdate;
-import com.billkeeper.billkeeperbackend.user.persistence.UserRepository;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
+import com.billkeeper.billkeeperbackend.utils.Authentication;
 import com.billkeeper.billkeeperbackend.utils.BillParsingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,45 +39,46 @@ public class BillController {
     private final BillRepository billRepository;
     private final BillParsingService billParsingService;
     private final DocumentRepository documentRepository;
-    private final UserRepository userRepository;
     private final AppConfig appConfig;
     private final BillUpdate billUpdate;
     private final BillDeletion billDeletion;
     private final CreateDocumentResponse createDocumentResponse;
     private final Logger logger = LoggerFactory.getLogger(BillController.class);
     private final ParsingJobRepository parsingJobRepository;
+    private final Authentication authentication;
 
     private final InsuranceSubmissionUpdate insuranceSubmissionUpdate;
 
-    public BillController(BillRepository billRepository, DocumentRepository documentRepository, UserRepository userRepository, AppConfig appConfig, BillParsingService billParsingService, BillUpdate billUpdate, BillDeletion billDeletion, CreateDocumentResponse createDocumentResponse, ParsingJobRepository parsingJobRepository, InsuranceSubmissionUpdate insuranceSubmissionUpdate) {
+    public BillController(BillRepository billRepository, DocumentRepository documentRepository, AppConfig appConfig, BillParsingService billParsingService, BillUpdate billUpdate, BillDeletion billDeletion, CreateDocumentResponse createDocumentResponse, ParsingJobRepository parsingJobRepository, Authentication authentication, InsuranceSubmissionUpdate insuranceSubmissionUpdate) {
         this.billRepository = billRepository;
         this.documentRepository = documentRepository;
-        this.userRepository = userRepository;
         this.appConfig = appConfig;
         this.billParsingService = billParsingService;
         this.billUpdate = billUpdate;
         this.billDeletion = billDeletion;
         this.createDocumentResponse = createDocumentResponse;
         this.parsingJobRepository = parsingJobRepository;
+        this.authentication = authentication;
         this.insuranceSubmissionUpdate = insuranceSubmissionUpdate;
     }
 
     @GetMapping("/bills")
-    public List<BillResponse> findAllBills() {
-        return billRepository.findAllActiveBills();
+    public List<BillResponse> findAllBills(JwtAuthenticationToken token) {
+        User user = authentication.getCurrentUserFromToken(token);
+        return billRepository.findAllActiveBills(user);
     }
 
     @GetMapping("/bills/{id}")
-    public BillResponse findBillById(@PathVariable UUID id) {
-        return billRepository.findBillById(id)
+    public BillResponse findBillById(@PathVariable UUID id, JwtAuthenticationToken token) {
+        User user = authentication.getCurrentUserFromToken(token);
+        return billRepository.findBillById(id, user)
                 .orElseThrow(() -> new NotFoundException("Bill not found"));
     }
 
     @PostMapping("/bills")
-    public void createBill(@RequestParam("file") MultipartFile multipartFile, JwtAuthenticationToken jwtAuthenticationToken) {
+    public void createBill(@RequestParam("file") MultipartFile multipartFile, JwtAuthenticationToken token) {
         try {
-            User user = userRepository.findUserByKeycloakId(jwtAuthenticationToken.getName())
-                    .orElseThrow(() -> new UnauthorizedException(""));
+            User user = authentication.getCurrentUserFromToken(token);
             String filename = UUID.randomUUID() + ".pdf";
             Path destination = Paths.get(appConfig.getDocumentsDirectory()).resolve(filename);
             multipartFile.transferTo(destination);
@@ -91,9 +93,11 @@ public class BillController {
     }
 
     @PostMapping("/bills/{id}")
-    public void updateBill(@PathVariable UUID id, @RequestBody Bill updatedBill) {
+    public void updateBill(@PathVariable UUID id, @RequestBody Bill updatedBill, JwtAuthenticationToken token) {
+        User user = authentication.getCurrentUserFromToken(token);
         Bill bill = billRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Bill not found"));
+        checkIfUserCanAccessBillOrThrowException(user, bill);
         billUpdate.update(bill, updatedBill);
         if (bill.getSubmission() != null) {
             insuranceSubmissionUpdate.updateStatus(bill.getSubmission());
@@ -101,17 +105,21 @@ public class BillController {
     }
 
     @DeleteMapping("/bills/{id}")
-    public void deleteBill(@PathVariable UUID id) {
+    public void deleteBill(@PathVariable UUID id, JwtAuthenticationToken token) {
+        User user = authentication.getCurrentUserFromToken(token);
         Bill bill = billRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Bill not found"));
+        checkIfUserCanAccessBillOrThrowException(user, bill);
         billDeletion.delete(bill);
     }
 
     @PostMapping("/bills/{id}/documents")
-    public void uploadBillDocument(@PathVariable UUID id, @RequestParam("file") MultipartFile multipartFile) {
+    public void uploadBillDocument(@PathVariable UUID id, @RequestParam("file") MultipartFile multipartFile, JwtAuthenticationToken token) {
         try {
+            User user = authentication.getCurrentUserFromToken(token);
             Bill bill = billRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("Bill not found"));
+            checkIfUserCanAccessBillOrThrowException(user, bill);
             String filename = UUID.randomUUID() + ".pdf";
             Path destination = Paths.get(appConfig.getDocumentsDirectory()).resolve(filename);
             multipartFile.transferTo(destination);
@@ -123,10 +131,11 @@ public class BillController {
     }
 
     @GetMapping("/bills/{id}/documents")
-    public List<DocumentResponse> getBillDocuments(@PathVariable UUID id) {
-        if (!billRepository.existsById(id)) {
-            throw new NotFoundException("Bill not found");
-        }
+    public List<DocumentResponse> getBillDocuments(@PathVariable UUID id, JwtAuthenticationToken token) {
+        User user = authentication.getCurrentUserFromToken(token);
+        Bill bill = billRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Bill not found"));
+        checkIfUserCanAccessBillOrThrowException(user, bill);
         return documentRepository.findByBillIdAndActiveTrue(id)
                 .stream()
                 .map(createDocumentResponse::create)
@@ -136,6 +145,23 @@ public class BillController {
     @GetMapping("/bills/providers")
     public List<String> getProvidersStartingWith(@RequestParam("value") String value) {
         return billRepository.findAllProvidersMatchingValue(value);
+    }
+
+    private void checkIfUserCanAccessBillOrThrowException(User user, Bill bill) {
+        if (!userCanAccessBill(user, bill)) {
+            throw new UnauthorizedException("You do not have permission to access the bill");
+        }
+    }
+
+    private boolean userCanAccessBill(User user, Bill bill) {
+        User billAuthor = bill.getUser();
+        Family billAuthorFamily = billAuthor.getFamily();
+        if (billAuthor.getId().equals(user.getId())) {
+            return true;
+        }
+        return user.getFamily() != null &&
+                billAuthorFamily != null &&
+                billAuthorFamily.getId().equals(user.getFamily().getId());
     }
 
     private Bill createEmptyBill(User user) {

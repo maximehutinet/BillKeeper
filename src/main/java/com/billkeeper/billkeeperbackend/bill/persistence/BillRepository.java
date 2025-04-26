@@ -2,6 +2,7 @@ package com.billkeeper.billkeeperbackend.bill.persistence;
 
 import com.billkeeper.billkeeperbackend.bill.api.model.BillResponse;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
+import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -10,11 +11,20 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface BillRepository extends CrudRepository<Bill, UUID> {
-    @Query("SELECT new com.billkeeper.billkeeperbackend.bill.api.model.BillResponse(b, p.status) FROM Bill b LEFT JOIN ParsingJob p ON p.bill = b WHERE b.active is true ORDER BY b.dateTime DESC")
-    List<BillResponse> findAllActiveBills();
+    @Query("SELECT new com.billkeeper.billkeeperbackend.bill.api.model.BillResponse(b, p.status) " +
+            "FROM Bill b " +
+            "LEFT JOIN ParsingJob p ON p.bill = b " +
+            "WHERE (b.user.id = :#{#user.id} OR (:#{#user.family?.id} IS NOT NULL AND b.user.family IS NOT NULL AND b.user.family.id = :#{#user.family?.id})) AND b.active IS TRUE " +
+            "ORDER BY b.dateTime DESC")
+    List<BillResponse> findAllActiveBills(User user);
 
-    @Query("SELECT new com.billkeeper.billkeeperbackend.bill.api.model.BillResponse(b, p.status) FROM Bill b LEFT JOIN ParsingJob p ON p.bill = b WHERE b.id = ?1")
-    Optional<BillResponse> findBillById(UUID id);
+    @Query("SELECT new com.billkeeper.billkeeperbackend.bill.api.model.BillResponse(b, p.status) " +
+            "FROM Bill b " +
+            "LEFT JOIN ParsingJob p ON p.bill = b " +
+            "WHERE b.id = :#{#id} AND " +
+            "b.user.id = :#{#user.id} OR (:#{#user.family?.id} IS NOT NULL AND b.user.family IS NOT NULL AND b.user.family.id = :#{#user.family?.id}) " +
+            "AND b.active IS TRUE")
+    Optional<BillResponse> findBillById(UUID id, User user);
 
     List<Bill> findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(UUID submissionId);
 
