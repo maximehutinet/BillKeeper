@@ -9,7 +9,7 @@ public class BillAccessManager {
 
     public static void checkIfUserCanAccessBillOrThrowException(User user, Bill bill) {
         if (!userCanAccessBill(user, bill)) {
-            throw new UnauthorizedException("You do not have permission to access the bill");
+            throw new UnauthorizedException("");
         }
     }
 

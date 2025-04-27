@@ -7,10 +7,10 @@ import com.billkeeper.billkeeperbackend.bill.BillUpdate;
 import com.billkeeper.billkeeperbackend.bill.api.model.BillResponse;
 import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
+import com.billkeeper.billkeeperbackend.document.DocumentCreation;
 import com.billkeeper.billkeeperbackend.document.api.CreateDocumentResponse;
 import com.billkeeper.billkeeperbackend.document.api.model.DocumentResponse;
 import com.billkeeper.billkeeperbackend.document.persistence.DocumentRepository;
-import com.billkeeper.billkeeperbackend.document.persistence.model.Document;
 import com.billkeeper.billkeeperbackend.exception.InternalServerErrorException;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import com.billkeeper.billkeeperbackend.parsingjob.persistence.ParsingJobRepository;
@@ -45,10 +45,10 @@ public class BillController {
     private final Logger logger = LoggerFactory.getLogger(BillController.class);
     private final ParsingJobRepository parsingJobRepository;
     private final Authentication authentication;
-
     private final InsuranceSubmissionUpdate insuranceSubmissionUpdate;
+    private final DocumentCreation documentCreation;
 
-    public BillController(BillRepository billRepository, DocumentRepository documentRepository, AppConfig appConfig, BillParsingService billParsingService, BillUpdate billUpdate, BillDeletion billDeletion, CreateDocumentResponse createDocumentResponse, ParsingJobRepository parsingJobRepository, Authentication authentication, InsuranceSubmissionUpdate insuranceSubmissionUpdate) {
+    public BillController(BillRepository billRepository, DocumentRepository documentRepository, AppConfig appConfig, BillParsingService billParsingService, BillUpdate billUpdate, BillDeletion billDeletion, CreateDocumentResponse createDocumentResponse, ParsingJobRepository parsingJobRepository, Authentication authentication, InsuranceSubmissionUpdate insuranceSubmissionUpdate, DocumentCreation documentCreation) {
         this.billRepository = billRepository;
         this.documentRepository = documentRepository;
         this.appConfig = appConfig;
@@ -59,6 +59,7 @@ public class BillController {
         this.parsingJobRepository = parsingJobRepository;
         this.authentication = authentication;
         this.insuranceSubmissionUpdate = insuranceSubmissionUpdate;
+        this.documentCreation = documentCreation;
     }
 
     @GetMapping("/bills")
@@ -82,7 +83,7 @@ public class BillController {
             Path destination = Paths.get(appConfig.getDocumentsDirectory()).resolve(filename);
             multipartFile.transferTo(destination);
             Bill bill = createEmptyBill(user);
-            createDocument(filename, bill);
+            documentCreation.create(filename, bill, user);
             ParsingJob parsingJob = createParsingJob(bill);
             billParsingService.parseAndUpdateBill(bill, destination.toFile(), parsingJob);
         } catch (IOException | RuntimeException e) {
@@ -122,7 +123,7 @@ public class BillController {
             String filename = UUID.randomUUID() + ".pdf";
             Path destination = Paths.get(appConfig.getDocumentsDirectory()).resolve(filename);
             multipartFile.transferTo(destination);
-            createDocument(filename, bill);
+            documentCreation.create(filename, bill, user);
         } catch (IOException | RuntimeException e) {
             logger.error(e.getMessage());
             throw new InternalServerErrorException("Error while uploading file");
@@ -154,15 +155,6 @@ public class BillController {
         bill.setUser(user);
         billRepository.save(bill);
         return bill;
-    }
-
-    private void createDocument(String filename, Bill bill) {
-        Document document = new Document();
-        document.setActive(true);
-        document.setDateTime(OffsetDateTime.now());
-        document.setName(filename);
-        document.setBill(bill);
-        documentRepository.save(document);
     }
 
     private ParsingJob createParsingJob(Bill bill) {

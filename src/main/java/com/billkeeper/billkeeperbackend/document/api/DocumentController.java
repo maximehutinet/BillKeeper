@@ -1,8 +1,10 @@
 package com.billkeeper.billkeeperbackend.document.api;
 
 import com.billkeeper.billkeeperbackend.AppConfig;
+import com.billkeeper.billkeeperbackend.bill.BillAccessManager;
 import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
+import com.billkeeper.billkeeperbackend.document.DocumentCreation;
 import com.billkeeper.billkeeperbackend.document.api.model.DocumentResponse;
 import com.billkeeper.billkeeperbackend.document.api.model.UpdateDocumentRequest;
 import com.billkeeper.billkeeperbackend.document.persistence.DocumentRepository;
@@ -10,6 +12,8 @@ import com.billkeeper.billkeeperbackend.document.persistence.model.Document;
 import com.billkeeper.billkeeperbackend.exception.BadRequestException;
 import com.billkeeper.billkeeperbackend.exception.InternalServerErrorException;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
+import com.billkeeper.billkeeperbackend.user.persistence.model.User;
+import com.billkeeper.billkeeperbackend.utils.Authentication;
 import com.billkeeper.billkeeperbackend.utils.PDFMerger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +21,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,7 +29,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -36,26 +40,27 @@ public class DocumentController {
     private final BillRepository billRepository;
     private final AppConfig appConfig;
     private final CreateDocumentResponse createDocumentResponse;
+    private final Authentication authentication;
     private final Logger logger = LoggerFactory.getLogger(DocumentController.class);
+    private final DocumentCreation documentCreation;
 
-    public DocumentController(DocumentRepository documentRepository, BillRepository billRepository, AppConfig appConfig, CreateDocumentResponse createDocumentResponse) {
+    public DocumentController(DocumentRepository documentRepository, BillRepository billRepository, AppConfig appConfig, CreateDocumentResponse createDocumentResponse, Authentication authentication, DocumentCreation documentCreation) {
         this.documentRepository = documentRepository;
         this.billRepository = billRepository;
         this.appConfig = appConfig;
         this.createDocumentResponse = createDocumentResponse;
+        this.authentication = authentication;
+        this.documentCreation = documentCreation;
     }
 
     @PostMapping("/documents")
-    public void createDocument(@RequestParam("file") MultipartFile multipartFile) {
+    public void createDocument(@RequestParam("file") MultipartFile multipartFile, JwtAuthenticationToken token) {
         try {
+            User user = authentication.getCurrentUserFromToken(token);
             String filename = UUID.randomUUID() + ".pdf";
             Path destination = Paths.get(appConfig.getDocumentsDirectory()).resolve(filename);
             multipartFile.transferTo(destination);
-            Document document = new Document();
-            document.setActive(true);
-            document.setDateTime(OffsetDateTime.now());
-            document.setName(filename);
-            documentRepository.save(document);
+            documentCreation.create(filename, null, user);
         } catch (IOException | RuntimeException e) {
             logger.error(e.getMessage());
             throw new InternalServerErrorException("Error while uploading file");
@@ -63,10 +68,11 @@ public class DocumentController {
     }
 
     @GetMapping("/documents")
-    public ResponseEntity<Resource> getMergedBillsDocuments(@RequestParam("billIds") List<UUID> billIds) {
+    public ResponseEntity<Resource> getMergedBillsDocuments(@RequestParam("billIds") List<UUID> billIds, JwtAuthenticationToken token) {
         try {
+            User user = authentication.getCurrentUserFromToken(token);
             List<Document> documents = new ArrayList<>();
-            billIds.forEach(id -> documents.addAll(documentRepository.findByBillIdAndActiveTrue(id)));
+            billIds.forEach(id -> documents.addAll(documentRepository.findByBillIdAndActiveTrue(id, user)));
             if (documents.isEmpty()) {
                 throw new BadRequestException("No documents found");
             }
@@ -86,10 +92,12 @@ public class DocumentController {
     }
 
     @GetMapping("/documents/{id}")
-    public ResponseEntity<Resource> getDocument(@PathVariable("id") UUID id) {
+    public ResponseEntity<Resource> getDocument(@PathVariable("id") UUID id, JwtAuthenticationToken token) {
         try {
             Document document = documentRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("Document not found"));
+            User user = authentication.getCurrentUserFromToken(token);
+            BillAccessManager.checkIfUserCanAccessBillOrThrowException(user, document.getBill());
             File file = new File(appConfig.getDocumentsDirectory() + File.separator + document.getName());
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType("application/pdf"))
@@ -101,9 +109,11 @@ public class DocumentController {
     }
 
     @PostMapping("/documents/{id}")
-    public void updateDocument(@RequestBody UpdateDocumentRequest request, @PathVariable("id") UUID id) {
+    public void updateDocument(@RequestBody UpdateDocumentRequest request, @PathVariable("id") UUID id, JwtAuthenticationToken token) {
         Document document = documentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Document not found"));
+        User user = authentication.getCurrentUserFromToken(token);
+        BillAccessManager.checkIfUserCanAccessBillOrThrowException(user, document.getBill());
         if (request.getDescription() != null) {
             document.setDescription(request.getDescription());
         }
@@ -116,16 +126,19 @@ public class DocumentController {
     }
 
     @DeleteMapping("/documents/{id}")
-    public void delete(@PathVariable("id") UUID id) {
+    public void delete(@PathVariable("id") UUID id, JwtAuthenticationToken token) {
         Document document = documentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Document not found"));
+        User user = authentication.getCurrentUserFromToken(token);
+        BillAccessManager.checkIfUserCanAccessBillOrThrowException(user, document.getBill());
         document.setActive(false);
         documentRepository.save(document);
     }
 
     @GetMapping("/documents/orphans")
-    public List<DocumentResponse> getAllOrphansDocuments() {
-        return documentRepository.findByBillIdNullAndActiveTrue()
+    public List<DocumentResponse> getAllOrphansDocuments(JwtAuthenticationToken token) {
+        User user = authentication.getCurrentUserFromToken(token);
+        return documentRepository.findByBillIdNullAndActiveTrue(user)
                 .stream()
                 .map(createDocumentResponse::create)
                 .toList();

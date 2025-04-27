@@ -1,6 +1,7 @@
 package com.billkeeper.billkeeperbackend.document.persistence.model;
 
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
+import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -22,4 +23,7 @@ public class Document {
 
     @ManyToOne
     private Bill bill;
+
+    @ManyToOne
+    private User user;
 }

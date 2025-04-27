@@ -43,3 +43,14 @@ CREATE TABLE invitation
     type            VARCHAR(255) CHECK (type IN ('JOIN_FAMILY')),
     status          VARCHAR(255) CHECK (status IN ('PENDING', 'ACCEPTED', 'REJECTED'))
 );
+
+ALTER TABLE document
+    ADD user_id UUID
+        CONSTRAINT fk_user_id REFERENCES billkeeperuser;
+
+UPDATE document
+SET user_id = b.user_id
+FROM bill b WHERE document.bill_id = b.id;
+
+ALTER TABLE document
+    ALTER COLUMN user_id SET NOT NULL;
