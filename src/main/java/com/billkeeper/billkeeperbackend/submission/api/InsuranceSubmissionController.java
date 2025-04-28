@@ -9,6 +9,7 @@ import com.billkeeper.billkeeperbackend.submission.api.model.CreateUpdateInsuran
 import com.billkeeper.billkeeperbackend.submission.api.model.InsuranceSubmissionResponse;
 import com.billkeeper.billkeeperbackend.submission.persistence.InsuranceSubmissionRepository;
 import com.billkeeper.billkeeperbackend.submission.persistence.model.InsuranceSubmission;
+import com.billkeeper.billkeeperbackend.user.api.model.UserResponse;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import com.billkeeper.billkeeperbackend.utils.Authentication;
 import com.billkeeper.billkeeperbackend.utils.BillUtils;
@@ -126,6 +127,7 @@ public class InsuranceSubmissionController {
                 .bills(billResponses)
                 .totalUsdAmount(billUtils.getTotalBillsUsdAmount(bills))
                 .status(submission.getStatus())
+                .user(new UserResponse(submission.getUser()))
                 .build();
     }
 

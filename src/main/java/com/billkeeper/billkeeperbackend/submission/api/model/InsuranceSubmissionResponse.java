@@ -2,6 +2,7 @@ package com.billkeeper.billkeeperbackend.submission.api.model;
 
 import com.billkeeper.billkeeperbackend.bill.api.model.BillResponse;
 import com.billkeeper.billkeeperbackend.submission.persistence.model.InsuranceSubmission;
+import com.billkeeper.billkeeperbackend.user.api.model.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,4 +25,5 @@ public class InsuranceSubmissionResponse {
     private List<BillResponse> bills;
     private Double totalUsdAmount;
     private InsuranceSubmission.Status status;
+    private UserResponse user;
 }
