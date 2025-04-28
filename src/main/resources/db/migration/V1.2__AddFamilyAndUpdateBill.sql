@@ -54,3 +54,14 @@ FROM bill b WHERE document.bill_id = b.id;
 
 ALTER TABLE document
     ALTER COLUMN user_id SET NOT NULL;
+
+ALTER TABLE submission
+    ADD user_id UUID
+        CONSTRAINT fk_user_id REFERENCES billkeeperuser;
+
+UPDATE submission s
+SET user_id = b.user_id
+FROM bill b WHERE b.submission_id = s.id;
+
+ALTER TABLE submission
+    ALTER COLUMN user_id SET NOT NULL;

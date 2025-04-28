@@ -1,5 +1,6 @@
 package com.billkeeper.billkeeperbackend.submission.api;
 
+import com.billkeeper.billkeeperbackend.bill.api.model.BillResponse;
 import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
 import com.billkeeper.billkeeperbackend.exception.BadRequestException;
@@ -8,12 +9,18 @@ import com.billkeeper.billkeeperbackend.submission.api.model.CreateUpdateInsuran
 import com.billkeeper.billkeeperbackend.submission.api.model.InsuranceSubmissionResponse;
 import com.billkeeper.billkeeperbackend.submission.persistence.InsuranceSubmissionRepository;
 import com.billkeeper.billkeeperbackend.submission.persistence.model.InsuranceSubmission;
+import com.billkeeper.billkeeperbackend.user.persistence.model.User;
+import com.billkeeper.billkeeperbackend.utils.Authentication;
 import com.billkeeper.billkeeperbackend.utils.BillUtils;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
+
+import static com.billkeeper.billkeeperbackend.bill.BillAccessManager.checkIfUserCanAccessBillOrThrowException;
+import static com.billkeeper.billkeeperbackend.submission.InsuranceSubmissionAccessManager.checkIfUserCanAccessSubmissionOrThrowException;
 
 @RestController
 public class InsuranceSubmissionController {
@@ -21,16 +28,19 @@ public class InsuranceSubmissionController {
     private final InsuranceSubmissionRepository insuranceSubmissionRepository;
     private final BillRepository billRepository;
     private final BillUtils billUtils;
+    private final Authentication authentication;
 
-    public InsuranceSubmissionController(InsuranceSubmissionRepository insuranceSubmissionRepository, BillRepository billRepository, BillUtils billUtils) {
+    public InsuranceSubmissionController(InsuranceSubmissionRepository insuranceSubmissionRepository, BillRepository billRepository, BillUtils billUtils, Authentication authentication) {
         this.insuranceSubmissionRepository = insuranceSubmissionRepository;
         this.billRepository = billRepository;
         this.billUtils = billUtils;
+        this.authentication = authentication;
     }
 
     @GetMapping("submissions")
-    public List<InsuranceSubmissionResponse> getAllActiveSubmissions() {
-        List<InsuranceSubmission> submissions = insuranceSubmissionRepository.findAllByActiveTrueOrderByDateTimeDesc();
+    public List<InsuranceSubmissionResponse> getAllActiveSubmissions(JwtAuthenticationToken token) {
+        User user = authentication.getCurrentUserFromToken(token);
+        List<InsuranceSubmission> submissions = insuranceSubmissionRepository.findAllByActiveTrueOrderByDateTimeDesc(user);
         return submissions
                 .stream()
                 .map(this::buildSubmissionResponse)
@@ -38,17 +48,20 @@ public class InsuranceSubmissionController {
     }
 
     @GetMapping("submissions/{id}")
-    public InsuranceSubmissionResponse getSubmission(@PathVariable UUID id) {
+    public InsuranceSubmissionResponse getSubmission(@PathVariable UUID id, JwtAuthenticationToken token) {
+        User user = authentication.getCurrentUserFromToken(token);
         InsuranceSubmission submission = insuranceSubmissionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Submission not found"));
+        checkIfUserCanAccessSubmissionOrThrowException(user, submission);
         return buildSubmissionResponse(submission);
     }
 
     @PostMapping("/submissions")
-    public void createSubmission(@RequestBody CreateUpdateInsuranceSubmissionRequest request) {
+    public void createSubmission(@RequestBody CreateUpdateInsuranceSubmissionRequest request, JwtAuthenticationToken token) {
         if (request.getName() == null || request.getName().isEmpty() || request.getBillIds().isEmpty()) {
             throw new BadRequestException("");
         }
+        User user = authentication.getCurrentUserFromToken(token);
         List<Bill> bills = request.getBillIds()
                 .stream()
                 .map(id -> billRepository.findByIdAndSubmissionNull(id).orElse(null))
@@ -56,18 +69,24 @@ public class InsuranceSubmissionController {
         if (bills.contains(null)) {
             throw new BadRequestException("");
         }
+        bills.forEach(bill -> {
+            checkIfUserCanAccessBillOrThrowException(user, bill);
+        });
         InsuranceSubmission submission = new InsuranceSubmission();
         submission.setActive(true);
         submission.setDateTime(OffsetDateTime.now());
         submission.setName(request.getName());
+        submission.setUser(user);
         insuranceSubmissionRepository.save(submission);
         bills.forEach(bill -> addBillToSubmission(submission, bill));
     }
 
     @PostMapping("/submissions/{id}")
-    public void updateSubmission(@PathVariable UUID id, @RequestBody CreateUpdateInsuranceSubmissionRequest request) {
+    public void updateSubmission(@PathVariable UUID id, @RequestBody CreateUpdateInsuranceSubmissionRequest request, JwtAuthenticationToken token) {
+        User user = authentication.getCurrentUserFromToken(token);
         InsuranceSubmission submission = insuranceSubmissionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Submission not found"));
+        checkIfUserCanAccessSubmissionOrThrowException(user, submission);
         if (request.getName() != null && !request.getName().isEmpty() && !request.getName().equals(submission.getName())) {
             submission.setName(request.getName());
         }
@@ -82,9 +101,11 @@ public class InsuranceSubmissionController {
     }
 
     @DeleteMapping("submissions/{id}")
-    public void deleteSubmission(@PathVariable UUID id) {
+    public void deleteSubmission(@PathVariable UUID id, JwtAuthenticationToken token) {
+        User user = authentication.getCurrentUserFromToken(token);
         InsuranceSubmission submission = insuranceSubmissionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Submission not found"));
+        checkIfUserCanAccessSubmissionOrThrowException(user, submission);
         billRepository.findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(submission.getId())
                         .forEach(this::removeBillFromSubmission);
         submission.setActive(false);
@@ -93,6 +114,10 @@ public class InsuranceSubmissionController {
 
     private InsuranceSubmissionResponse buildSubmissionResponse(InsuranceSubmission submission) {
         List<Bill> bills = billRepository.findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(submission.getId());
+        List<BillResponse> billResponses = bills
+                .stream()
+                .map(BillResponse::new)
+                .toList();
         return InsuranceSubmissionResponse
                 .builder()
                 .id(submission.getId())
@@ -100,7 +125,7 @@ public class InsuranceSubmissionController {
                 .dateTime(submission.getDateTime())
                 .name(submission.getName())
                 .eClaimId(submission.getEClaimId())
-                .bills(bills)
+                .bills(billResponses)
                 .totalUsdAmount(billUtils.getTotalBillsUsdAmount(bills))
                 .status(submission.getStatus())
                 .build();

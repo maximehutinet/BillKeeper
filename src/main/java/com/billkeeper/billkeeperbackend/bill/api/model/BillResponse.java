@@ -3,7 +3,6 @@ package com.billkeeper.billkeeperbackend.bill.api.model;
 import com.billkeeper.billkeeperbackend.beneficiary.persistence.model.Beneficiary;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
 import com.billkeeper.billkeeperbackend.parsingjob.persistence.model.ParsingJob;
-import com.billkeeper.billkeeperbackend.submission.persistence.model.InsuranceSubmission;
 import com.billkeeper.billkeeperbackend.user.api.model.UserResponse;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +24,7 @@ public class BillResponse {
     private String provider;
     private Bill.Status status;
     private Beneficiary beneficiary;
-    private InsuranceSubmission submission;
+    private UUID submissionId;
     private ParsingJob.Status parsingJobStatus;
 
     public BillResponse(Bill bill, ParsingJob.Status parsingJobStatus) {
@@ -40,7 +39,7 @@ public class BillResponse {
         this.provider = bill.getProvider();
         this.status = bill.getStatus();
         this.beneficiary = bill.getBeneficiary();
-        this.submission = bill.getSubmission();
+        this.submissionId = bill.getSubmission().getId();
         this.parsingJobStatus = parsingJobStatus;
     }
 
@@ -56,6 +55,6 @@ public class BillResponse {
         this.provider = bill.getProvider();
         this.status = bill.getStatus();
         this.beneficiary = bill.getBeneficiary();
-        this.submission = bill.getSubmission();
+        this.submissionId = bill.getSubmission().getId();
     }
 }

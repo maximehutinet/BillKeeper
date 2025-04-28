@@ -30,11 +30,23 @@ public interface BillRepository extends CrudRepository<Bill, UUID> {
 
     Optional<Bill> findByIdAndSubmissionNull(UUID id);
 
-    Integer countByActiveTrueAndStatus(Bill.Status status);
+    @Query("SELECT COUNT (b) FROM Bill b " +
+            "WHERE (b.user.id = :#{#user.id} OR (:#{#user.family?.id} IS NOT NULL AND b.user.family IS NOT NULL AND b.user.family.id = :#{#user.family?.id})) AND " +
+            "b.status = :#{#status} AND " +
+            "b.active IS TRUE")
+    Integer countByActiveTrueAndStatus(Bill.Status status, User user);
 
-    List<Bill> findAllByActiveTrueAndStatus(Bill.Status status);
+    @Query("SELECT b FROM Bill b " +
+            "WHERE (b.user.id = :#{#user.id} OR (:#{#user.family?.id} IS NOT NULL AND b.user.family IS NOT NULL AND b.user.family.id = :#{#user.family?.id})) AND " +
+            "b.status = :#{#status} AND " +
+            "b.active IS TRUE")
+    List<Bill> findAllByActiveTrueAndStatus(Bill.Status status, User user);
 
-    List<Bill> findAllByActiveTrueAndPaidDateTimeNull();
+    @Query("SELECT b FROM Bill b " +
+            "WHERE (b.user.id = :#{#user.id} OR (:#{#user.family?.id} IS NOT NULL AND b.user.family IS NOT NULL AND b.user.family.id = :#{#user.family?.id})) AND " +
+            "b.paidDateTime IS NULL AND " +
+            "b.active IS TRUE")
+    List<Bill> findAllByActiveTrueAndPaidDateTimeNull(User user);
 
     @Query("SELECT DISTINCT b.provider FROM Bill b WHERE lower(b.provider) LIKE lower(CONCAT(:provider, '%'))")
     List<String> findAllProvidersMatchingValue(String provider);

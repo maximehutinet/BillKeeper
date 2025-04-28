@@ -1,5 +1,6 @@
 package com.billkeeper.billkeeperbackend.submission.persistence.model;
 
+import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -25,4 +26,7 @@ public class InsuranceSubmission {
 
     @Enumerated(EnumType.STRING)
     private InsuranceSubmission.Status status;
+
+    @ManyToOne
+    private User user;
 }
