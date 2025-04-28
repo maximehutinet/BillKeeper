@@ -62,3 +62,8 @@ FROM bill b WHERE b.submission_id = s.id;
 
 ALTER TABLE submission
     ALTER COLUMN user_id SET NOT NULL;
+
+ALTER TABLE billkeeperuser DROP CONSTRAINT billkeeperuser_firstname_key;
+
+ALTER TABLE billkeeperuser
+    ALTER COLUMN firstname SET NOT NULL;
