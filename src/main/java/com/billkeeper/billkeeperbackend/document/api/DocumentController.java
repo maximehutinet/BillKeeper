@@ -1,7 +1,6 @@
 package com.billkeeper.billkeeperbackend.document.api;
 
 import com.billkeeper.billkeeperbackend.AppConfig;
-import com.billkeeper.billkeeperbackend.bill.BillAccessManager;
 import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
 import com.billkeeper.billkeeperbackend.document.DocumentCreation;
@@ -15,6 +14,7 @@ import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import com.billkeeper.billkeeperbackend.utils.Authentication;
 import com.billkeeper.billkeeperbackend.utils.PDFMerger;
+import com.billkeeper.billkeeperbackend.utils.accessmanager.AccessManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -97,7 +97,7 @@ public class DocumentController {
             Document document = documentRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("Document not found"));
             User user = authentication.getCurrentUserFromToken(token);
-            BillAccessManager.checkIfUserCanAccessBillOrThrowException(user, document.getBill());
+            AccessManager.checkIfUserCanAccessDocumentOrThrowException(user, document);
             File file = new File(appConfig.getDocumentsDirectory() + File.separator + document.getName());
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType("application/pdf"))
@@ -113,7 +113,7 @@ public class DocumentController {
         Document document = documentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Document not found"));
         User user = authentication.getCurrentUserFromToken(token);
-        BillAccessManager.checkIfUserCanAccessBillOrThrowException(user, document.getBill());
+        AccessManager.checkIfUserCanAccessDocumentOrThrowException(user, document);
         if (request.getDescription() != null) {
             document.setDescription(request.getDescription());
         }
@@ -130,7 +130,7 @@ public class DocumentController {
         Document document = documentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Document not found"));
         User user = authentication.getCurrentUserFromToken(token);
-        BillAccessManager.checkIfUserCanAccessBillOrThrowException(user, document.getBill());
+        AccessManager.checkIfUserCanAccessDocumentOrThrowException(user, document);
         document.setActive(false);
         documentRepository.save(document);
     }

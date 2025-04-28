@@ -1,6 +1,5 @@
 package com.billkeeper.billkeeperbackend.comment.api;
 
-import com.billkeeper.billkeeperbackend.bill.BillAccessManager;
 import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
 import com.billkeeper.billkeeperbackend.comment.CommentEmailNotifier;
@@ -12,6 +11,7 @@ import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import com.billkeeper.billkeeperbackend.exception.UnauthorizedException;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import com.billkeeper.billkeeperbackend.utils.Authentication;
+import com.billkeeper.billkeeperbackend.utils.accessmanager.AccessManager;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +40,7 @@ public class CommentController {
         User user = authentication.getCurrentUserFromToken(token);
         Bill bill = billRepository.findById(billId)
                 .orElseThrow(() -> new NotFoundException("Bill not found"));
-        BillAccessManager.checkIfUserCanAccessBillOrThrowException(user, bill);
+        AccessManager.checkIfUserCanAccessBillOrThrowException(user, bill);
         return commentRepository.findByBillIdAndActiveTrueOrderByDateTimeDesc(billId);
     }
 
@@ -49,7 +49,7 @@ public class CommentController {
         User user = authentication.getCurrentUserFromToken(token);
         Bill bill = billRepository.findById(billId)
                 .orElseThrow(() -> new NotFoundException("Bill not found"));
-        BillAccessManager.checkIfUserCanAccessBillOrThrowException(user, bill);
+        AccessManager.checkIfUserCanAccessBillOrThrowException(user, bill);
         Comment comment = new Comment();
         comment.setDateTime(OffsetDateTime.now());
         comment.setActive(true);

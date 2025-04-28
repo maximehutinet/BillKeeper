@@ -12,15 +12,13 @@ import com.billkeeper.billkeeperbackend.submission.persistence.model.InsuranceSu
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import com.billkeeper.billkeeperbackend.utils.Authentication;
 import com.billkeeper.billkeeperbackend.utils.BillUtils;
+import com.billkeeper.billkeeperbackend.utils.accessmanager.AccessManager;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
-
-import static com.billkeeper.billkeeperbackend.bill.BillAccessManager.checkIfUserCanAccessBillOrThrowException;
-import static com.billkeeper.billkeeperbackend.submission.InsuranceSubmissionAccessManager.checkIfUserCanAccessSubmissionOrThrowException;
 
 @RestController
 public class InsuranceSubmissionController {
@@ -52,7 +50,7 @@ public class InsuranceSubmissionController {
         User user = authentication.getCurrentUserFromToken(token);
         InsuranceSubmission submission = insuranceSubmissionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Submission not found"));
-        checkIfUserCanAccessSubmissionOrThrowException(user, submission);
+        AccessManager.checkIfUserCanAccessSubmissionOrThrowException(user, submission);
         return buildSubmissionResponse(submission);
     }
 
@@ -70,7 +68,7 @@ public class InsuranceSubmissionController {
             throw new BadRequestException("");
         }
         bills.forEach(bill -> {
-            checkIfUserCanAccessBillOrThrowException(user, bill);
+            AccessManager.checkIfUserCanAccessBillOrThrowException(user, bill);
         });
         InsuranceSubmission submission = new InsuranceSubmission();
         submission.setActive(true);
@@ -86,7 +84,7 @@ public class InsuranceSubmissionController {
         User user = authentication.getCurrentUserFromToken(token);
         InsuranceSubmission submission = insuranceSubmissionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Submission not found"));
-        checkIfUserCanAccessSubmissionOrThrowException(user, submission);
+        AccessManager.checkIfUserCanAccessSubmissionOrThrowException(user, submission);
         if (request.getName() != null && !request.getName().isEmpty() && !request.getName().equals(submission.getName())) {
             submission.setName(request.getName());
         }
@@ -105,7 +103,7 @@ public class InsuranceSubmissionController {
         User user = authentication.getCurrentUserFromToken(token);
         InsuranceSubmission submission = insuranceSubmissionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Submission not found"));
-        checkIfUserCanAccessSubmissionOrThrowException(user, submission);
+        AccessManager.checkIfUserCanAccessSubmissionOrThrowException(user, submission);
         billRepository.findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(submission.getId())
                         .forEach(this::removeBillFromSubmission);
         submission.setActive(false);
