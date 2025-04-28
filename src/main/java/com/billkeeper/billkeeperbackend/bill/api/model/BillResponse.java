@@ -39,7 +39,7 @@ public class BillResponse {
         this.provider = bill.getProvider();
         this.status = bill.getStatus();
         this.beneficiary = bill.getBeneficiary();
-        this.submissionId = bill.getSubmission().getId();
+        this.submissionId = bill.getSubmission() != null ? bill.getSubmission().getId() : null;
         this.parsingJobStatus = parsingJobStatus;
     }
 
@@ -55,6 +55,6 @@ public class BillResponse {
         this.provider = bill.getProvider();
         this.status = bill.getStatus();
         this.beneficiary = bill.getBeneficiary();
-        this.submissionId = bill.getSubmission().getId();
+        this.submissionId = bill.getSubmission() != null ? bill.getSubmission().getId() : null;
     }
 }
