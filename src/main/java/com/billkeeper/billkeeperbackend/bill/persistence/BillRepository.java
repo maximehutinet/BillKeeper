@@ -48,6 +48,9 @@ public interface BillRepository extends CrudRepository<Bill, UUID> {
             "b.active IS TRUE")
     List<Bill> findAllByActiveTrueAndPaidDateTimeNull(User user);
 
-    @Query("SELECT DISTINCT b.provider FROM Bill b WHERE lower(b.provider) LIKE lower(CONCAT(:provider, '%'))")
-    List<String> findAllProvidersMatchingValue(String provider);
+    @Query("SELECT DISTINCT b.provider " +
+            "FROM Bill b " +
+            "WHERE lower(b.provider) LIKE lower(CONCAT(:provider, '%')) AND " +
+            "(b.user.id = :#{#user.id} OR (:#{#user.family?.id} IS NOT NULL AND b.user.family IS NOT NULL AND b.user.family.id = :#{#user.family?.id}))")
+    List<String> findAllProvidersMatchingValue(String provider, User user);
 }

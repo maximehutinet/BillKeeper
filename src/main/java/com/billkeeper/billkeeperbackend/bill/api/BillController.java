@@ -143,8 +143,9 @@ public class BillController {
     }
 
     @GetMapping("/bills/providers")
-    public List<String> getProvidersStartingWith(@RequestParam("value") String value) {
-        return billRepository.findAllProvidersMatchingValue(value);
+    public List<String> getProvidersStartingWith(@RequestParam("value") String value, JwtAuthenticationToken token) {
+        User user = authentication.getCurrentUserFromToken(token);
+        return billRepository.findAllProvidersMatchingValue(value, user);
     }
 
     private Bill createEmptyBill(User user) {

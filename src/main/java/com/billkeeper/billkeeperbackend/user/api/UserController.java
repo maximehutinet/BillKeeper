@@ -7,6 +7,7 @@ import com.billkeeper.billkeeperbackend.exception.UnauthorizedException;
 import com.billkeeper.billkeeperbackend.user.api.model.UserResponse;
 import com.billkeeper.billkeeperbackend.user.persistence.UserRepository;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
+import com.billkeeper.billkeeperbackend.utils.Authentication;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,24 +32,26 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final AppConfig appConfig;
+    private final Authentication authentication;
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    public UserController(UserRepository userRepository, AppConfig appConfig) {
+    public UserController(UserRepository userRepository, AppConfig appConfig, Authentication authentication) {
         this.userRepository = userRepository;
         this.appConfig = appConfig;
+        this.authentication = authentication;
     }
 
     @GetMapping("/users/me")
-    public UserResponse getCurrentUserProfile(JwtAuthenticationToken jwtAuthenticationToken) {
-        User user = userRepository.findUserByKeycloakId(jwtAuthenticationToken.getName())
+    public UserResponse getCurrentUserProfile(JwtAuthenticationToken token) {
+        User user = userRepository.findUserByKeycloakId(token.getName())
                 .orElseThrow(() -> new UnauthorizedException(""));
         return new UserResponse(user);
     }
 
     @PostMapping("/users/me/picture")
-    public void updateCurrentUserProfilePicture(@RequestParam("file") MultipartFile multipartFile, JwtAuthenticationToken jwtAuthenticationToken) {
+    public void updateCurrentUserProfilePicture(@RequestParam("file") MultipartFile multipartFile, JwtAuthenticationToken token) {
         try {
-            User user = userRepository.findUserByKeycloakId(jwtAuthenticationToken.getName())
+            User user = userRepository.findUserByKeycloakId(token.getName())
                     .orElseThrow(() -> new UnauthorizedException(""));
             String filename = UUID.randomUUID() + "." +  FilenameUtils.getExtension(multipartFile.getOriginalFilename());
             Path destination = Paths.get(appConfig.getUsersDirectory()).resolve(filename);
@@ -62,9 +65,9 @@ public class UserController {
     }
 
     @GetMapping("/users/me/picture")
-    public ResponseEntity<Resource> getCurrentUserProfilePicture(JwtAuthenticationToken jwtAuthenticationToken) {
+    public ResponseEntity<Resource> getCurrentUserProfilePicture(JwtAuthenticationToken token) {
         try {
-            User user = userRepository.findUserByKeycloakId(jwtAuthenticationToken.getName())
+            User user = userRepository.findUserByKeycloakId(token.getName())
                     .orElseThrow(() -> new UnauthorizedException(""));
             return buildProfilePictureResponse(user);
         } catch (IOException e) {
@@ -86,8 +89,9 @@ public class UserController {
     }
 
     @GetMapping("/users/suggestions")
-    public List<UserResponse> getUsersStartingWith(@RequestParam("value") String value) {
-        return userRepository.findAllUsersMatchingValue(value);
+    public List<UserResponse> getUsersStartingWith(@RequestParam("value") String value, JwtAuthenticationToken token) {
+        User user = authentication.getCurrentUserFromToken(token);
+        return userRepository.findAllUsersMatchingValue(value, user);
     }
 
     private ResponseEntity<Resource> buildProfilePictureResponse(User user) throws MalformedURLException {
