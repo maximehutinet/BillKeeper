@@ -18,4 +18,7 @@ public interface UserRepository extends CrudRepository<User, UUID> {
             "WHERE lower(u.firstname) LIKE lower(CONCAT(:value, '%')) AND " +
             "(u.id != :#{#user.id} AND (:#{#user.family?.id} IS NOT NULL AND u.family IS NOT NULL AND u.family.id = :#{#user.family?.id}))")
     List<UserResponse> findAllUsersMatchingValue(String value, User user);
+
+    @Query("SELECT u FROM User u WHERE u.family.id = :#{#familyId}")
+    List<User> findAllUsersWithFamilyId(UUID familyId);
 }

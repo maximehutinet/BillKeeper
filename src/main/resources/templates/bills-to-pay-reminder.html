@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Email</title>
+</head>
+<style>
+    body {
+        background-color: #F3F4F8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: Roboto, sans-serif;
+        height: 100vh;
+    }
+
+    body, h2 {
+        margin: 0;
+    }
+
+    #content-wrapper {
+        padding: 2rem;
+        background-color: white;
+        margin: auto;
+    }
+
+    a {
+        color: #18181B;
+    }
+
+    #bills-to-pay-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+</style>
+<body>
+    <div id="content-wrapper">
+        <h2>Hi <span th:text="${name}">User</span>,</h2>
+        <p>As of today, the following bills haven't been paid:</p>
+        <div id="bills-to-pay-wrapper" th:utext="${billsToPay}">
+            <a href="/">Link</a>
+            <a href="/">Link</a>
+            <a href="/">Link</a>
+        </div>
+    </div>
+</body>
+</html>
