@@ -76,6 +76,7 @@ public class InsuranceSubmissionController {
         submission.setDateTime(OffsetDateTime.now());
         submission.setName(request.getName());
         submission.setUser(user);
+        submission.setStatus(InsuranceSubmission.Status.OPEN);
         insuranceSubmissionRepository.save(submission);
         bills.forEach(bill -> addBillToSubmission(submission, bill));
     }
@@ -91,7 +92,6 @@ public class InsuranceSubmissionController {
         }
         if (request.getEClaimId() != null && !request.getEClaimId().isEmpty()) {
             submission.setEClaimId(request.getEClaimId());
-            submission.setStatus(InsuranceSubmission.Status.OPEN);
         }
         if (request.getBillIds() != null) {
             updateSubmissionBills(submission, request.getBillIds());
