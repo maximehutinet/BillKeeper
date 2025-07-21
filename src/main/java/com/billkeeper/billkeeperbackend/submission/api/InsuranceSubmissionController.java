@@ -78,7 +78,8 @@ public class InsuranceSubmissionController {
         submission.setUser(user);
         submission.setStatus(InsuranceSubmission.Status.OPEN);
         insuranceSubmissionRepository.save(submission);
-        bills.forEach(bill -> addBillToSubmission(submission, bill));
+        bills.forEach(bill -> bill.setSubmission(submission));
+        billRepository.saveAll(bills);
     }
 
     @PostMapping("/submissions/{id}")
@@ -92,6 +93,11 @@ public class InsuranceSubmissionController {
         }
         if (request.getEClaimId() != null && !request.getEClaimId().isEmpty()) {
             submission.setEClaimId(request.getEClaimId());
+            List<Bill> bills = billRepository.findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(submission.getId());
+            bills.forEach(bill -> {
+                bill.setStatus(Bill.Status.FILED);
+            });
+            billRepository.saveAll(bills);
         }
         if (request.getBillIds() != null) {
             updateSubmissionBills(submission, request.getBillIds());
@@ -146,19 +152,14 @@ public class InsuranceSubmissionController {
                 .stream()
                 .filter(bill -> !updatedSubmissionBills.contains(bill.getId()))
                 .toList();
-        billsToAddToSubmission.forEach(bill -> addBillToSubmission(submission, bill));
+        billsToAddToSubmission.forEach(bill -> bill.setSubmission(submission));
+        billRepository.saveAll(billsToAddToSubmission);
         billsToRemoveFromSubmission.forEach(this::removeBillFromSubmission);
     }
 
     private void removeBillFromSubmission(Bill bill) {
         bill.setSubmission(null);
         bill.setStatus(Bill.Status.TO_FILE);
-        billRepository.save(bill);
-    }
-
-    private void addBillToSubmission(InsuranceSubmission submission, Bill bill) {
-        bill.setSubmission(submission);
-        bill.setStatus(Bill.Status.FILED);
         billRepository.save(bill);
     }
 

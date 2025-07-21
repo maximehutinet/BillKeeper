@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -28,7 +29,7 @@ public class StatsController {
     @GetMapping("/stats/bills")
     public StatsResponse getBillStats(JwtAuthenticationToken token) {
         User user = authentication.getCurrentUserFromToken(token);
-        List<Bill> billsWaitingToBeReimbursed = billRepository.findAllByActiveTrueAndStatus(Bill.Status.FILED, user);
+        List<Bill> billsWaitingToBeReimbursed = billRepository.findAllByActiveTrueAndStatus(Arrays.asList(Bill.Status.TO_FILE, Bill.Status.FILED), user);
         List<Bill> billsToPay = billRepository.findAllByActiveTrueAndPaidDateTimeNull(user);
         return StatsResponse
                 .builder()

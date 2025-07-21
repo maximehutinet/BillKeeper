@@ -35,8 +35,13 @@ public class BillUpdate {
         if (updatedBill.getBeneficiary() != null && !updatedBill.getBeneficiary().equals(bill.getBeneficiary())) {
             beneficiaryRepository.findById(updatedBill.getBeneficiary().getId()).ifPresent(bill::setBeneficiary);
         }
+        if (updatedBill.getPaidDateTime() != null && bill.getStatus().equals(Bill.Status.TO_PAY)) {
+            bill.setPaidDateTime(updatedBill.getPaidDateTime());
+            bill.setStatus(Bill.Status.TO_FILE);
+        } else {
+            bill.setPaidDateTime(updatedBill.getPaidDateTime());
+        }
         bill.setServiceDateTime(updatedBill.getServiceDateTime());
-        bill.setPaidDateTime(updatedBill.getPaidDateTime());
         billRepository.save(bill);
     }
 }

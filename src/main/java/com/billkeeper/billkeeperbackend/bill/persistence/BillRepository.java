@@ -38,9 +38,9 @@ public interface BillRepository extends CrudRepository<Bill, UUID> {
 
     @Query("SELECT b FROM Bill b " +
             "WHERE (b.user.id = :#{#user.id} OR (:#{#user.family?.id} IS NOT NULL AND b.user.family IS NOT NULL AND b.user.family.id = :#{#user.family?.id})) AND " +
-            "b.status = :#{#status} AND " +
+            "b.status IN :#{#status} AND " +
             "b.active IS TRUE")
-    List<Bill> findAllByActiveTrueAndStatus(Bill.Status status, User user);
+    List<Bill> findAllByActiveTrueAndStatus(List<Bill.Status> status, User user);
 
     @Query("SELECT b FROM Bill b " +
             "WHERE (b.user.id = :#{#user.id} OR (:#{#user.family?.id} IS NOT NULL AND b.user.family IS NOT NULL AND b.user.family.id = :#{#user.family?.id})) AND " +

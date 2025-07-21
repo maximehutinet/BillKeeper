@@ -152,7 +152,7 @@ public class BillController {
         Bill bill = new Bill();
         bill.setActive(true);
         bill.setDateTime(OffsetDateTime.now());
-        bill.setStatus(Bill.Status.TO_FILE);
+        bill.setStatus(Bill.Status.TO_PAY);
         bill.setUser(user);
         billRepository.save(bill);
         return bill;
