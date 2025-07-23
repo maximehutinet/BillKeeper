@@ -6,12 +6,11 @@ import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
 import com.billkeeper.billkeeperbackend.parsingjob.persistence.ParsingJobRepository;
 import com.billkeeper.billkeeperbackend.parsingjob.persistence.model.ParsingJob;
+import net.codecrete.qrbill.generator.QRCodeText;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import net.codecrete.qrbill.generator.QRCodeText;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,7 +49,7 @@ public class BillParsingService {
             }
             parsingJob.setStatus(ParsingJob.Status.SUCCESS);
             parsingJobRepository.save(parsingJob);
-        } catch (IOException ignored) {
+        } catch (Exception ignored) {
             parsingJob.setStatus(ParsingJob.Status.FAILED);
             parsingJobRepository.save(parsingJob);
         }

@@ -3,11 +3,12 @@ package com.billkeeper.billkeeperbackend.utils;
 import com.billkeeper.billkeeperbackend.AppConfig;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
-import net.sourceforge.tess4j.TesseractException;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -22,12 +23,13 @@ import java.util.UUID;
 public class PDFParser {
 
     private final AppConfig appConfig;
+    private final Logger logger = LoggerFactory.getLogger(PDFParser.class);
 
     public PDFParser(AppConfig appConfig) {
         this.appConfig = appConfig;
     }
 
-    public String extractTextFromFile(File file) throws IOException {
+    public String extractTextFromFile(File file) {
         try {
             ITesseract tesseract = new Tesseract();
             tesseract.setDatapath(appConfig.getTesseractDataDirectory());
@@ -38,7 +40,8 @@ public class PDFParser {
             text.append(result);
             tempImageFile.delete();
             return text.toString();
-        } catch (TesseractException e) {
+        } catch (Throwable e) {
+            logger.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }
