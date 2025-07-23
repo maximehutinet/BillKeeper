@@ -15,7 +15,7 @@ import java.util.UUID;
 public class Bill {
 
     public enum Status {
-        TO_PAY, TO_FILE, FILED, REIMBURSEMENT_IN_PROGRESS, REIMBURSED, REJECTED
+        TO_PAY, TO_FILE, FILING_IN_PROGRESS, FILED, REIMBURSEMENT_IN_PROGRESS, REIMBURSED, REJECTED
     }
 
     public enum Currency {

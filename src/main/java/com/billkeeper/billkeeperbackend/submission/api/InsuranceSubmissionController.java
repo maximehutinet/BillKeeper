@@ -78,7 +78,10 @@ public class InsuranceSubmissionController {
         submission.setUser(user);
         submission.setStatus(InsuranceSubmission.Status.OPEN);
         insuranceSubmissionRepository.save(submission);
-        bills.forEach(bill -> bill.setSubmission(submission));
+        bills.forEach(bill -> {
+            bill.setSubmission(submission);
+            bill.setStatus(Bill.Status.FILING_IN_PROGRESS);
+        });
         billRepository.saveAll(bills);
     }
 
