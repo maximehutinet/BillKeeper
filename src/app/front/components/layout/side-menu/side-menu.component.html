@@ -33,8 +33,7 @@
     }
   </div>
   <div id="menu-footer">
-    <p-toast/>
-    <p-menu #menu [model]="profileItems" [popup]="true"/>
+    <p-menu #menu [model]="profileItems"  [popup]="true" />
     <div id="log-out-button" (click)="menu.toggle($event)">
       <div id="user-detail">
         <p-avatar [image]="userProfilePicture" size="normal" shape="circle"/>

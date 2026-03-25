@@ -140,3 +140,8 @@
     }
   }
 }
+
+// Temporary fix so the menu stay at the bottom
+:host ::ng-deep p-menu > p-motion {
+  top: 80vh !important;
+}

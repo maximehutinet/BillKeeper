@@ -9,7 +9,6 @@ import {ToastMessageService} from '../../../../services/toast-message.service';
 import {Badge} from 'primeng/badge';
 import {SideMenuService} from '../../../../services/side-menu.service';
 import {AuthService} from '../../../../services/auth/auth.service';
-import {Toast} from 'primeng/toast';
 import {Menu} from 'primeng/menu';
 import {UserWsService} from '../../../../services/billkeeper-ws/user/user-ws.service';
 
@@ -20,7 +19,6 @@ import {UserWsService} from '../../../../services/billkeeper-ws/user/user-ws.ser
     Avatar,
     RouterLink,
     Badge,
-    Toast,
     Menu
   ],
   templateUrl: './side-menu.component.html',
