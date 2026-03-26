@@ -16,9 +16,4 @@ public interface DocumentRepository extends CrudRepository<Document, UUID> {
             "(d.user.id = :#{#user.id} OR (:#{#user.family?.id} IS NOT NULL AND d.user.family IS NOT NULL AND d.user.family.id = :#{#user.family?.id})) AND " +
             "d.active IS TRUE")
     List<Document> findByBillIdAndActiveTrue(UUID billId, User user);
-
-    @Query("SELECT d FROM Document d WHERE d.bill.id IS NULL AND " +
-            "(d.user.id = :#{#user.id} OR (:#{#user.family?.id} IS NOT NULL AND d.user.family IS NOT NULL AND d.user.family.id = :#{#user.family?.id})) AND " +
-            "d.active IS TRUE")
-    List<Document> findByBillIdNullAndActiveTrue(User user);
 }

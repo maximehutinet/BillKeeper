@@ -4,7 +4,6 @@ import com.billkeeper.billkeeperbackend.AppConfig;
 import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
 import com.billkeeper.billkeeperbackend.document.DocumentCreation;
-import com.billkeeper.billkeeperbackend.document.api.model.DocumentResponse;
 import com.billkeeper.billkeeperbackend.document.api.model.UpdateDocumentRequest;
 import com.billkeeper.billkeeperbackend.document.persistence.DocumentRepository;
 import com.billkeeper.billkeeperbackend.document.persistence.model.Document;
@@ -39,16 +38,14 @@ public class DocumentController {
     private final DocumentRepository documentRepository;
     private final BillRepository billRepository;
     private final AppConfig appConfig;
-    private final CreateDocumentResponse createDocumentResponse;
     private final Authentication authentication;
     private final Logger logger = LoggerFactory.getLogger(DocumentController.class);
     private final DocumentCreation documentCreation;
 
-    public DocumentController(DocumentRepository documentRepository, BillRepository billRepository, AppConfig appConfig, CreateDocumentResponse createDocumentResponse, Authentication authentication, DocumentCreation documentCreation) {
+    public DocumentController(DocumentRepository documentRepository, BillRepository billRepository, AppConfig appConfig, Authentication authentication, DocumentCreation documentCreation) {
         this.documentRepository = documentRepository;
         this.billRepository = billRepository;
         this.appConfig = appConfig;
-        this.createDocumentResponse = createDocumentResponse;
         this.authentication = authentication;
         this.documentCreation = documentCreation;
     }
@@ -133,14 +130,5 @@ public class DocumentController {
         AccessManager.checkIfUserCanAccessDocumentOrThrowException(user, document);
         document.setActive(false);
         documentRepository.save(document);
-    }
-
-    @GetMapping("/documents/orphans")
-    public List<DocumentResponse> getAllOrphansDocuments(JwtAuthenticationToken token) {
-        User user = authentication.getCurrentUserFromToken(token);
-        return documentRepository.findByBillIdNullAndActiveTrue(user)
-                .stream()
-                .map(createDocumentResponse::create)
-                .toList();
     }
 }
