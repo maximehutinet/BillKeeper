@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.billkeeper</groupId>
     <artifactId>billkeeper-backend</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <name>billkeeper-backend</name>
     <description>billkeeper-backend</description>
     <url/>
