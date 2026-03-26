@@ -10,7 +10,6 @@ import {BillsListPageComponent} from './front/pages/bills/bills-list-page/bills-
 import {BillDetailPageComponent} from './front/pages/bills/bill-detail-page/bill-detail-page.component';
 import {SettingsPageComponent} from './front/pages/settings/settings-page/settings-page.component';
 import {StatsPageComponent} from './front/pages/stats/stats-page/stats-page.component';
-import {DocumentListPageComponent} from './front/pages/documents/document-list-page/document-list-page.component';
 import {
   EditSubmissionPageComponent
 } from './front/pages/submissions/edit-submission-page/edit-submission-page.component';
@@ -29,7 +28,6 @@ export const routes: Routes = [
   {path: 'submissions/:submissionId/edit', component: EditSubmissionPageComponent, canActivate: [canActivate]},
   {path: 'settings', component: SettingsPageComponent, canActivate: [canActivate]},
   {path: 'stats', component: StatsPageComponent, canActivate: [canActivate]},
-  {path: 'documents', component: DocumentListPageComponent, canActivate: [canActivate]},
   {path: 'profile', component: UserProfilePageComponent, canActivate: [canActivate]},
   {path: 'invitation/family/:invitationId', component: AcceptFamilyInvitationPageComponent, canActivate: [canActivate]},
   {path: "**", redirectTo: ''}
