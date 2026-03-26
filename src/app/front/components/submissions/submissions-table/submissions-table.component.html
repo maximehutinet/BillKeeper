@@ -18,8 +18,8 @@
       </td>
       <td [routerLink]="'/submissions/' + row.submission.id">{{ row.submission.dateTime | date: 'longDate' }}</td>
       <td [routerLink]="'/submissions/' + row.submission.id">
-        <app-value-loading-or-ns [value]="row.submission.eclaimId" [loading]="false">
-          {{ row.submission.eclaimId }}
+        <app-value-loading-or-ns [value]="row.submission.eClaimId" [loading]="false">
+          {{ row.submission.eClaimId }}
         </app-value-loading-or-ns>
       </td>
       <td [routerLink]="'/submissions/' + row.submission.id">{{ row.submission.name }}</td>
