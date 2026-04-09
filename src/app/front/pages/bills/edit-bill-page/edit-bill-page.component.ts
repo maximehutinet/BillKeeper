@@ -23,7 +23,7 @@ import {
   TopBarWithBackButtonComponent
 } from '../../../components/layout/top-bar-with-back-button/top-bar-with-back-button.component';
 import {AutoComplete, AutoCompleteCompleteEvent} from 'primeng/autocomplete';
-import {billStatusToString} from '../../../../services/utils';
+import {billStatusToString, parseDateToDayMonthYear, parseDayMonthYearDate} from '../../../../services/utils';
 import {Select} from 'primeng/select';
 
 @Component({
@@ -116,9 +116,10 @@ export class EditBillPageComponent {
   }
 
   private buildForm() {
+    const serviceDateTime = this.bill.serviceDateTime ? parseDateToDayMonthYear(new Date(this.bill.serviceDateTime)) : parseDateToDayMonthYear(new Date());
     this.form = new FormGroup({
       name: new FormControl(this.bill.name),
-      serviceDateTime: new FormControl(this.bill.serviceDateTime),
+      serviceDateTime: new FormControl(serviceDateTime),
       amount: new FormControl(this.bill.amount),
       provider: new FormControl(this.bill.provider),
       beneficiary: new FormControl(this.bill.beneficiary)
@@ -132,7 +133,7 @@ export class EditBillPageComponent {
     try {
       const updatedBill: Bill = {
         name: this.form.value.name,
-        serviceDateTime: this.form.value.serviceDateTime ? new Date(this.form.value.serviceDateTime) : undefined,
+        serviceDateTime: this.form.value.serviceDateTime ? parseDayMonthYearDate(this.form.value.serviceDateTime) : undefined,
         amount: this.form.value.amount,
         currency: <Currency> this.billCurrency?.value,
         paidDateTime: this.form.value.paidDateTime ? new Date(this.form.value.paidDateTime) : undefined,

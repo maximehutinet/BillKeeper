@@ -98,3 +98,17 @@ export function loadEnvironment() {
   } catch (error) { }
   return { keycloakUrl, keycloakRealm, keycloakClientId, serverUrl };
 }
+
+export function parseDayMonthYearDate(date: string): Date {
+  const [day, month, year] = date
+    .split('/')
+    .map(Number);
+  return new Date(Date.UTC(year, month - 1, day));
+}
+
+export function parseDateToDayMonthYear(date: Date): string {
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const year = date.getUTCFullYear();
+  return `${day}/${month}/${year}`;
+}

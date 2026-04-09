@@ -7,9 +7,14 @@
     justify-content: space-between;
     align-items: center;
     width: 15rem;
+    background-color: var(--app-white-color);
+    padding: 0.7rem;
+    border-radius: 1rem;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.02), 0 0 2px rgba(0, 0, 0, 0.05), 0 1px 4px rgba(0, 0, 0, 0.08);
+    font-size: var(--app-comment-datetime-font-size);
 
     .round-button {
-      padding: 1rem;
+      padding: 0.8rem;
       border-radius: 50%;
       cursor: pointer;
 

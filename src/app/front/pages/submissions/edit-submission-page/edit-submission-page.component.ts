@@ -62,7 +62,7 @@ export class EditSubmissionPageComponent {
   private buildForm() {
     this.form = new FormGroup({
       name: new FormControl(this.submission.name),
-      eClaimId: new FormControl(this.submission.eclaimId)
+      eClaimId: new FormControl(this.submission.eClaimId)
     });
   }
 

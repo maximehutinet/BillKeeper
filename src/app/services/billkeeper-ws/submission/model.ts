@@ -10,7 +10,7 @@ export interface InsuranceSubmission {
   id?: string;
   dateTime?: Date;
   name?: string;
-  eclaimId?: string;
+  eClaimId?: string;
   status?: SubmissionStatus;
   user?: User;
 }

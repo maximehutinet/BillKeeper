@@ -79,7 +79,7 @@ export class SubmissionsListPageComponent {
       this.filteredSubmissions = this.submissions;
     }
     this.filteredSubmissions = this.submissions
-      .filter(submission => submission.eclaimId?.includes(this.searchKeyword!) || submission.name?.includes(this.searchKeyword!));
+      .filter(submission => submission.eClaimId?.includes(this.searchKeyword!) || submission.name?.includes(this.searchKeyword!));
   }
 
   async onMarkSubmissionAsPaid(submission: InsuranceSubmissionWithBills) {

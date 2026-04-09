@@ -2,7 +2,7 @@
   <ng-container main-content>
     <app-top-bar-with-back-button>
       <div right class="buttons-wrapper">
-        @if (!submission.eclaimId) {
+        @if (!submission.eClaimId) {
           <p-button (click)="showAddEclaimIdDialog = true"
                     label="Add eClaimId"
                     icon="pi pi-plus"
@@ -32,7 +32,7 @@
 
         <p-button severity="info" icon="pi pi-pencil" [routerLink]="'/submissions/' + submission.id + '/edit'"></p-button>
 
-        @if (!submission.eclaimId) {
+        @if (!submission.eClaimId) {
           <p-button severity="danger" icon="pi pi-trash" (onClick)="onDeleteSubmission()"></p-button>
         }
       </div>
@@ -59,12 +59,12 @@
         <div class="card-entry">
           <label>eClaimId: </label>
           <span>
-            <app-value-loading-or-ns [value]="submission.eclaimId" [loading]="false">
-              {{ submission.eclaimId }}
+            <app-value-loading-or-ns [value]="submission.eClaimId" [loading]="false">
+              {{ submission.eClaimId }}
             </app-value-loading-or-ns>
           </span>
-          @if (submission.eclaimId) {
-            <app-copy-to-clipboard-icon [value]="submission.eclaimId"></app-copy-to-clipboard-icon>
+          @if (submission.eClaimId) {
+            <app-copy-to-clipboard-icon [value]="submission.eClaimId"></app-copy-to-clipboard-icon>
           }
         </div>
         <div class="card-entry">

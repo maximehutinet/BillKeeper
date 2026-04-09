@@ -84,7 +84,7 @@ export class SubmissionsTableComponent {
         routerLink: '/submissions/' + submission.id + '/edit'
       }
     ];
-    if (!submission.eclaimId) {
+    if (!submission.eClaimId) {
       items.push({
         label: 'Add eclaimId',
         icon: 'pi pi-plus',
@@ -112,7 +112,7 @@ export class SubmissionsTableComponent {
         command: () => this.onMarkAsReimbursed.emit(submission)
       });
     }
-    if (!submission.eclaimId) {
+    if (!submission.eClaimId) {
       items.push({
         label: 'Delete',
         icon: 'pi pi-trash',
