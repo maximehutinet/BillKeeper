@@ -1,19 +1,20 @@
 import {Component, Input} from '@angular/core';
 import {BillDocument} from '../../../../services/billkeeper-ws/document/model';
-import {PDFSource, PdfViewerModule} from 'ng2-pdf-viewer';
 import {AuthService} from '../../../../services/auth/auth.service';
+import {NgxExtendedPdfViewerModule} from 'ngx-extended-pdf-viewer';
 
 @Component({
   selector: 'app-document-pdf-viewer',
   imports: [
-    PdfViewerModule
+    NgxExtendedPdfViewerModule
   ],
   templateUrl: './document-pdf-viewer.component.html',
   styleUrl: './document-pdf-viewer.component.scss'
 })
 export class DocumentPdfViewerComponent {
 
-  src: PDFSource = {};
+  url: string | undefined;
+  token: string | undefined;
   _document: BillDocument = {};
 
   @Input()
@@ -25,11 +26,9 @@ export class DocumentPdfViewerComponent {
   constructor(private authService: AuthService) { }
 
   async setSource() {
+    this.url = this._document.url;
     const token = await this.authService.getToken();
-    this.src = {
-      url: this._document.url,
-      httpHeaders: {Authorization : `Bearer ${token}`},
-      withCredentials: true
-    }
+    this.token = token ? 'Bearer ' + token : undefined;
   }
+
 }

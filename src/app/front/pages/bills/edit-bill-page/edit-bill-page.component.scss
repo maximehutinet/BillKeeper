@@ -8,4 +8,9 @@
 #edit-bill-wrapper {
   display: flex;
   justify-content: space-between;
+  gap: 5rem;
+
+  p-fieldset {
+    flex-grow: 1;
+  }
 }

@@ -22,7 +22,10 @@
                 <p-button severity="danger" icon="pi pi-trash" (onClick)="onDeleteDocument.emit(document)"></p-button>
               </div>
             }
-            <app-document-pdf-viewer [document]="document"></app-document-pdf-viewer>
+
+            @if (document.id === activeDocumentId) {
+              <app-document-pdf-viewer [document]="document" [style.display]="document.id === activeDocumentId ? 'block' : 'none'"></app-document-pdf-viewer>
+            }
           </p-tabpanel>
         }
       }
