@@ -52,6 +52,15 @@
       [(showDialog)]="showSubmissionNameDialog"
       (onValidate)="onValidateNewSubmissionName($event)"
     ></app-edit-name-dialog>
+
+    @if (billTargetedByAction) {
+      <app-bill-reimbursement-dialog
+        [(showDialog)]="showAddReimbursedAmountDialog"
+        [bills]="[billTargetedByAction]"
+        (onValidateBillsReimbursement)="onValidateBillReimbursement($event[0])"
+      ></app-bill-reimbursement-dialog>
+    }
+
   </ng-container>
 </app-main-layout>
 

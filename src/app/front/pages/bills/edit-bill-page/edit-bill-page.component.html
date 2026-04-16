@@ -58,13 +58,31 @@
           @if (this.form.value.paidDateTime) {
             <div class="inline-fields-wrapper">
               <p-floatlabel>
-                <p-inputmask id="bill-paiddatetime-input" mask="9999/99/99" slotChar="yyyy/mm/dd" formControlName="paidDateTime" />
+                <p-inputmask id="bill-paiddatetime-input" mask="99/99/9999" slotChar="dd/mm/yyyy" formControlName="paidDateTime" />
                 <label for="bill-paiddatetime-input">Paid on</label>
               </p-floatlabel>
 
               <p-button (onClick)="onDeletePaidOn()" severity="danger" icon="pi pi-times"></p-button>
             </div>
           }
+
+          <div class="inline-fields-wrapper">
+            @if (this.form.value.reimbursementDateTime && this.form.value.reimbursedAmount) {
+              <p-floatlabel>
+                <p-inputnumber inputId="bill-reimbursedamount-input" mode="currency" currency="USD" locale="en-US" formControlName="reimbursedAmount" />
+                <label for="bill-amount-input">Reimbursed</label>
+              </p-floatlabel>
+
+              <div class="inline-fields-wrapper">
+                <p-floatlabel>
+                  <p-inputmask id="bill-reimbursementdatetime-input" mask="99/99/9999" slotChar="dd/mm/yyyy" formControlName="reimbursementDateTime" />
+                  <label for="bill-reimbursementdatetime-input">On</label>
+                </p-floatlabel>
+
+                <p-button (onClick)="onDeleteReimbursedOn()" severity="danger" icon="pi pi-times"></p-button>
+              </div>
+            }
+          </div>
 
           <p-floatlabel>
             <p-select

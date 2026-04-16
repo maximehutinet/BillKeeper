@@ -15,6 +15,7 @@
       <th pSortableColumn="bill.beneficiary.firstname">Beneficiary
         <p-sortIcon field="bill.beneficiary.firstname"/>
       </th>
+      <th>Reimbursed</th>
       <th pSortableColumn="bill.status">Status
         <p-sortIcon field="bill.status"/>
       </th>
@@ -47,6 +48,11 @@
       <td [routerLink]="'/bill/' + row.bill.id" [queryParams]="submissionViewParamActive ? { submissionView: true } : null">
         <app-value-loading-or-ns [value]="row.bill.beneficiary?.firstname" [loading]="row.bill.parsingJobStatus === ParsingJobStatus.IN_PROGRESS">
           {{ row.bill.beneficiary?.firstname }}
+        </app-value-loading-or-ns>
+      </td>
+      <td>
+        <app-value-loading-or-ns [value]="row.bill.reimbursedAmount">
+          {{ row.bill.reimbursedAmount | currency:'USD' }}
         </app-value-loading-or-ns>
       </td>
       <td [routerLink]="'/bill/' + row.bill.id" [queryParams]="submissionViewParamActive ? { submissionView: true } : null">

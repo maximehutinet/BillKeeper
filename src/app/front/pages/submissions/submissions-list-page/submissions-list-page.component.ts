@@ -21,6 +21,10 @@ import {EditNameDialogComponent} from '../../../components/commun/edit-name-dial
 import {
   SubmissionsFilterComponent
 } from '../../../components/submissions/submissions-filter/submissions-filter.component';
+import {
+  BillReimbursementDialogComponent
+} from '../../../components/bills/bill-reimbursement-dialog/bill-reimbursement-dialog.component';
+import {Bill} from '../../../../services/billkeeper-ws/bill/model';
 
 @Component({
   selector: 'app-submissions-list-page',
@@ -35,7 +39,8 @@ import {
     InputText,
     FormsModule,
     EditNameDialogComponent,
-    SubmissionsFilterComponent
+    SubmissionsFilterComponent,
+    BillReimbursementDialogComponent
   ],
   templateUrl: './submissions-list-page.component.html',
   styleUrl: './submissions-list-page.component.scss'
@@ -47,6 +52,8 @@ export class SubmissionsListPageComponent {
   searchKeyword: string | undefined;
   showAddEclaimIdDialog = false;
   editedSubmission: InsuranceSubmissionWithBills | undefined;
+  dialogReimbursedBills: Bill[] = [];
+  showAddReimbursedAmountDialog: boolean = false;
 
 
   constructor(
@@ -79,7 +86,7 @@ export class SubmissionsListPageComponent {
       this.filteredSubmissions = this.submissions;
     }
     this.filteredSubmissions = this.submissions
-      .filter(submission => submission.eClaimId?.includes(this.searchKeyword!) || submission.name?.includes(this.searchKeyword!));
+      .filter(submission => submission.eClaimId?.includes(this.searchKeyword!) || submission.name?.toLowerCase().includes(this.searchKeyword!.toLowerCase()));
   }
 
   async onMarkSubmissionAsPaid(submission: InsuranceSubmissionWithBills) {
@@ -93,10 +100,10 @@ export class SubmissionsListPageComponent {
     }
   }
 
-  async onMarkSubmissionAsReimbursementInProgress(submission: InsuranceSubmissionWithBills) {
+  async onMarkSubmissionAsReimbursed(submission: InsuranceSubmissionWithBills) {
     try {
       for (const bill of submission.bills) {
-        await this.billWsService.markBillAsReimbursementInProgress(bill)
+        await this.billWsService.markBillAsReimbursed(bill)
       }
       await this.loadSubmissions();
     } catch (e) {
@@ -104,10 +111,15 @@ export class SubmissionsListPageComponent {
     }
   }
 
-  async onMarkSubmissionAsReimbursed(submission: InsuranceSubmissionWithBills) {
+  async onMarkSubmissionAsReimbursementInProgress(submission: InsuranceSubmissionWithBills) {
+    this.dialogReimbursedBills = submission.bills;
+    this.showAddReimbursedAmountDialog = true;
+  }
+
+  async onValidateBillsReimbursement(bills: Bill[]) {
     try {
-      for (const bill of submission.bills) {
-        await this.billWsService.markBillAsReimbursed(bill)
+      for (const bill of bills) {
+        await this.billWsService.markBillAsReimbursementInProgress(bill);
       }
       await this.loadSubmissions();
     } catch (e) {

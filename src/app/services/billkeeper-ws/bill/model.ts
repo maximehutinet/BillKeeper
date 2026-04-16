@@ -15,6 +15,8 @@ export interface Bill {
   beneficiary?: Beneficiary;
   submissionId?: string;
   parsingJobStatus?: ParsingJobStatus;
+  reimbursementDateTime?: Date;
+  reimbursedAmount?: number;
 }
 
 export enum Currency {

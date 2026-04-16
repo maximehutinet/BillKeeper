@@ -43,6 +43,8 @@ export class BillWsService {
     const requestBody: Bill = {
       serviceDateTime: bill.serviceDateTime,
       paidDateTime: bill.paidDateTime,
+      reimbursementDateTime: bill.reimbursementDateTime,
+      reimbursedAmount: bill.reimbursedAmount,
       status: BillStatus.REIMBURSED
     }
     return this.httpWsService.post(`/bills/${bill.id}`, requestBody);
@@ -52,6 +54,8 @@ export class BillWsService {
     const requestBody: Bill = {
       serviceDateTime: bill.serviceDateTime,
       paidDateTime: bill.paidDateTime,
+      reimbursementDateTime: bill.reimbursementDateTime,
+      reimbursedAmount: bill.reimbursedAmount,
       status: BillStatus.REIMBURSEMENT_IN_PROGRESS
     }
     return this.httpWsService.post(`/bills/${bill.id}`, requestBody);

@@ -56,6 +56,13 @@
           </div>
         }
 
+        @if (submission.reimbursedAmount) {
+          <div class="card-entry">
+            <label>Reimbursed: </label>
+            <span>{{ submission.reimbursedAmount | currency: 'USD' }}</span>
+          </div>
+        }
+
         <div class="card-entry">
           <label>eClaimId: </label>
           <span>

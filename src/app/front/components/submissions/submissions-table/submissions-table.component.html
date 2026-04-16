@@ -6,6 +6,7 @@
       <th>eClaimId</th>
       <th>Name</th>
       <th>Amount</th>
+      <th>Reimbursed</th>
       <th>Status</th>
       <th></th>
     </tr>
@@ -26,6 +27,11 @@
       <td [routerLink]="'/submissions/' + row.submission.id">
         <app-value-loading-or-ns [value]="row.submission.totalUsdAmount" [loading]="false">
           {{ row.submission.totalUsdAmount | currency }}
+        </app-value-loading-or-ns>
+      </td>
+      <td>
+        <app-value-loading-or-ns [value]="row.submission.reimbursedAmount" [loading]="false">
+          {{ row.submission.reimbursedAmount | currency: 'USD' }}
         </app-value-loading-or-ns>
       </td>
       <td>

@@ -43,6 +43,9 @@ import {
   NavigationLink
 } from '../../../components/commun/left-right-navigation-arrows/model';
 import {combineLatest} from 'rxjs';
+import {
+  BillReimbursementDialogComponent
+} from '../../../components/bills/bill-reimbursement-dialog/bill-reimbursement-dialog.component';
 
 @Component({
   selector: 'app-bill-detail-page',
@@ -65,7 +68,8 @@ import {combineLatest} from 'rxjs';
     CopyToClipboardIconComponent,
     ValueLoadingOrNsComponent,
     AddCommentTextareaComponent,
-    LeftRightNavigationArrowsComponent
+    LeftRightNavigationArrowsComponent,
+    BillReimbursementDialogComponent
   ],
   templateUrl: './bill-detail-page.component.html',
   styleUrl: './bill-detail-page.component.scss'
@@ -90,6 +94,7 @@ export class BillDetailPageComponent {
   submissionNavigation: LeftRightNavigation | undefined;
   navigationIndex: NavigationIndex | undefined;
   validateLink: NavigationLink | undefined;
+  showAddReimbursedAmountDialog: boolean = false;
 
   constructor(
     private billWsService: BillWsService,
@@ -209,8 +214,14 @@ export class BillDetailPageComponent {
   }
 
   async onMarkAsReimbursementInProgress() {
+    this.showAddReimbursedAmountDialog = true;
+  }
+
+  async onValidateBillReimbursement(updateBill: Bill) {
     try {
       await this.layoutService.withPageLoading(async () => {
+        this.bill.reimbursementDateTime = updateBill.reimbursementDateTime;
+        this.bill.reimbursedAmount = updateBill.reimbursedAmount;
         await this.billWsService.markBillAsReimbursementInProgress(this.bill);
         this.bill = await this.billWsService.getBill(this.bill.id!);
       });

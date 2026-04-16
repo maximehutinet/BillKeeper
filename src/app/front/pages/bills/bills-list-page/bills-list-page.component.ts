@@ -15,6 +15,9 @@ import {CreateUpdateInsuranceSubmissionRequest} from '../../../../services/billk
 import {Subject} from 'rxjs';
 import {TopBarComponent} from '../../../components/layout/top-bar/top-bar.component';
 import {ValidationService} from '../../../../services/validation.service';
+import {
+  BillReimbursementDialogComponent
+} from '../../../components/bills/bill-reimbursement-dialog/bill-reimbursement-dialog.component';
 
 @Component({
   selector: 'app-bills-list-page',
@@ -24,7 +27,8 @@ import {ValidationService} from '../../../../services/validation.service';
     Button,
     EditNameDialogComponent,
     MainLayoutComponent,
-    TopBarComponent
+    TopBarComponent,
+    BillReimbursementDialogComponent
   ],
   templateUrl: './bills-list-page.component.html',
   styleUrl: './bills-list-page.component.scss'
@@ -39,6 +43,8 @@ export class BillsListPageComponent {
   createNewSubmissionButtonVisible = false;
   resetFiltersSubject: Subject<void> = new Subject<void>();
   private dragCounter = 0;
+  showAddReimbursedAmountDialog: boolean = false;
+  billTargetedByAction?: Bill = undefined;
 
   constructor(
     private billWsService: BillWsService,
@@ -128,10 +134,24 @@ export class BillsListPageComponent {
     }
   }
 
-  async onMarkAsReimbursementInProgress(bill: Bill) {
+  onMarkAsReimbursementInProgress(bill: Bill) {
+    this.billTargetedByAction = bill;
+    this.showAddReimbursedAmountDialog = true;
+  }
+
+  async onValidateBillReimbursement(updatedBill: Bill) {
     try {
-      await this.billWsService.markBillAsReimbursementInProgress(bill);
-      await this.loadAllBills();
+      await this.layoutService.withPageLoading(async () => {
+        if (!this.billTargetedByAction) { return; }
+
+        const billToUpdate: Bill = {
+          ...this.billTargetedByAction,
+          reimbursementDateTime: updatedBill.reimbursementDateTime,
+          reimbursedAmount: updatedBill.reimbursedAmount
+        };
+        await this.billWsService.markBillAsReimbursementInProgress(billToUpdate);
+        await this.loadAllBills();
+      });
     } catch (e) {
       this.toastMessageService.displayError(e);
     }

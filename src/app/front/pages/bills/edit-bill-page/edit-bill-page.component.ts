@@ -122,10 +122,16 @@ export class EditBillPageComponent {
       serviceDateTime: new FormControl(serviceDateTime),
       amount: new FormControl(this.bill.amount),
       provider: new FormControl(this.bill.provider),
-      beneficiary: new FormControl(this.bill.beneficiary)
+      beneficiary: new FormControl(this.bill.beneficiary),
     });
     if (this.bill.paidDateTime) {
-      this.form.addControl("paidDateTime", new FormControl(this.bill.paidDateTime));
+      this.form.addControl("paidDateTime", new FormControl(parseDateToDayMonthYear(new Date(this.bill.paidDateTime))));
+    }
+    if (this.bill.reimbursementDateTime) {
+      this.form.addControl("reimbursementDateTime", new FormControl(parseDateToDayMonthYear(new Date(this.bill.reimbursementDateTime))));
+    }
+    if (this.bill.reimbursedAmount) {
+      this.form.addControl("reimbursedAmount", new FormControl(this.bill.reimbursedAmount));
     }
   }
 
@@ -134,9 +140,11 @@ export class EditBillPageComponent {
       const updatedBill: Bill = {
         name: this.form.value.name,
         serviceDateTime: this.form.value.serviceDateTime ? parseDayMonthYearDate(this.form.value.serviceDateTime) : undefined,
+        reimbursementDateTime: this.form.value.reimbursementDateTime ? parseDayMonthYearDate(this.form.value.reimbursementDateTime) : undefined,
+        reimbursedAmount: this.form.value.reimbursedAmount,
         amount: this.form.value.amount,
         currency: <Currency> this.billCurrency?.value,
-        paidDateTime: this.form.value.paidDateTime ? new Date(this.form.value.paidDateTime) : undefined,
+        paidDateTime: this.form.value.paidDateTime ? parseDayMonthYearDate(this.form.value.paidDateTime) : undefined,
         provider: this.form.value.provider,
         status: <BillStatus> this.billStatus?.value,
         beneficiary: this.form.value.beneficiary
@@ -150,6 +158,11 @@ export class EditBillPageComponent {
 
   onDeletePaidOn() {
     this.form.value.paidDateTime = undefined;
+  }
+
+  onDeleteReimbursedOn() {
+    this.form.value.reimbursementDateTime = undefined;
+    this.form.value.reimbursedAmount = undefined;
   }
 
   async onProviderAutocompleteChange(event: AutoCompleteCompleteEvent) {

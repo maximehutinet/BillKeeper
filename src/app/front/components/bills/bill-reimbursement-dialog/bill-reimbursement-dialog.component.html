@@ -1,0 +1,50 @@
+<p-dialog header="Reimbursement" [modal]="true" [visible]="showDialog" (visibleChange)="showDialogChange.emit($event)">
+  @if (form) {
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <p-table [value]="billsArray.controls" formArrayName="bills">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Name</th>
+            <th>Amount</th>
+            <th>Paid on</th>
+            <th>Reimbursed Amount</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-billGroup let-i="rowIndex">
+          <tr [formGroupName]="i">
+            <td>
+              <app-value-loading-or-ns [value]="billGroup.value.name">
+                {{ billGroup.value.name }}
+              </app-value-loading-or-ns>
+            </td>
+            <td>
+              <app-value-loading-or-ns [value]="billGroup.value.amount">
+                {{ billGroup.value.amount | currency: billGroup.value.currency }}
+              </app-value-loading-or-ns>
+            </td>
+            <td>
+              <p-inputmask
+                id="bill-reimbursementdatetime-input-{{ i }}"
+                mask="99/99/9999"
+                slotChar="dd/mm/yyyy"
+                formControlName="reimbursementDateTime"
+              />
+            </td>
+            <td>
+              <p-inputnumber
+                id="bill-reimbursedamount-input-{{ i }}"
+                mode="currency"
+                currency="USD"
+                locale="en-US"
+                formControlName="reimbursedAmount"
+              />
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+
+      <p-button id="submit-button" type="submit" severity="success" label="Ok" [disabled]="!form.valid"/>
+    </form>
+  }
+</p-dialog>

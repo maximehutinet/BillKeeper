@@ -36,5 +36,11 @@
       [(showDialog)]="showAddEclaimIdDialog"
       (onValidate)="onValidateEclaimIdValue($event)"
     ></app-edit-name-dialog>
+
+    <app-bill-reimbursement-dialog
+      [(showDialog)]="showAddReimbursedAmountDialog"
+      [bills]="dialogReimbursedBills"
+      (onValidateBillsReimbursement)="onValidateBillsReimbursement($event)"
+    ></app-bill-reimbursement-dialog>
   </ng-container>
 </app-main-layout>

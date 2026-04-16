@@ -18,6 +18,7 @@ export interface InsuranceSubmission {
 export interface InsuranceSubmissionWithBills extends InsuranceSubmission {
   bills: Bill[];
   totalUsdAmount?: number;
+  reimbursedAmount?: number;
 }
 
 export interface CreateUpdateInsuranceSubmissionRequest {

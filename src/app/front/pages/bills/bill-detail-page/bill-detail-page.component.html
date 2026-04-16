@@ -50,6 +50,14 @@
       </div>
     </app-top-bar-with-back-button>
 
+    @if (bill.status?.valueOf() === BillStatus.FILED.valueOf()) {
+      <app-bill-reimbursement-dialog
+        [(showDialog)]="showAddReimbursedAmountDialog"
+        [bills]="[bill]"
+        (onValidateBillsReimbursement)="onValidateBillReimbursement($event[0])"
+      ></app-bill-reimbursement-dialog>
+    }
+
     <p-fieldset legend="Bill detail" [toggleable]="true">
       <div class="card-body">
         <div class="card-entry">
@@ -94,6 +102,13 @@
           <label>Status: </label>
           <span><app-bill-status-badge [bill]="bill"></app-bill-status-badge></span>
         </div>
+
+        @if (bill.reimbursementDateTime && bill.reimbursedAmount) {
+          <div class="card-entry">
+            <label>Reimbursed: </label>
+            <span>{{ bill.reimbursedAmount | currency: 'USD' }} on {{ bill.reimbursementDateTime | date: 'longDate' }}</span>
+          </div>
+        }
 
         @if (bill.paidDateTime) {
           <div class="card-entry">
