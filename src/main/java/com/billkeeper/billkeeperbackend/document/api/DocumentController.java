@@ -3,7 +3,7 @@ package com.billkeeper.billkeeperbackend.document.api;
 import com.billkeeper.billkeeperbackend.AppConfig;
 import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
-import com.billkeeper.billkeeperbackend.document.DocumentCreation;
+import com.billkeeper.billkeeperbackend.document.DocumentService;
 import com.billkeeper.billkeeperbackend.document.api.model.UpdateDocumentRequest;
 import com.billkeeper.billkeeperbackend.document.persistence.DocumentRepository;
 import com.billkeeper.billkeeperbackend.document.persistence.model.Document;
@@ -40,14 +40,14 @@ public class DocumentController {
     private final AppConfig appConfig;
     private final Authentication authentication;
     private final Logger logger = LoggerFactory.getLogger(DocumentController.class);
-    private final DocumentCreation documentCreation;
+    private final DocumentService documentService;
 
-    public DocumentController(DocumentRepository documentRepository, BillRepository billRepository, AppConfig appConfig, Authentication authentication, DocumentCreation documentCreation) {
+    public DocumentController(DocumentRepository documentRepository, BillRepository billRepository, AppConfig appConfig, Authentication authentication, DocumentService documentService) {
         this.documentRepository = documentRepository;
         this.billRepository = billRepository;
         this.appConfig = appConfig;
         this.authentication = authentication;
-        this.documentCreation = documentCreation;
+        this.documentService = documentService;
     }
 
     @PostMapping("/documents")
@@ -57,7 +57,7 @@ public class DocumentController {
             String filename = UUID.randomUUID() + ".pdf";
             Path destination = Paths.get(appConfig.getDocumentsDirectory()).resolve(filename);
             multipartFile.transferTo(destination);
-            documentCreation.create(filename, null, user);
+            documentService.create(filename, null, user);
         } catch (IOException | RuntimeException e) {
             logger.error(e.getMessage());
             throw new InternalServerErrorException("Error while uploading file");
