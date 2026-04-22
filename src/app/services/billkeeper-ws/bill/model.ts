@@ -40,4 +40,8 @@ export enum ParsingJobStatus {
   FAILED = "FAILED"
 }
 
+export interface UpdateBillReimbursementRequest {
+  reimbursementDateTime?: Date,
+  reimbursedAmount?: number,
+}
 

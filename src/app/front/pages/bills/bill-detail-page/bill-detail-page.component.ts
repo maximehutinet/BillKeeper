@@ -13,7 +13,12 @@ import {FormsModule} from "@angular/forms";
 import {MainLayoutComponent} from "../../../layouts/main-layout/main-layout.component";
 import {ActivatedRoute, Router, RouterLink} from "@angular/router";
 import {Tooltip} from "primeng/tooltip";
-import {Bill, BillStatus, ParsingJobStatus} from '../../../../services/billkeeper-ws/bill/model';
+import {
+  Bill,
+  BillStatus,
+  ParsingJobStatus,
+  UpdateBillReimbursementRequest
+} from '../../../../services/billkeeper-ws/bill/model';
 import {BillDocument} from '../../../../services/billkeeper-ws/document/model';
 import {BillComment} from '../../../../services/billkeeper-ws/comment/model';
 import {BillWsService} from '../../../../services/billkeeper-ws/bill/bill-ws.service';
@@ -217,12 +222,14 @@ export class BillDetailPageComponent {
     this.showAddReimbursedAmountDialog = true;
   }
 
-  async onValidateBillReimbursement(updateBill: Bill) {
+  async onValidateBillReimbursement(updatedBill: Bill) {
     try {
       await this.layoutService.withPageLoading(async () => {
-        this.bill.reimbursementDateTime = updateBill.reimbursementDateTime;
-        this.bill.reimbursedAmount = updateBill.reimbursedAmount;
-        await this.billWsService.markBillAsReimbursementInProgress(this.bill);
+        const request: UpdateBillReimbursementRequest = {
+          reimbursedAmount: updatedBill.reimbursedAmount,
+          reimbursementDateTime: updatedBill.reimbursementDateTime
+        }
+        await this.billWsService.updateBillReimbursement(updatedBill.id!, request);
         this.bill = await this.billWsService.getBill(this.bill.id!);
       });
     } catch (e) {
@@ -233,7 +240,7 @@ export class BillDetailPageComponent {
   async onMarkAsReimbursed() {
     try {
       await this.layoutService.withPageLoading(async () => {
-        await this.billWsService.markBillAsReimbursed(this.bill);
+        await this.billWsService.updateBillStatus(this.bill, BillStatus.REIMBURSED);
         this.bill = await this.billWsService.getBill(this.bill.id!);
       });
     } catch (e) {

@@ -24,7 +24,7 @@ import {
 import {
   BillReimbursementDialogComponent
 } from '../../../components/bills/bill-reimbursement-dialog/bill-reimbursement-dialog.component';
-import {Bill} from '../../../../services/billkeeper-ws/bill/model';
+import {Bill, BillStatus, UpdateBillReimbursementRequest} from '../../../../services/billkeeper-ws/bill/model';
 
 @Component({
   selector: 'app-submissions-list-page',
@@ -103,7 +103,7 @@ export class SubmissionsListPageComponent {
   async onMarkSubmissionAsReimbursed(submission: InsuranceSubmissionWithBills) {
     try {
       for (const bill of submission.bills) {
-        await this.billWsService.markBillAsReimbursed(bill)
+        await this.billWsService.updateBillStatus(bill, BillStatus.REIMBURSED);
       }
       await this.loadSubmissions();
     } catch (e) {
@@ -119,7 +119,12 @@ export class SubmissionsListPageComponent {
   async onValidateBillsReimbursement(bills: Bill[]) {
     try {
       for (const bill of bills) {
-        await this.billWsService.markBillAsReimbursementInProgress(bill);
+        const request: UpdateBillReimbursementRequest = {
+          reimbursedAmount: bill.reimbursedAmount,
+          reimbursementDateTime: bill.reimbursementDateTime
+        }
+        await this.billWsService.updateBillReimbursement(bill.id!, request);
+        await this.billWsService.updateBillStatus(bill, BillStatus.REIMBURSEMENT_IN_PROGRESS);
       }
       await this.loadSubmissions();
     } catch (e) {

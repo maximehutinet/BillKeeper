@@ -17,7 +17,7 @@ import {
   submissionStatusBadge,
   submissionStatusToString
 } from "../../../../services/utils";
-import {Bill} from '../../../../services/billkeeper-ws/bill/model';
+import {Bill, BillStatus} from '../../../../services/billkeeper-ws/bill/model';
 import {ValidationService} from '../../../../services/validation.service';
 import {Button} from 'primeng/button';
 import {Tooltip} from 'primeng/tooltip';
@@ -125,7 +125,7 @@ export class SubmissionDetailPageComponent {
   async onMarkSubmissionAsReimbursed() {
     try {
       for (const bill of this.submission.bills) {
-        await this.billWsService.markBillAsReimbursed(bill)
+        await this.billWsService.updateBillStatus(bill, BillStatus.REIMBURSED);
       }
       await this.loadSubmission();
     } catch (e) {

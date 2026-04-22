@@ -106,9 +106,12 @@ export function parseDayMonthYearDate(date: string): Date {
   return new Date(Date.UTC(year, month - 1, day));
 }
 
-export function parseDateToDayMonthYear(date: Date): string {
-  const day = String(date.getUTCDate()).padStart(2, '0');
-  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-  const year = date.getUTCFullYear();
+export function parseDateToDayMonthYear(date: Date | string): string {
+  const dateValue = typeof date === "string" ? new Date(date) : date;
+  if (isNaN(dateValue.getTime())) throw new Error(`Invalid date: ${date}`);
+
+  const day = String(dateValue.getUTCDate()).padStart(2, '0');
+  const month = String(dateValue.getUTCMonth() + 1).padStart(2, '0');
+  const year = dateValue.getUTCFullYear();
   return `${day}/${month}/${year}`;
 }

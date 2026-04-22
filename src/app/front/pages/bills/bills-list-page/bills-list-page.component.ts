@@ -4,7 +4,7 @@ import {BillsTableComponent} from "../../../components/bills/bills-table/bills-t
 import {Button} from "primeng/button";
 import {EditNameDialogComponent} from "../../../components/commun/edit-name-dialog/edit-name-dialog.component";
 import {MainLayoutComponent} from "../../../layouts/main-layout/main-layout.component";
-import {Bill, BillStatus} from '../../../../services/billkeeper-ws/bill/model';
+import {Bill, BillStatus, UpdateBillReimbursementRequest} from '../../../../services/billkeeper-ws/bill/model';
 import {BillWsService} from '../../../../services/billkeeper-ws/bill/bill-ws.service';
 import {DocumentWsService} from '../../../../services/billkeeper-ws/document/document-ws.service';
 import {SubmissionWsService} from '../../../../services/billkeeper-ws/submission/submission-ws.service';
@@ -127,7 +127,7 @@ export class BillsListPageComponent {
 
   async onMarkAsReimbursed(bill: Bill) {
     try {
-      await this.billWsService.markBillAsReimbursed(bill);
+      await this.billWsService.updateBillStatus(bill, BillStatus.REIMBURSED);
       await this.loadAllBills();
     } catch (e) {
       this.toastMessageService.displayError(e);
@@ -142,14 +142,11 @@ export class BillsListPageComponent {
   async onValidateBillReimbursement(updatedBill: Bill) {
     try {
       await this.layoutService.withPageLoading(async () => {
-        if (!this.billTargetedByAction) { return; }
-
-        const billToUpdate: Bill = {
-          ...this.billTargetedByAction,
-          reimbursementDateTime: updatedBill.reimbursementDateTime,
-          reimbursedAmount: updatedBill.reimbursedAmount
-        };
-        await this.billWsService.markBillAsReimbursementInProgress(billToUpdate);
+        const request: UpdateBillReimbursementRequest = {
+          reimbursedAmount: updatedBill.reimbursedAmount,
+          reimbursementDateTime: updatedBill.reimbursementDateTime
+        }
+        await this.billWsService.updateBillReimbursement(updatedBill.id!, request);
         await this.loadAllBills();
       });
     } catch (e) {
@@ -198,7 +195,9 @@ export class BillsListPageComponent {
   }
 
   onBillFilterChange(bills: Bill[]) {
-    this.filteredBills = bills;
+    setTimeout(() => {
+      this.filteredBills = bills;
+    });
   }
 
   async onDrop(event: any) {

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpWsService} from '../http-ws.service';
-import {Bill, BillStatus} from './model';
+import {Bill, BillStatus, UpdateBillReimbursementRequest} from './model';
 import {BillDocument} from '../document/model';
 
 @Injectable({
@@ -39,26 +39,12 @@ export class BillWsService {
     return this.httpWsService.post(`/bills/${billId}`, updatedBill);
   }
 
-  async markBillAsReimbursed(bill: Bill): Promise<void> {
-    const requestBody: Bill = {
-      serviceDateTime: bill.serviceDateTime,
-      paidDateTime: bill.paidDateTime,
-      reimbursementDateTime: bill.reimbursementDateTime,
-      reimbursedAmount: bill.reimbursedAmount,
-      status: BillStatus.REIMBURSED
-    }
-    return this.httpWsService.post(`/bills/${bill.id}`, requestBody);
+  async updateBillStatus(bill: Bill, status: BillStatus) {
+    return this.httpWsService.post(`/bills/${bill.id}/status`, {status: status});
   }
 
-  async markBillAsReimbursementInProgress(bill: Bill): Promise<void> {
-    const requestBody: Bill = {
-      serviceDateTime: bill.serviceDateTime,
-      paidDateTime: bill.paidDateTime,
-      reimbursementDateTime: bill.reimbursementDateTime,
-      reimbursedAmount: bill.reimbursedAmount,
-      status: BillStatus.REIMBURSEMENT_IN_PROGRESS
-    }
-    return this.httpWsService.post(`/bills/${bill.id}`, requestBody);
+  async updateBillReimbursement(billId: string, request: UpdateBillReimbursementRequest): Promise<void> {
+    return this.httpWsService.post(`/bills/${billId}/reimbursement`, request);
   }
 
   async markBillAsPaid(bill: Bill): Promise<void> {

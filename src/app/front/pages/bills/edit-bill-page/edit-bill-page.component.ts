@@ -1,5 +1,10 @@
 import {Component} from '@angular/core';
-import {Bill, BillStatus, Currency} from '../../../../services/billkeeper-ws/bill/model';
+import {
+  Bill,
+  BillStatus,
+  Currency,
+  UpdateBillReimbursementRequest
+} from '../../../../services/billkeeper-ws/bill/model';
 import {MainLayoutComponent} from '../../../layouts/main-layout/main-layout.component';
 import {Button} from 'primeng/button';
 import {ActivatedRoute} from '@angular/router';
@@ -149,6 +154,15 @@ export class EditBillPageComponent {
         status: <BillStatus> this.billStatus?.value,
         beneficiary: this.form.value.beneficiary
       };
+      const updatedReimbursementDateTime = parseDayMonthYearDate(this.form.value.reimbursementDateTime);
+      const updatedReimbursementAmount = this.form.value.reimbursedAmount;
+      if (updatedReimbursementDateTime != this.bill.reimbursementDateTime || updatedReimbursementAmount != this.bill.reimbursedAmount) {
+        const updateReimbursementRequest: UpdateBillReimbursementRequest = {
+          reimbursedAmount: updatedReimbursementAmount,
+          reimbursementDateTime: updatedReimbursementDateTime
+        }
+        await this.billWsService.updateBillReimbursement(this.bill.id!, updateReimbursementRequest);
+      }
       await this.billWsService.updateBill(this.bill.id!, updatedBill);
       this.location.back();
     } catch (e) {
