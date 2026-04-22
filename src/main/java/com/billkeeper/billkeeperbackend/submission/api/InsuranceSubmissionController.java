@@ -135,9 +135,18 @@ public class InsuranceSubmissionController {
                 .eClaimId(submission.getEClaimId())
                 .bills(billResponses)
                 .totalUsdAmount(billUtils.getTotalBillsUsdAmount(bills))
+                .reimbursedAmount(getTotalReimbursed(bills))
                 .status(submission.getStatus())
                 .user(new UserResponse(submission.getUser()))
                 .build();
+    }
+
+    private Double getTotalReimbursed(List<Bill> bills) {
+        return bills
+                .stream()
+                .filter(bill -> bill.getReimbursedAmount() != null)
+                .mapToDouble(Bill::getReimbursedAmount)
+                .sum();
     }
 
     private void updateSubmissionBills(InsuranceSubmission submission, List<UUID> updatedSubmissionBills) {

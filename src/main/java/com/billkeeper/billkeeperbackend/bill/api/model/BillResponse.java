@@ -26,6 +26,8 @@ public class BillResponse {
     private Beneficiary beneficiary;
     private UUID submissionId;
     private ParsingJob.Status parsingJobStatus;
+    private OffsetDateTime reimbursementDateTime;
+    private Double reimbursedAmount;
 
     public BillResponse(Bill bill, ParsingJob.Status parsingJobStatus) {
         this.id = bill.getId();
@@ -41,6 +43,8 @@ public class BillResponse {
         this.beneficiary = bill.getBeneficiary();
         this.submissionId = bill.getSubmission() != null ? bill.getSubmission().getId() : null;
         this.parsingJobStatus = parsingJobStatus;
+        this.reimbursementDateTime = bill.getReimbursementDateTime();
+        this.reimbursedAmount = bill.getReimbursedAmount();
     }
 
     public BillResponse (Bill bill) {
@@ -56,5 +60,7 @@ public class BillResponse {
         this.status = bill.getStatus();
         this.beneficiary = bill.getBeneficiary();
         this.submissionId = bill.getSubmission() != null ? bill.getSubmission().getId() : null;
+        this.reimbursementDateTime = bill.getReimbursementDateTime();
+        this.reimbursedAmount = bill.getReimbursedAmount();
     }
 }

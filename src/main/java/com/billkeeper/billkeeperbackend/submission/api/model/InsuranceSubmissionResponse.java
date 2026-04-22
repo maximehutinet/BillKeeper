@@ -24,6 +24,7 @@ public class InsuranceSubmissionResponse {
     private String eClaimId;
     private List<BillResponse> bills;
     private Double totalUsdAmount;
+    private Double reimbursedAmount;
     private InsuranceSubmission.Status status;
     private UserResponse user;
 }

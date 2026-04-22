@@ -1,9 +1,8 @@
 package com.billkeeper.billkeeperbackend.bill.api;
 
 import com.billkeeper.billkeeperbackend.AppConfig;
-import com.billkeeper.billkeeperbackend.bill.BillDeletion;
-import com.billkeeper.billkeeperbackend.bill.BillUpdate;
-import com.billkeeper.billkeeperbackend.bill.api.model.BillResponse;
+import com.billkeeper.billkeeperbackend.bill.BillService;
+import com.billkeeper.billkeeperbackend.bill.api.model.*;
 import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
 import com.billkeeper.billkeeperbackend.document.DocumentCreation;
@@ -39,8 +38,7 @@ public class BillController {
     private final BillParsingService billParsingService;
     private final DocumentRepository documentRepository;
     private final AppConfig appConfig;
-    private final BillUpdate billUpdate;
-    private final BillDeletion billDeletion;
+    private final BillService billService;
     private final CreateDocumentResponse createDocumentResponse;
     private final Logger logger = LoggerFactory.getLogger(BillController.class);
     private final ParsingJobRepository parsingJobRepository;
@@ -48,13 +46,12 @@ public class BillController {
     private final InsuranceSubmissionUpdate insuranceSubmissionUpdate;
     private final DocumentCreation documentCreation;
 
-    public BillController(BillRepository billRepository, DocumentRepository documentRepository, AppConfig appConfig, BillParsingService billParsingService, BillUpdate billUpdate, BillDeletion billDeletion, CreateDocumentResponse createDocumentResponse, ParsingJobRepository parsingJobRepository, Authentication authentication, InsuranceSubmissionUpdate insuranceSubmissionUpdate, DocumentCreation documentCreation) {
+    public BillController(BillRepository billRepository, DocumentRepository documentRepository, AppConfig appConfig, BillParsingService billParsingService, BillService billService, CreateDocumentResponse createDocumentResponse, ParsingJobRepository parsingJobRepository, Authentication authentication, InsuranceSubmissionUpdate insuranceSubmissionUpdate, DocumentCreation documentCreation) {
         this.billRepository = billRepository;
         this.documentRepository = documentRepository;
         this.appConfig = appConfig;
         this.billParsingService = billParsingService;
-        this.billUpdate = billUpdate;
-        this.billDeletion = billDeletion;
+        this.billService = billService;
         this.createDocumentResponse = createDocumentResponse;
         this.parsingJobRepository = parsingJobRepository;
         this.authentication = authentication;
@@ -93,12 +90,12 @@ public class BillController {
     }
 
     @PostMapping("/bills/{id}")
-    public void updateBill(@PathVariable UUID id, @RequestBody Bill updatedBill, JwtAuthenticationToken token) {
+    public void updateBill(@PathVariable UUID id, @RequestBody UpdateBillRequest request, JwtAuthenticationToken token) {
         User user = authentication.getCurrentUserFromToken(token);
         Bill bill = billRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Bill not found"));
         AccessManager.checkIfUserCanAccessBillOrThrowException(user, bill);
-        billUpdate.update(bill, updatedBill);
+        billService.update(bill, request);
         if (bill.getSubmission() != null) {
             insuranceSubmissionUpdate.updateStatus(bill.getSubmission());
         }
@@ -110,7 +107,37 @@ public class BillController {
         Bill bill = billRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Bill not found"));
         AccessManager.checkIfUserCanAccessBillOrThrowException(user, bill);
-        billDeletion.delete(bill);
+        billService.delete(bill);
+    }
+
+    @PostMapping("/bills/{id}/payment")
+    public void updateBillPayment(@PathVariable UUID id, @RequestBody UpdateBillPaymentRequest request, JwtAuthenticationToken token) {
+        User user = authentication.getCurrentUserFromToken(token);
+        Bill bill = billRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Bill not found"));
+        AccessManager.checkIfUserCanAccessBillOrThrowException(user, bill);
+        billService.updatePayment(bill, request.getPaidDateTime());
+    }
+
+    @PostMapping("/bills/{id}/reimbursement")
+    public void updateBillReimbursement(@PathVariable UUID id, @RequestBody UpdateBillReimbursementRequest request, JwtAuthenticationToken token) {
+        User user = authentication.getCurrentUserFromToken(token);
+        Bill bill = billRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Bill not found"));
+        AccessManager.checkIfUserCanAccessBillOrThrowException(user, bill);
+        billService.updateReimbursement(bill, request);
+    }
+
+    @PostMapping("/bills/{id}/status")
+    public void updateBillStatus(@PathVariable UUID id, @RequestBody UpdateBillStatusRequest request, JwtAuthenticationToken token) {
+        User user = authentication.getCurrentUserFromToken(token);
+        Bill bill = billRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Bill not found"));
+        AccessManager.checkIfUserCanAccessBillOrThrowException(user, bill);
+        billService.updateStatus(bill, request.getStatus());
+        if (bill.getSubmission() != null) {
+            insuranceSubmissionUpdate.updateStatus(bill.getSubmission());
+        }
     }
 
     @PostMapping("/bills/{id}/documents")

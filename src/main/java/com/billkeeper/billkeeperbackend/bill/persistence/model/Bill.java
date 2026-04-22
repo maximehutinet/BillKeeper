@@ -48,4 +48,7 @@ public class Bill {
     @ManyToOne(fetch = FetchType.EAGER)
     private InsuranceSubmission submission;
 
+    private OffsetDateTime reimbursementDateTime;
+    private Double reimbursedAmount;
+
 }
