@@ -6,6 +6,7 @@ import com.billkeeper.billkeeperbackend.family.api.model.CreateUpdateFamilyReque
 import com.billkeeper.billkeeperbackend.family.api.model.FamilyResponse;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import com.billkeeper.billkeeperbackend.utils.Authentication;
+import jakarta.validation.Valid;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,13 +30,13 @@ public class FamilyController {
     }
 
     @PostMapping("/family")
-    public void createFamily(@RequestBody CreateUpdateFamilyRequest request, JwtAuthenticationToken token) {
+    public void createFamily(@Valid @RequestBody CreateUpdateFamilyRequest request, JwtAuthenticationToken token) {
         User user = authentication.getCurrentUserFromToken(token);
         familyService.createFamily(request, user);
     }
 
     @PostMapping("/family/members")
-    public void addMemberToFamily(@RequestBody AddMemberToFamilyRequest request, JwtAuthenticationToken token) {
+    public void addMemberToFamily(@Valid @RequestBody AddMemberToFamilyRequest request, JwtAuthenticationToken token) {
         User user = authentication.getCurrentUserFromToken(token);
         familyService.addMemberToFamily(request, user);
     }

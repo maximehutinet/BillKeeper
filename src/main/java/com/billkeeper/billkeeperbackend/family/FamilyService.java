@@ -48,8 +48,8 @@ public class FamilyService {
     }
 
     public void createFamily(CreateUpdateFamilyRequest request, User user) {
-        if (request.getName() == null || request.getName().isEmpty()) {
-            throw new BadRequestException("Family name cannot be empty");
+        if (user.getFamily() != null) {
+            throw new BadRequestException("User already belongs to a family");
         }
         Family family = new Family();
         family.setName(request.getName());
@@ -60,8 +60,11 @@ public class FamilyService {
     }
 
     public void addMemberToFamily(AddMemberToFamilyRequest request, User user) {
-        if (request.getEmail() == null || request.getEmail().isEmpty()) {
-            throw new BadRequestException("Email address cannot be empty");
+        if (user.getFamily() == null) {
+            throw new BadRequestException("You must belong to a family to invite members");
+        }
+        if (!user.getId().equals(user.getFamily().getOwner().getId())) {
+            throw new UnauthorizedException("Only the family owner can invite members");
         }
         Invitation invitation = createInvitation(user, request.getEmail());
         invitationEmailNotifier.sendJoinFamilyInvitationEmail(invitation, user.getFamily());
@@ -70,8 +73,14 @@ public class FamilyService {
     public void acceptFamilyInvitation(UUID invitationId, User user) {
         Invitation invitation = invitationRepository.findById(invitationId)
                 .orElseThrow(() -> new NotFoundException("Invitation not found"));
+        if (user.getFamily() != null) {
+            throw new BadRequestException("User already belongs to a family");
+        }
         if (!user.getEmail().equals(invitation.getRecipientEmail())) {
             throw new UnauthorizedException("");
+        }
+        if (invitation.getStatus() != Invitation.Status.PENDING) {
+            throw new BadRequestException("Invitation is no longer valid");
         }
         user.setFamily(invitation.getAuthor().getFamily());
         userRepository.save(user);

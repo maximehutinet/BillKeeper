@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class AddMemberToFamilyRequest {
-    @NotBlank
+    @NotBlank(message = "Email address cannot be empty")
     @Email
     private String email;
 }
