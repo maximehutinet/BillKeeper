@@ -120,7 +120,7 @@ export class BillsTableComponent {
         command: () => this.onMarkBillAsReimbursed.emit(bill)
       });
     }
-    if (this.displayDeleteButton && !bill.submissionId) {
+    if (this.displayDeleteButton) {
       items.push({
         label: 'Delete',
         icon: 'pi pi-trash',

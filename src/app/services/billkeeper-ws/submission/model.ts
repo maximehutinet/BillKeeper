@@ -8,6 +8,7 @@ export enum SubmissionStatus {
 
 export interface InsuranceSubmission {
   id?: string;
+  active?: boolean;
   dateTime?: Date;
   name?: string;
   eClaimId?: string;

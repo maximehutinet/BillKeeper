@@ -8,7 +8,7 @@ import {
   InsuranceSubmissionWithBills
 } from '../../../../services/billkeeper-ws/submission/model';
 import {SubmissionWsService} from '../../../../services/billkeeper-ws/submission/submission-ws.service';
-import {ActivatedRoute, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {LayoutService} from '../../../../services/layout.service';
 import {ToastMessageService} from '../../../../services/toast-message.service';
 import {
@@ -71,8 +71,8 @@ export class SubmissionDetailPageComponent {
     private layoutService: LayoutService,
     private validationService: ValidationService,
     private toastMessageService: ToastMessageService,
-    private location: Location
-
+    private location: Location,
+    private router: Router
   ) {
   }
 
@@ -89,6 +89,9 @@ export class SubmissionDetailPageComponent {
     try {
       await this.layoutService.withPageLoading(async () => {
         this.submission = await this.submissionWsService.getSubmission(this.submission.id!);
+        if (!this.submission.active) {
+          await this.router.navigate(["submissions"]);
+        }
       });
     } catch (e) {
       this.toastMessageService.displayError(e);
