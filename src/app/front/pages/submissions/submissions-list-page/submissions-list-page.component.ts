@@ -25,6 +25,7 @@ import {
   BillReimbursementDialogComponent
 } from '../../../components/bills/bill-reimbursement-dialog/bill-reimbursement-dialog.component';
 import {Bill, BillStatus, UpdateBillReimbursementRequest} from '../../../../services/billkeeper-ws/bill/model';
+import {CurrencyPipe} from '@angular/common';
 
 @Component({
   selector: 'app-submissions-list-page',
@@ -40,7 +41,8 @@ import {Bill, BillStatus, UpdateBillReimbursementRequest} from '../../../../serv
     FormsModule,
     EditNameDialogComponent,
     SubmissionsFilterComponent,
-    BillReimbursementDialogComponent
+    BillReimbursementDialogComponent,
+    CurrencyPipe
   ],
   templateUrl: './submissions-list-page.component.html',
   styleUrl: './submissions-list-page.component.scss'
@@ -54,7 +56,8 @@ export class SubmissionsListPageComponent {
   editedSubmission: InsuranceSubmissionWithBills | undefined;
   dialogReimbursedBills: Bill[] = [];
   showAddReimbursedAmountDialog: boolean = false;
-
+  selectedSubmissions: InsuranceSubmissionWithBills[] = [];
+  totalSelectedSubmissionsValue: number = 0;
 
   constructor(
     private submissionWsService: SubmissionWsService,
@@ -164,5 +167,14 @@ export class SubmissionsListPageComponent {
 
   onSubmissionFilterChange(submissions: InsuranceSubmissionWithBills[]) {
     this.filteredSubmissions = submissions;
+  }
+
+  onSubmissionCheckboxChange(submission: InsuranceSubmissionWithBills) {
+    if (this.selectedSubmissions.includes(submission)) {
+      this.selectedSubmissions = this.selectedSubmissions.filter(s => s !== submission);
+    } else {
+      this.selectedSubmissions.push(submission);
+    }
+    this.totalSelectedSubmissionsValue = this.selectedSubmissions.reduce((acc, curr) => acc + (curr.totalUsdAmount ?? 0), 0);
   }
 }

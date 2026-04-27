@@ -1,6 +1,7 @@
 <p-table [value]="tableRows" dataKey="id">
   <ng-template #header>
     <tr>
+      <th></th>
       <th style="width: 5rem"></th>
       <th>Date</th>
       <th>eClaimId</th>
@@ -13,6 +14,9 @@
   </ng-template>
   <ng-template #body let-row let-expanded="expanded">
     <tr class="submission-row-header">
+      <td class="td-checkbox">
+        <p-checkbox (onChange)="onCheckboxChange(row.submission)" [binary]="true"/>
+      </td>
       <td class="expand-row-td">
         <p-button type="button" pRipple [text]="true" [rounded]="true" [plain]="true"
                   [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" [pRowToggler]="row"/>

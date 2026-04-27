@@ -18,6 +18,7 @@ import {SubmissionTableRow} from './model';
 import {MenuItem} from 'primeng/api';
 import {Menu} from 'primeng/menu';
 import {Badge} from 'primeng/badge';
+import {Checkbox} from 'primeng/checkbox';
 
 @Component({
   selector: 'app-submissions-table',
@@ -31,7 +32,8 @@ import {Badge} from 'primeng/badge';
     RouterLink,
     ValueLoadingOrNsComponent,
     Menu,
-    Badge
+    Badge,
+    Checkbox
   ],
   templateUrl: './submissions-table.component.html',
   styleUrl: './submissions-table.component.scss'
@@ -63,6 +65,9 @@ export class SubmissionsTableComponent {
   @Output()
   onAddEclaimId: EventEmitter<InsuranceSubmissionWithBills> = new EventEmitter();
 
+  @Output()
+  onSubmissionCheckboxChange: EventEmitter<InsuranceSubmissionWithBills> = new EventEmitter();
+
   private buildTableRows(submissions: InsuranceSubmissionWithBills[]) {
     this.tableRows = submissions.map(submission => {
       return {
@@ -74,6 +79,10 @@ export class SubmissionsTableComponent {
         }]
       }
     });
+  }
+
+  public onCheckboxChange(submission: InsuranceSubmissionWithBills) {
+    this.onSubmissionCheckboxChange.emit(submission);
   }
 
   private getMenuItems(submission: InsuranceSubmissionWithBills): MenuItem[] {

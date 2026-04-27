@@ -1,7 +1,11 @@
 <app-main-layout>
   <ng-container main-content>
     <app-top-bar>
-      <h1 left>Submissions</h1>
+      @if (totalSelectedSubmissionsValue > 0) {
+        <h1 left>Submissions ({{ totalSelectedSubmissionsValue | currency:'USD':true }})</h1>
+      } @else {
+        <h1 left>Submissions</h1>
+      }
 
       <div id="submissions-filters-wrapper" right>
         @if (submissions.length > 0) {
@@ -28,6 +32,7 @@
         (onMarkAsReimbursed)="onMarkSubmissionAsReimbursed($event)"
         (onDeleteSubmission)="onDeleteSubmission($event)"
         (onAddEclaimId)="onAddEclaimId($event)"
+        (onSubmissionCheckboxChange)="onSubmissionCheckboxChange($event)"
       ></app-submissions-table>
     }
 
