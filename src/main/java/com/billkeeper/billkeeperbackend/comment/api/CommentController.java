@@ -6,7 +6,7 @@ import com.billkeeper.billkeeperbackend.comment.CommentService;
 import com.billkeeper.billkeeperbackend.comment.api.model.CommentResponse;
 import com.billkeeper.billkeeperbackend.comment.api.model.CreateUpdateCommentRequest;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
-import com.billkeeper.billkeeperbackend.utils.Authentication;
+import com.billkeeper.billkeeperbackend.utils.security.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 

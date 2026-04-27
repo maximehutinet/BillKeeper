@@ -1,4 +1,4 @@
-package com.billkeeper.billkeeperbackend.utils;
+package com.billkeeper.billkeeperbackend.utils.security;
 
 import com.billkeeper.billkeeperbackend.exception.UnauthorizedException;
 import com.billkeeper.billkeeperbackend.user.persistence.UserRepository;

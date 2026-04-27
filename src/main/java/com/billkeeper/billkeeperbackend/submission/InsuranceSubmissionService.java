@@ -11,8 +11,8 @@ import com.billkeeper.billkeeperbackend.submission.persistence.InsuranceSubmissi
 import com.billkeeper.billkeeperbackend.submission.persistence.model.InsuranceSubmission;
 import com.billkeeper.billkeeperbackend.user.api.model.UserResponse;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
-import com.billkeeper.billkeeperbackend.utils.BillUtils;
-import com.billkeeper.billkeeperbackend.utils.accessmanager.AccessManager;
+import com.billkeeper.billkeeperbackend.utils.currency.BillUtils;
+import com.billkeeper.billkeeperbackend.utils.security.accessmanager.AccessManager;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -26,11 +26,13 @@ public class InsuranceSubmissionService {
     private final InsuranceSubmissionRepository submissionRepository;
     private final BillRepository billRepository;
     private final BillUtils billUtils;
+    private final AccessManager accessManager;
 
-    public InsuranceSubmissionService(InsuranceSubmissionRepository submissionRepository, BillRepository billRepository, BillUtils billUtils) {
+    public InsuranceSubmissionService(InsuranceSubmissionRepository submissionRepository, BillRepository billRepository, BillUtils billUtils, AccessManager accessManager) {
         this.submissionRepository = submissionRepository;
         this.billRepository = billRepository;
         this.billUtils = billUtils;
+        this.accessManager = accessManager;
     }
 
     public List<InsuranceSubmissionResponse> getAllActiveSubmissions(User user) {
@@ -54,7 +56,7 @@ public class InsuranceSubmissionService {
                 .map(id -> billRepository.findByIdAndSubmissionNull(id)
                         .orElseThrow(() -> new BadRequestException("Bill not found or already assigned to a submission")))
                 .toList();
-        bills.forEach(bill -> AccessManager.checkIfUserCanAccessBillOrThrowException(user, bill));
+        bills.forEach(bill -> accessManager.checkIfUserCanAccessBillOrThrowException(user, bill));
         InsuranceSubmission submission = new InsuranceSubmission();
         submission.setActive(true);
         submission.setDateTime(OffsetDateTime.now());
@@ -101,7 +103,7 @@ public class InsuranceSubmissionService {
     private InsuranceSubmission getSubmissionForUser(UUID id, User user) {
         InsuranceSubmission submission = submissionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Submission not found"));
-        AccessManager.checkIfUserCanAccessSubmissionOrThrowException(user, submission);
+        accessManager.checkIfUserCanAccessSubmissionOrThrowException(user, submission);
         return submission;
     }
 

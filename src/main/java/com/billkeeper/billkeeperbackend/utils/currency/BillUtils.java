@@ -1,4 +1,4 @@
-package com.billkeeper.billkeeperbackend.utils;
+package com.billkeeper.billkeeperbackend.utils.currency;
 
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
 import com.billkeeper.billkeeperbackend.settings.persistence.SettingsRepository;

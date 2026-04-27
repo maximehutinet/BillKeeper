@@ -4,7 +4,7 @@ import com.billkeeper.billkeeperbackend.submission.InsuranceSubmissionService;
 import com.billkeeper.billkeeperbackend.submission.api.model.CreateUpdateInsuranceSubmissionRequest;
 import com.billkeeper.billkeeperbackend.submission.api.model.InsuranceSubmissionResponse;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
-import com.billkeeper.billkeeperbackend.utils.Authentication;
+import com.billkeeper.billkeeperbackend.utils.security.Authentication;
 import jakarta.validation.Valid;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;

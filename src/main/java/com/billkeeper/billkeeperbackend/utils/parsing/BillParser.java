@@ -1,4 +1,4 @@
-package com.billkeeper.billkeeperbackend.utils;
+package com.billkeeper.billkeeperbackend.utils.parsing;
 
 import com.billkeeper.billkeeperbackend.beneficiary.persistence.model.Beneficiary;
 

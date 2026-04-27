@@ -2,6 +2,7 @@ package com.billkeeper.billkeeperbackend.beneficiary;
 
 import com.billkeeper.billkeeperbackend.beneficiary.api.model.BeneficiaryResponse;
 import com.billkeeper.billkeeperbackend.beneficiary.api.model.CreateUpdateBeneficiaryRequest;
+import com.billkeeper.billkeeperbackend.beneficiary.persistence.BeneficiaryRepository;
 import com.billkeeper.billkeeperbackend.beneficiary.persistence.model.Beneficiary;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import jakarta.transaction.Transactional;

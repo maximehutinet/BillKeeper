@@ -5,7 +5,7 @@ import com.billkeeper.billkeeperbackend.family.api.model.AddMemberToFamilyReques
 import com.billkeeper.billkeeperbackend.family.api.model.CreateUpdateFamilyRequest;
 import com.billkeeper.billkeeperbackend.family.api.model.FamilyResponse;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
-import com.billkeeper.billkeeperbackend.utils.Authentication;
+import com.billkeeper.billkeeperbackend.utils.security.Authentication;
 import jakarta.validation.Valid;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;

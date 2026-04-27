@@ -12,8 +12,8 @@ import com.billkeeper.billkeeperbackend.exception.BadRequestException;
 import com.billkeeper.billkeeperbackend.exception.InternalServerErrorException;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
-import com.billkeeper.billkeeperbackend.utils.PDFMerger;
-import com.billkeeper.billkeeperbackend.utils.accessmanager.AccessManager;
+import com.billkeeper.billkeeperbackend.utils.pdf.PDFMerger;
+import com.billkeeper.billkeeperbackend.utils.security.accessmanager.AccessManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -40,12 +40,14 @@ public class DocumentService {
     private final CreateDocumentResponse createDocumentResponse;
     private final AppConfig appConfig;
     private final Logger logger = LoggerFactory.getLogger(DocumentService.class);
+    private final AccessManager accessManager;
 
-    public DocumentService(BillRepository billRepository, DocumentRepository documentRepository, CreateDocumentResponse createDocumentResponse, AppConfig appConfig) {
+    public DocumentService(BillRepository billRepository, DocumentRepository documentRepository, CreateDocumentResponse createDocumentResponse, AppConfig appConfig, AccessManager accessManager) {
         this.billRepository = billRepository;
         this.documentRepository = documentRepository;
         this.createDocumentResponse = createDocumentResponse;
         this.appConfig = appConfig;
+        this.accessManager = accessManager;
     }
 
     public void createDocument(MultipartFile multipartFile, User user) {
@@ -93,7 +95,7 @@ public class DocumentService {
     private Document getDocumentForUser(UUID id, User user) {
         Document document = documentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Document not found"));
-        AccessManager.checkIfUserCanAccessDocumentOrThrowException(user, document);
+        accessManager.checkIfUserCanAccessDocumentOrThrowException(user, document);
         return document;
     }
 

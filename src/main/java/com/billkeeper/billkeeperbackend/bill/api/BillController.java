@@ -6,7 +6,7 @@ import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
 import com.billkeeper.billkeeperbackend.document.DocumentService;
 import com.billkeeper.billkeeperbackend.document.api.model.DocumentResponse;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
-import com.billkeeper.billkeeperbackend.utils.Authentication;
+import com.billkeeper.billkeeperbackend.utils.security.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

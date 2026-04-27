@@ -1,4 +1,4 @@
-package com.billkeeper.billkeeperbackend;
+package com.billkeeper.billkeeperbackend.infra.security;
 
 import com.billkeeper.billkeeperbackend.user.persistence.UserRepository;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;

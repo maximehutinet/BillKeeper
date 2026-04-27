@@ -1,4 +1,4 @@
-package com.billkeeper.billkeeperbackend.utils;
+package com.billkeeper.billkeeperbackend.utils.pdf;
 
 import com.billkeeper.billkeeperbackend.AppConfig;
 import net.sourceforge.tess4j.ITesseract;

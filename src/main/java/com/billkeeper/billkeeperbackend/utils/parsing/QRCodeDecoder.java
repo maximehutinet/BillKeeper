@@ -1,4 +1,4 @@
-package com.billkeeper.billkeeperbackend.utils;
+package com.billkeeper.billkeeperbackend.utils.parsing;
 
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;

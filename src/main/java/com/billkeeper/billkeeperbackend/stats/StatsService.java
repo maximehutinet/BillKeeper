@@ -4,7 +4,7 @@ import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
 import com.billkeeper.billkeeperbackend.stats.api.model.StatsResponse;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
-import com.billkeeper.billkeeperbackend.utils.BillUtils;
+import com.billkeeper.billkeeperbackend.utils.currency.BillUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

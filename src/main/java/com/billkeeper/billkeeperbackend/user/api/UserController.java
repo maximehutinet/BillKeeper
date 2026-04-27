@@ -3,7 +3,7 @@ package com.billkeeper.billkeeperbackend.user.api;
 import com.billkeeper.billkeeperbackend.user.UserService;
 import com.billkeeper.billkeeperbackend.user.api.model.UserResponse;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
-import com.billkeeper.billkeeperbackend.utils.Authentication;
+import com.billkeeper.billkeeperbackend.utils.security.Authentication;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;

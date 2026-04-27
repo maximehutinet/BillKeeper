@@ -1,7 +1,7 @@
 package com.billkeeper.billkeeperbackend.bill;
 
 import com.billkeeper.billkeeperbackend.AppConfig;
-import com.billkeeper.billkeeperbackend.beneficiary.BeneficiaryRepository;
+import com.billkeeper.billkeeperbackend.beneficiary.persistence.BeneficiaryRepository;
 import com.billkeeper.billkeeperbackend.bill.api.model.BillResponse;
 import com.billkeeper.billkeeperbackend.bill.api.model.UpdateBillReimbursementRequest;
 import com.billkeeper.billkeeperbackend.bill.api.model.UpdateBillRequest;
@@ -14,8 +14,8 @@ import com.billkeeper.billkeeperbackend.parsingjob.ParsingJobService;
 import com.billkeeper.billkeeperbackend.parsingjob.persistence.model.ParsingJob;
 import com.billkeeper.billkeeperbackend.submission.InsuranceSubmissionService;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
-import com.billkeeper.billkeeperbackend.utils.BillParsingService;
-import com.billkeeper.billkeeperbackend.utils.accessmanager.AccessManager;
+import com.billkeeper.billkeeperbackend.utils.parsing.BillParsingService;
+import com.billkeeper.billkeeperbackend.utils.security.accessmanager.AccessManager;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +34,7 @@ import java.util.UUID;
 @Transactional
 public class BillService {
 
+    private final AccessManager accessManager;
     private final BillRepository billRepository;
     private final BeneficiaryRepository beneficiaryRepository;
     private final DocumentService documentService;
@@ -43,7 +44,8 @@ public class BillService {
     private final InsuranceSubmissionService insuranceSubmissionService;
     private final Logger logger = LoggerFactory.getLogger(BillService.class);
 
-    public BillService(BillRepository billRepository, BeneficiaryRepository beneficiaryRepository, DocumentService documentService, BillParsingService billParsingService, ParsingJobService parsingJobService, AppConfig appConfig, InsuranceSubmissionService insuranceSubmissionService) {
+    public BillService(AccessManager accessManager, BillRepository billRepository, BeneficiaryRepository beneficiaryRepository, DocumentService documentService, BillParsingService billParsingService, ParsingJobService parsingJobService, AppConfig appConfig, InsuranceSubmissionService insuranceSubmissionService) {
+        this.accessManager = accessManager;
         this.billRepository = billRepository;
         this.beneficiaryRepository = beneficiaryRepository;
         this.documentService = documentService;
@@ -56,7 +58,7 @@ public class BillService {
     public Bill getBillForUser(UUID id, User user) {
         Bill bill = billRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Bill not found"));
-        AccessManager.checkIfUserCanAccessBillOrThrowException(user, bill);
+        accessManager.checkIfUserCanAccessBillOrThrowException(user, bill);
         return bill;
     }
 

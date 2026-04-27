@@ -1,5 +1,6 @@
-package com.billkeeper.billkeeperbackend;
+package com.billkeeper.billkeeperbackend.infra.security;
 
+import com.billkeeper.billkeeperbackend.AppConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;

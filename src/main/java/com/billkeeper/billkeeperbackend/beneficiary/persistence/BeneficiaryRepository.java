@@ -1,4 +1,4 @@
-package com.billkeeper.billkeeperbackend.beneficiary;
+package com.billkeeper.billkeeperbackend.beneficiary.persistence;
 
 import com.billkeeper.billkeeperbackend.beneficiary.persistence.model.Beneficiary;
 import org.springframework.data.jpa.repository.JpaRepository;

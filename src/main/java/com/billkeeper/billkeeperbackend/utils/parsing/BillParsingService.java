@@ -1,11 +1,13 @@
-package com.billkeeper.billkeeperbackend.utils;
+package com.billkeeper.billkeeperbackend.utils.parsing;
 
-import com.billkeeper.billkeeperbackend.beneficiary.BeneficiaryRepository;
+import com.billkeeper.billkeeperbackend.beneficiary.persistence.BeneficiaryRepository;
 import com.billkeeper.billkeeperbackend.beneficiary.persistence.model.Beneficiary;
 import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
 import com.billkeeper.billkeeperbackend.parsingjob.persistence.ParsingJobRepository;
 import com.billkeeper.billkeeperbackend.parsingjob.persistence.model.ParsingJob;
+import com.billkeeper.billkeeperbackend.utils.StringUtils;
+import com.billkeeper.billkeeperbackend.utils.pdf.PDFParser;
 import net.codecrete.qrbill.generator.QRCodeText;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
