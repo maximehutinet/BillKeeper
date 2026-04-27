@@ -12,7 +12,7 @@ import com.billkeeper.billkeeperbackend.exception.InternalServerErrorException;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import com.billkeeper.billkeeperbackend.parsingjob.ParsingJobService;
 import com.billkeeper.billkeeperbackend.parsingjob.persistence.model.ParsingJob;
-import com.billkeeper.billkeeperbackend.submission.InsuranceSubmissionUpdate;
+import com.billkeeper.billkeeperbackend.submission.InsuranceSubmissionService;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import com.billkeeper.billkeeperbackend.utils.BillParsingService;
 import com.billkeeper.billkeeperbackend.utils.accessmanager.AccessManager;
@@ -40,17 +40,17 @@ public class BillService {
     private final BillParsingService billParsingService;
     private final ParsingJobService parsingJobService;
     private final AppConfig appConfig;
-    private final InsuranceSubmissionUpdate insuranceSubmissionUpdate;
+    private final InsuranceSubmissionService insuranceSubmissionService;
     private final Logger logger = LoggerFactory.getLogger(BillService.class);
 
-    public BillService(BillRepository billRepository, BeneficiaryRepository beneficiaryRepository, DocumentService documentService, BillParsingService billParsingService, ParsingJobService parsingJobService, AppConfig appConfig, InsuranceSubmissionUpdate insuranceSubmissionUpdate) {
+    public BillService(BillRepository billRepository, BeneficiaryRepository beneficiaryRepository, DocumentService documentService, BillParsingService billParsingService, ParsingJobService parsingJobService, AppConfig appConfig, InsuranceSubmissionService insuranceSubmissionService) {
         this.billRepository = billRepository;
         this.beneficiaryRepository = beneficiaryRepository;
         this.documentService = documentService;
         this.billParsingService = billParsingService;
         this.parsingJobService = parsingJobService;
         this.appConfig = appConfig;
-        this.insuranceSubmissionUpdate = insuranceSubmissionUpdate;
+        this.insuranceSubmissionService = insuranceSubmissionService;
     }
 
     public Bill getBillForUser(UUID id, User user) {
@@ -111,7 +111,7 @@ public class BillService {
         applyPaymentUpdate(bill, request.getPaidDateTime());
         billRepository.save(bill);
         if (bill.getSubmission() != null) {
-            insuranceSubmissionUpdate.updateStatus(bill.getSubmission());
+            insuranceSubmissionService.updateStatus(bill.getSubmission());
         }
     }
 
@@ -141,7 +141,7 @@ public class BillService {
             bill.setStatus(status);
             billRepository.save(bill);
             if (bill.getSubmission() != null) {
-                insuranceSubmissionUpdate.updateStatus(bill.getSubmission());
+                insuranceSubmissionService.updateStatus(bill.getSubmission());
             }
         }
     }

@@ -1,7 +1,6 @@
-package com.billkeeper.billkeeperbackend.document.api;
+package com.billkeeper.billkeeperbackend.document.api.model;
 
 import com.billkeeper.billkeeperbackend.AppConfig;
-import com.billkeeper.billkeeperbackend.document.api.model.DocumentResponse;
 import com.billkeeper.billkeeperbackend.document.persistence.model.Document;
 import org.springframework.stereotype.Service;
 

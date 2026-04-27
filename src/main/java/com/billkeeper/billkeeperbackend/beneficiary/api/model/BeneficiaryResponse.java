@@ -1,14 +1,18 @@
 package com.billkeeper.billkeeperbackend.beneficiary.api.model;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.UUID;
 
 @Getter
 @Setter
 @AllArgsConstructor
-public class CreateUpdateBeneficiaryRequest {
-    @NotBlank(message = "Firstname cannot be empty")
-    String firstname;
+@Builder
+public class BeneficiaryResponse {
+    private UUID id;
+    private Boolean active;
+    private String firstname;
 }

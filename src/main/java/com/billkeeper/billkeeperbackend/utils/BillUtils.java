@@ -11,26 +11,25 @@ import java.util.List;
 public class BillUtils {
 
     private final SettingsRepository settingsRepository;
-    private Settings settings;
 
     public BillUtils(SettingsRepository settingsRepository) {
         this.settingsRepository = settingsRepository;
     }
 
     public Double getTotalBillsUsdAmount(List<Bill> bills) {
-        this.settings = this.settingsRepository.findLatestSettings()
+        Settings settings = this.settingsRepository.findLatestSettings()
                 .orElse(null);
-        if (this.settings == null) {
+        if (settings == null) {
             return null;
         }
         return bills
                 .stream()
-                .map(this::getBillUsdAmount)
+                .map(bill -> getBillUsdAmount(bill, settings))
                 .mapToDouble(Double::doubleValue)
                 .sum();
     }
 
-    private Double getBillUsdAmount(Bill bill) {
+    private Double getBillUsdAmount(Bill bill, Settings settings) {
         if (bill.getCurrency() == null || bill.getAmount() == null) {
             return 0.0;
         }
