@@ -19,6 +19,6 @@ public class User {
     private String email;
     private String profilePictureName;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Family family;
 }

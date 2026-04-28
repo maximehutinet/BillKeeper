@@ -1,6 +1,6 @@
 package com.billkeeper.billkeeperbackend.bill.api.model;
 
-import com.billkeeper.billkeeperbackend.beneficiary.persistence.model.Beneficiary;
+import com.billkeeper.billkeeperbackend.beneficiary.api.model.BeneficiaryResponse;
 import com.billkeeper.billkeeperbackend.bill.persistence.model.Bill;
 import com.billkeeper.billkeeperbackend.parsingjob.persistence.model.ParsingJob;
 import com.billkeeper.billkeeperbackend.user.api.model.UserResponse;
@@ -23,7 +23,7 @@ public class BillResponse {
     private OffsetDateTime paidDateTime;
     private String provider;
     private Bill.Status status;
-    private Beneficiary beneficiary;
+    private BeneficiaryResponse beneficiary;
     private UUID submissionId;
     private ParsingJob.Status parsingJobStatus;
     private OffsetDateTime reimbursementDateTime;
@@ -40,7 +40,7 @@ public class BillResponse {
         this.paidDateTime = bill.getPaidDateTime();
         this.provider = bill.getProvider();
         this.status = bill.getStatus();
-        this.beneficiary = bill.getBeneficiary();
+        this.beneficiary = bill.getBeneficiary() != null ? new BeneficiaryResponse(bill.getBeneficiary()) : null;
         this.submissionId = bill.getSubmission() != null ? bill.getSubmission().getId() : null;
         this.parsingJobStatus = parsingJobStatus;
         this.reimbursementDateTime = bill.getReimbursementDateTime();
@@ -48,19 +48,6 @@ public class BillResponse {
     }
 
     public BillResponse (Bill bill) {
-        this.id = bill.getId();
-        this.dateTime = bill.getDateTime();
-        this.name = bill.getName();
-        this.amount = bill.getAmount();
-        this.user = new UserResponse(bill.getUser());
-        this.currency = bill.getCurrency();
-        this.serviceDateTime = bill.getServiceDateTime();
-        this.paidDateTime = bill.getPaidDateTime();
-        this.provider = bill.getProvider();
-        this.status = bill.getStatus();
-        this.beneficiary = bill.getBeneficiary();
-        this.submissionId = bill.getSubmission() != null ? bill.getSubmission().getId() : null;
-        this.reimbursementDateTime = bill.getReimbursementDateTime();
-        this.reimbursedAmount = bill.getReimbursedAmount();
+        this(bill, null);
     }
 }

@@ -1,6 +1,5 @@
 package com.billkeeper.billkeeperbackend.settings;
 
-import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import com.billkeeper.billkeeperbackend.settings.api.model.CreateUpdateSettingsRequest;
 import com.billkeeper.billkeeperbackend.settings.api.model.SettingsResponse;
 import com.billkeeper.billkeeperbackend.settings.persistence.SettingsRepository;
@@ -23,13 +22,11 @@ public class SettingsService {
     public SettingsResponse getSettings() {
         return settingsRepository.findLatestSettings()
                 .map(SettingsResponse::new)
-                .orElseThrow(() -> new NotFoundException("No settings found"));
+                .orElse(null);
     }
 
     public void applySettings(CreateUpdateSettingsRequest request) {
-        settingsRepository.findLatestSettings().ifPresent(oldSettings -> {
-            oldSettings.setActive(false);
-        });
+        settingsRepository.findLatestSettings().ifPresent(oldSettings -> oldSettings.setActive(false));
         Settings settings = new Settings();
         settings.setDateTime(OffsetDateTime.now());
         settings.setActive(true);

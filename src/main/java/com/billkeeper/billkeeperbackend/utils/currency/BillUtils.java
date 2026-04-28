@@ -20,7 +20,7 @@ public class BillUtils {
         Settings settings = this.settingsRepository.findLatestSettings()
                 .orElse(null);
         if (settings == null) {
-            return null;
+            return 0.0;
         }
         return bills
                 .stream()
