@@ -9,16 +9,20 @@ import com.billkeeper.billkeeperbackend.parsingjob.persistence.model.ParsingJob;
 import com.billkeeper.billkeeperbackend.utils.StringUtils;
 import com.billkeeper.billkeeperbackend.utils.pdf.PDFParser;
 import net.codecrete.qrbill.generator.QRCodeText;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class BillParsingService {
-
     private final PDFParser pdfParser;
     private final BeneficiaryRepository beneficiaryRepository;
     private final BillRepository billRepository;
@@ -33,22 +37,19 @@ public class BillParsingService {
 
     @Async
     public void parseAndUpdateBill(Bill bill, File file, ParsingJob parsingJob) {
-        try {
-            String qrCodeText = "";
-            List<File> filePages = PDFParser.getPagesFromPDFAsTmpImages(file);
+        try (PDDocument document = Loader.loadPDF(file)) {
+            PDFRenderer renderer = new PDFRenderer(document);
+            BufferedImage firstPageImage = renderer.renderImageWithDPI(0, 200, ImageType.GRAY);
+            String qrCodeContent = QRCodeDecoder.decode(firstPageImage);
 
-            for (File filePage : filePages) {
-                qrCodeText = QRCodeDecoder.decode(filePage);
-                if (!qrCodeText.isEmpty()) break;
-            }
-
-            if (!qrCodeText.isEmpty()) {
-                net.codecrete.qrbill.generator.Bill QRBill = QRCodeText.decode(qrCodeText);
-                updateBillFromQRBill(bill, QRBill);
-            } else {
-                String text = pdfParser.extractTextFromFile(file);
+            if (qrCodeContent.isEmpty()) {
+                String text = pdfParser.extractTextFromImage(firstPageImage);
                 updateBillValues(bill, text);
+            } else {
+                net.codecrete.qrbill.generator.Bill QRBill = QRCodeText.decode(qrCodeContent);
+                updateBillFromQRBill(bill, QRBill);
             }
+
             parsingJob.setStatus(ParsingJob.Status.SUCCESS);
             parsingJobRepository.save(parsingJob);
         } catch (Exception ignored) {

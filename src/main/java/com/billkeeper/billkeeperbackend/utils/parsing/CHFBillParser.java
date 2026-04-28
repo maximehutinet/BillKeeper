@@ -10,6 +10,9 @@ public class CHFBillParser implements BillParser {
 
     private final String text;
     private final List<Beneficiary> registeredBeneficiaries;
+    private static final Pattern NAME_PATTERN = Pattern.compile("Auteur N° GLN \\(B\\)\\s*\\d+(.*)");
+    private static final Pattern CHF_AMOUNT_PATTERN = Pattern.compile("(CHF)\\s?\\d+\\s?'?\\d+\\.?\\d+");
+    private static final Pattern TOTAL_PATTERN = Pattern.compile("total:\\s*\\d+\\.\\d");
 
     public CHFBillParser(String text, List<Beneficiary> registeredBeneficiaries) {
         this.text = text;
@@ -19,9 +22,7 @@ public class CHFBillParser implements BillParser {
     @Override
     public Optional<String> getBillName() {
         Set<String> matches = new HashSet<>();
-        String regex = "Auteur N° GLN \\(B\\)\\s*\\d+(.*)";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(text);
+        Matcher matcher = NAME_PATTERN.matcher(text);
         while (matcher.find()) {
             matches.add(matcher.group(1));
         }
@@ -32,27 +33,12 @@ public class CHFBillParser implements BillParser {
 
     @Override
     public Optional<Double> getBillAmount() {
-        Set<String> matches = new HashSet<>();
-        List<String> regexs = new ArrayList<>();
-        // Regex matching CHF 2'480.95 for example
-        regexs.add("(CHF)\\s?\\d+\\s?'?\\d+\\.?\\d+");
-        // Regex matching total: 117.00 for example
-        regexs.add("total:\\s*\\d+\\.\\d");
-        regexs.forEach(regex -> {
-            Pattern pattern = Pattern.compile(regex);
+        List<Pattern> patterns = List.of(CHF_AMOUNT_PATTERN, TOTAL_PATTERN);
+        for (Pattern pattern : patterns) {
             Matcher matcher = pattern.matcher(text);
-            while (matcher.find()) {
-                String value = matcher.group();
-                matches.add(value);
+            if (matcher.find()) {
+                return Optional.of(Double.valueOf(matcher.group().replaceAll("[^\\d.]+", "")));
             }
-        });
-
-        // Regex matching CHF for example
-        if (!matches.isEmpty()) {
-            return matches
-                    .stream()
-                    .findFirst()
-                    .map(value -> Double.valueOf(value.replaceAll("[^\\d\\.]+", "")));
         }
         return Optional.empty();
     }
