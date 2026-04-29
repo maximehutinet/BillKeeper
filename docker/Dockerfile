@@ -5,7 +5,7 @@ COPY ../mvnw pom.xml ./
 RUN chmod +x ./mvnw
 RUN ./mvnw -X dependency:go-offline
 COPY ../src ./src
-RUN ./mvnw package -DskipTests
+RUN ./mvnw package
 RUN mv target/*.jar target/billkeeper.jar
 
 FROM eclipse-temurin:21
