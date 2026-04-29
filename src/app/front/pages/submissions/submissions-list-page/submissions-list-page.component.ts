@@ -175,6 +175,6 @@ export class SubmissionsListPageComponent {
     } else {
       this.selectedSubmissions.push(submission);
     }
-    this.totalSelectedSubmissionsValue = this.selectedSubmissions.reduce((acc, curr) => acc + (curr.totalUsdAmount ?? 0), 0);
+    this.totalSelectedSubmissionsValue = this.selectedSubmissions.reduce((acc, curr) => acc + (curr.reimbursedAmount ?? 0), 0);
   }
 }

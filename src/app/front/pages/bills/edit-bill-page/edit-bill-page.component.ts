@@ -154,7 +154,7 @@ export class EditBillPageComponent {
         status: <BillStatus> this.billStatus?.value,
         beneficiary: this.form.value.beneficiary
       };
-      const updatedReimbursementDateTime = parseDayMonthYearDate(this.form.value.reimbursementDateTime);
+      const updatedReimbursementDateTime = this.form.value.reimbursementDateTime ? parseDayMonthYearDate(this.form.value.reimbursementDateTime) : undefined;
       const updatedReimbursementAmount = this.form.value.reimbursedAmount;
       if (updatedReimbursementDateTime != this.bill.reimbursementDateTime || updatedReimbursementAmount != this.bill.reimbursedAmount) {
         const updateReimbursementRequest: UpdateBillReimbursementRequest = {
