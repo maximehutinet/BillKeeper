@@ -80,7 +80,7 @@ export class SideMenuComponent {
   }];
 
   userFirstname: string | undefined;
-  userProfilePicture: string = "assets/images/profile_placeholder.png";
+  userProfilePicture: string = "";
 
   constructor(
     private userWsService: UserWsService,

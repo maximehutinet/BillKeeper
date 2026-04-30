@@ -11,6 +11,8 @@ export class UserWsService {
     private httpWsService: HttpWsService
   ) { }
 
+  private PLACEHOLDER_PROFILE_PICTURE = "assets/images/profile_placeholder.webp";
+
   async getCurrentUserProfile(): Promise<User> {
     return this.httpWsService.get<User>('/users/me');
   }
@@ -23,12 +25,12 @@ export class UserWsService {
 
   async getProfilePicture(user: User): Promise<string> {
     const blob = await this.httpWsService.getBlob(`/users/${user.id}/picture`);
-    return URL.createObjectURL(blob);
+    return blob ? URL.createObjectURL(blob) : this.PLACEHOLDER_PROFILE_PICTURE;
   }
 
   async getCurrentUserProfilePicture(): Promise<string> {
     const blob = await this.httpWsService.getBlob("/users/me/picture");
-    return URL.createObjectURL(blob);
+    return blob ? URL.createObjectURL(blob) : this.PLACEHOLDER_PROFILE_PICTURE;
   }
 
   async getUsersStartingWith(value: string) {

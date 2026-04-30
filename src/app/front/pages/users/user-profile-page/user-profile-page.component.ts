@@ -37,7 +37,7 @@ import {SuccessDialogComponent} from '../../../components/commun/success-dialog/
 export class UserProfilePageComponent {
 
   currentUser: User | undefined;
-  profilePicture: string = "/assets/images/profile_placeholder.png";
+  profilePicture: string = "";
   family?: Family;
   showFamilyNameDialog = false;
   showAddMemberDialog = false;

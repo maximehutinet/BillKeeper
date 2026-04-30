@@ -16,7 +16,7 @@ export class UserAvatarComponent {
   @Input()
   size: "normal" | "large" | "xlarge" | undefined = "normal"
 
-  userProfilePicture: string = "assets/images/profile_placeholder.png";
+  userProfilePicture: string = "";
 
   @Input()
   set user(user: User) {
