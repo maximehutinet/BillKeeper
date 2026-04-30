@@ -1,4 +1,6 @@
+import {KeycloakServerConfig} from 'keycloak-js';
+
 export interface Configuration {
   serverUrl: string;
-  keycloakConfiguration?: Keycloak.KeycloakConfig;
+  keycloakConfiguration?: KeycloakServerConfig;
 }

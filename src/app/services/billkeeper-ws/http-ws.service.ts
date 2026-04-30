@@ -74,7 +74,7 @@ export class HttpWsService {
   }
 
   private url(path: string) {
-    return this.configurationService.configuration.serverUrl + path;
+    return ConfigurationService.load().serverUrl + path;
   }
 
   private async handleError(error: any) {

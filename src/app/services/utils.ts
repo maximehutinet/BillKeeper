@@ -77,28 +77,6 @@ export function markAsReimbursedSubmissionButtonVisible(submission: InsuranceSub
   return submission.bills.filter(bill => bill.status === BillStatus.REIMBURSEMENT_IN_PROGRESS).length === submission.bills.length;
 }
 
-export function loadEnvironment() {
-  let keycloakUrl = '';
-  let keycloakRealm = '';
-  let keycloakClientId = '';
-  let serverUrl = '';
-
-  try {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', '/assets/configuration.json?time=' + Date.now(), false);
-    xhr.send(null);
-
-    if (xhr.status === 200) {
-      const envProperties = JSON.parse(xhr.responseText);
-      keycloakUrl = envProperties.keycloakConfiguration.url;
-      keycloakRealm = envProperties.keycloakConfiguration.realm;
-      keycloakClientId = envProperties.keycloakConfiguration.clientId;
-      serverUrl = envProperties.serverUrl;
-    }
-  } catch (error) { }
-  return { keycloakUrl, keycloakRealm, keycloakClientId, serverUrl };
-}
-
 export function parseDayMonthYearDate(date: string): Date {
   const [day, month, year] = date
     .split('/')

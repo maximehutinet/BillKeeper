@@ -1,13 +1,13 @@
 import {provideKeycloak} from 'keycloak-angular';
-import {loadEnvironment} from './services/utils';
+import {ConfigurationService} from './services/configuration.service';
 
 export const provideKeycloakAngular = () => {
-  const { keycloakUrl, keycloakRealm, keycloakClientId } = loadEnvironment();
+  const keycloakConfig = ConfigurationService.load().keycloakConfiguration;
   return provideKeycloak({
     config: {
-      url: keycloakUrl,
-      realm: keycloakRealm,
-      clientId: keycloakClientId
+      url: keycloakConfig!.url,
+      realm: keycloakConfig!.realm,
+      clientId: keycloakConfig!.clientId
     },
     initOptions: {
       onLoad: 'login-required',

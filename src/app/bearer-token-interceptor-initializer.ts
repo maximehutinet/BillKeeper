@@ -1,9 +1,9 @@
 import {INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG} from 'keycloak-angular';
-import {loadEnvironment} from './services/utils';
+import {ConfigurationService} from './services/configuration.service';
 
 export const provideBearerTokenInterceptor = () => {
-  let { serverUrl } = loadEnvironment();
-  const urlRegex = escapeUrlToRegex(serverUrl)
+  const config = ConfigurationService.load();
+  const urlRegex = escapeUrlToRegex(config.serverUrl);
   return {
     provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
     useValue: [
