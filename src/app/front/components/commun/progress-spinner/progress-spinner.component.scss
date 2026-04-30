@@ -1,0 +1,16 @@
+.ring1 { animation: spin 1.4s linear infinite; transform-origin: 340px 340px; }
+.ring2 { animation: spin 1.8s linear infinite reverse; transform-origin: 340px 340px; }
+.ring3 { animation: spin 2.2s linear infinite; transform-origin: 340px 340px; }
+.dot1 { animation: pulse 1.4s ease-in-out infinite; }
+.dot2 { animation: pulse 1.4s ease-in-out infinite; animation-delay: -0.35s; }
+.dot3 { animation: pulse 1.4s ease-in-out infinite; animation-delay: -0.7s; }
+.dot4 { animation: pulse 1.4s ease-in-out infinite; animation-delay: -1.05s; }
+
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.bk {
+  font-size: 96px;
+  font-weight: var(--app-font-medium);
+  fill: #141413;
+}

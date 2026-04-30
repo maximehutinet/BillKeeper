@@ -54,9 +54,11 @@ export class UserProfilePageComponent {
 
   async ngOnInit() {
     try {
-      this.currentUser = await this.userWsService.getCurrentUserProfile();
-      this.profilePicture = await this.userWsService.getCurrentUserProfilePicture();
-      this.family = await this.familyWsService.getCurrentUserFamily();
+      await this.layoutService.withPageLoading(async () => {
+        this.currentUser = await this.userWsService.getCurrentUserProfile();
+        this.profilePicture = await this.userWsService.getCurrentUserProfilePicture();
+        this.family = await this.familyWsService.getCurrentUserFamily();
+      });
     } catch (e) {
       this.toastMessageService.displayError(e);
     }

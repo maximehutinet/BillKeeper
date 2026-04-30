@@ -6,15 +6,18 @@
       ></app-side-menu>
   </div>
   <div id="main-content-wrapper" [class.transition-active]="transitionAnimationActive" [class.menu-closed]="!menuOpen">
-    <ng-content select="[main-content]"></ng-content>
+    @if (layoutService.pageLoading) {
+      <div id="loading-overlay">
+        <app-progress-spinner></app-progress-spinner>
+      </div>
+    } @else {
+      <ng-content select="[main-content]"></ng-content>
+    }
+
   </div>
 </div>
 <app-toast-message></app-toast-message>
 <app-validation-dialog></app-validation-dialog>
-
-@if (layoutService.pageLoading) {
-  <app-full-screen-loading></app-full-screen-loading>
-}
 
 @if (layoutService.pageFocusing) {
   <app-full-screen-focusing></app-full-screen-focusing>

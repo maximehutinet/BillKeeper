@@ -13,6 +13,7 @@ import {Beneficiary} from '../../../../services/billkeeper-ws/beneficiary/model'
 import {BeneficiaryWsService} from '../../../../services/billkeeper-ws/beneficiary/beneficiary-ws.service';
 import {EditNameDialogComponent} from '../../../components/commun/edit-name-dialog/edit-name-dialog.component';
 import {ValidationService} from '../../../../services/validation.service';
+import {LayoutService} from '../../../../services/layout.service';
 
 @Component({
   selector: 'app-settings-page',
@@ -46,15 +47,18 @@ export class SettingsPageComponent {
     private settingsWsService: SettingsWsService,
     private validationService: ValidationService,
     private beneficiaryWSService: BeneficiaryWsService,
-    private toastMessageService: ToastMessageService
+    private toastMessageService: ToastMessageService,
+    private layoutService: LayoutService
   ) {
   }
 
   async ngOnInit() {
     try {
-      this.settings = await this.settingsWsService.getSettings();
-      this.buildForm();
-      this.beneficiaries = await this.beneficiaryWSService.getAllBeneficiaries();
+      await this.layoutService.withPageLoading(async () => {
+        this.settings = await this.settingsWsService.getSettings();
+        this.buildForm();
+        this.beneficiaries = await this.beneficiaryWSService.getAllBeneficiaries();
+      });
     } catch (e) {
       this.toastMessageService.displayError(e);
     }

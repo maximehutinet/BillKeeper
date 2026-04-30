@@ -13,7 +13,10 @@ export class LayoutService {
   async withPageLoading(fn: () => Promise<void>) {
     try {
       this.pageLoading = true;
-      await fn();
+      await Promise.all([
+        fn(),
+        new Promise(resolve => setTimeout(resolve, 400))
+      ]);
       this.pageLoading = false;
     } catch (e) {
       this.pageLoading = false

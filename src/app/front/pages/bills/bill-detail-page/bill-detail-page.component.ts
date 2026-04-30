@@ -199,9 +199,7 @@ export class BillDetailPageComponent {
 
   async downloadBillDocument(document: BillDocument) {
     try {
-      await this.layoutService.withPageLoading(async () => {
-        await this.documentWsService.downloadBillDocument(document.id!);
-      });
+      await this.documentWsService.downloadBillDocument(document.id!);
     } catch (e) {
       this.toastMessageService.displayError(e);
     }
@@ -224,14 +222,12 @@ export class BillDetailPageComponent {
 
   async onValidateBillReimbursement(updatedBill: Bill) {
     try {
-      await this.layoutService.withPageLoading(async () => {
-        const request: UpdateBillReimbursementRequest = {
-          reimbursedAmount: updatedBill.reimbursedAmount,
-          reimbursementDateTime: updatedBill.reimbursementDateTime
-        }
-        await this.billWsService.updateBillReimbursement(updatedBill.id!, request);
-        this.bill = await this.billWsService.getBill(this.bill.id!);
-      });
+      const request: UpdateBillReimbursementRequest = {
+        reimbursedAmount: updatedBill.reimbursedAmount,
+        reimbursementDateTime: updatedBill.reimbursementDateTime
+      }
+      await this.billWsService.updateBillReimbursement(updatedBill.id!, request);
+      this.bill = await this.billWsService.getBill(this.bill.id!);
     } catch (e) {
       this.toastMessageService.displayError(e);
     }
@@ -239,10 +235,8 @@ export class BillDetailPageComponent {
 
   async onMarkAsReimbursed() {
     try {
-      await this.layoutService.withPageLoading(async () => {
-        await this.billWsService.updateBillStatus(this.bill, BillStatus.REIMBURSED);
-        this.bill = await this.billWsService.getBill(this.bill.id!);
-      });
+      await this.billWsService.updateBillStatus(this.bill, BillStatus.REIMBURSED);
+      this.bill = await this.billWsService.getBill(this.bill.id!);
     } catch (e) {
       this.toastMessageService.displayError(e);
     }
@@ -250,10 +244,8 @@ export class BillDetailPageComponent {
 
   async onMarkAsPaid() {
     try {
-      await this.layoutService.withPageLoading(async () => {
-        await this.billWsService.markBillAsPaid(this.bill);
-        this.bill = await this.billWsService.getBill(this.bill.id!);
-      });
+      await this.billWsService.markBillAsPaid(this.bill);
+      this.bill = await this.billWsService.getBill(this.bill.id!);
     } catch (e) {
       this.toastMessageService.displayError(e);
     }

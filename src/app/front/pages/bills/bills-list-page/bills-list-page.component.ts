@@ -95,12 +95,10 @@ export class BillsListPageComponent {
 
   public async downloadMergedBillsDocuments() {
     try {
-      await this.layoutService.withPageLoading(async () => {
-        const billIds: string[] = this.selectedBills
-          .map(bill => bill.id)
-          .filter(id => id != undefined);
-        await this.documentWsService.getMergedBillsDocuments(billIds);
-      });
+      const billIds: string[] = this.selectedBills
+        .map(bill => bill.id)
+        .filter(id => id != undefined);
+      await this.documentWsService.getMergedBillsDocuments(billIds);
     } catch (e) {
       this.toastMessageService.displayError(e);
     }
@@ -141,14 +139,12 @@ export class BillsListPageComponent {
 
   async onValidateBillReimbursement(updatedBill: Bill) {
     try {
-      await this.layoutService.withPageLoading(async () => {
-        const request: UpdateBillReimbursementRequest = {
-          reimbursedAmount: updatedBill.reimbursedAmount,
-          reimbursementDateTime: updatedBill.reimbursementDateTime
-        }
-        await this.billWsService.updateBillReimbursement(updatedBill.id!, request);
-        await this.loadAllBills();
-      });
+      const request: UpdateBillReimbursementRequest = {
+        reimbursedAmount: updatedBill.reimbursedAmount,
+        reimbursementDateTime: updatedBill.reimbursementDateTime
+      }
+      await this.billWsService.updateBillReimbursement(updatedBill.id!, request);
+      await this.loadAllBills();
     } catch (e) {
       this.toastMessageService.displayError(e);
     }
@@ -162,9 +158,7 @@ export class BillsListPageComponent {
 
   private async deleteBill(bill: Bill) {
     try {
-      await this.layoutService.withPageLoading(async () => {
-        await this.billWsService.deleteBill(bill.id!);
-      });
+      await this.billWsService.deleteBill(bill.id!);
       await this.loadAllBills();
     } catch (e) {
       this.toastMessageService.displayError(e);

@@ -5,6 +5,7 @@ import {Stats} from '../../../../services/billkeeper-ws/stats/model';
 import {ToastMessageService} from '../../../../services/toast-message.service';
 import {TopBarComponent} from "../../../components/layout/top-bar/top-bar.component";
 import {StatsCardComponent} from '../../../components/stats/stats-card/stats-card.component';
+import {LayoutService} from '../../../../services/layout.service';
 
 @Component({
   selector: 'app-stats-page',
@@ -27,13 +28,16 @@ export class StatsPageComponent {
 
   constructor(
     private statsWsService: StatsWsService,
-    private toastMessageService: ToastMessageService
+    private toastMessageService: ToastMessageService,
+    private layoutService: LayoutService
   ) {
   }
 
   async ngOnInit() {
     try {
-      this.stats = await this.statsWsService.getBillsStats();
+      await this.layoutService.withPageLoading(async () => {
+        this.stats = await this.statsWsService.getBillsStats();
+      });
     } catch (e) {
       this.toastMessageService.displayError(e);
     }
