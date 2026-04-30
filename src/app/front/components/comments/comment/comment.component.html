@@ -7,7 +7,7 @@
         <span class="comment-datetime">• {{ comment.dateTime | date: 'longDate' }}</span>
       </div>
 
-      @if (comment.user.id === userDataService.getCurrentUser().id) {
+      @if (currentUser && comment.user.id === currentUser.id) {
         <div class="comment-actions">
           <p-button
             icon="pi pi-pencil"

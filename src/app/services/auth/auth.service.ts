@@ -14,8 +14,8 @@ export class AuthService {
     return this.keycloak.authenticated;
   }
 
-  logout() {
-    this.keycloak.logout();
+  async logout() {
+    await this.keycloak.logout();
   }
 
   async getUserProfile() {

@@ -15,6 +15,7 @@ import {EditNameDialogComponent} from '../../../components/commun/edit-name-dial
 import {UserAvatarComponent} from '../../../components/commun/user-avatar/user-avatar.component';
 import {EditEmailDialogComponent} from '../../../components/commun/edit-email-dialog/edit-email-dialog.component';
 import {SuccessDialogComponent} from '../../../components/commun/success-dialog/success-dialog.component';
+import {UserDataService} from '../../../../services/user-data.service';
 
 @Component({
   selector: 'app-user-profile-page',
@@ -46,6 +47,7 @@ export class UserProfilePageComponent {
 
   constructor(
     private userWsService: UserWsService,
+    private userDataService: UserDataService,
     private familyWsService: FamilyWsService,
     private toastMessageService: ToastMessageService,
     private layoutService: LayoutService
@@ -55,9 +57,12 @@ export class UserProfilePageComponent {
   async ngOnInit() {
     try {
       await this.layoutService.withPageLoading(async () => {
-        this.currentUser = await this.userWsService.getCurrentUserProfile();
-        this.profilePicture = await this.userWsService.getCurrentUserProfilePicture();
+        this.currentUser = await this.userDataService.getCurrentUser();
+        this.profilePicture = await this.userDataService.getCurrentUserProfilePicture();
         this.family = await this.familyWsService.getCurrentUserFamily();
+        this.userDataService.userRefreshedObservable.subscribe(async () => {
+          this.profilePicture = await this.userDataService.getCurrentUserProfilePicture();
+        });
       });
     } catch (e) {
       this.toastMessageService.displayError(e);
@@ -70,7 +75,7 @@ export class UserProfilePageComponent {
         return;
       }
       await this.uploadProfilePicture(event.target.files[0]);
-      this.profilePicture = await this.userWsService.getCurrentUserProfilePicture();
+      await this.userDataService.refreshUserData();
     });
   }
 

@@ -8,7 +8,7 @@ import {ToastMessageService} from '../../../../services/toast-message.service';
 import {Badge} from 'primeng/badge';
 import {AuthService} from '../../../../services/auth/auth.service';
 import {Menu} from 'primeng/menu';
-import {UserWsService} from '../../../../services/billkeeper-ws/user/user-ws.service';
+import {UserDataService} from '../../../../services/user-data.service';
 
 @Component({
   selector: 'app-side-menu',
@@ -83,18 +83,25 @@ export class SideMenuComponent {
   userProfilePicture: string = "";
 
   constructor(
-    private userWsService: UserWsService,
     private authService: AuthService,
     private toastMessageService: ToastMessageService,
+    private userDataService: UserDataService,
     private router: Router
   ) {
   }
 
   async ngOnInit() {
+    await this.updateUserData();
+    this.userDataService.userRefreshedObservable.subscribe(async () => {
+      await this.updateUserData();
+    });
+  }
+
+  async updateUserData() {
     try {
-      const userProfile = await this.authService.getUserProfile();
-      this.userFirstname = userProfile.firstName;
-      this.userProfilePicture = await this.userWsService.getCurrentUserProfilePicture();
+      const userProfile = await this.userDataService.getCurrentUser();
+      this.userFirstname = userProfile.firstname;
+      this.userProfilePicture = await this.userDataService.getCurrentUserProfilePicture();
     } catch (e) {
       this.toastMessageService.displayError(e);
     }
@@ -104,8 +111,9 @@ export class SideMenuComponent {
     return this.router.url === route;
   }
 
-  logout() {
-    this.authService.logout();
+  async logout() {
+    this.userDataService.clearUserData();
+    await this.authService.logout();
   }
 
 }
