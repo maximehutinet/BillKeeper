@@ -6,6 +6,7 @@ import com.billkeeper.billkeeperbackend.beneficiary.persistence.BeneficiaryRepos
 import com.billkeeper.billkeeperbackend.beneficiary.persistence.model.Beneficiary;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,6 +34,7 @@ public class BeneficiaryService {
                 .build();
     }
 
+    @Transactional
     public void createBeneficiary(CreateUpdateBeneficiaryRequest request) {
         Beneficiary beneficiary = new Beneficiary();
         beneficiary.setActive(true);
@@ -40,6 +42,7 @@ public class BeneficiaryService {
         beneficiaryRepository.save(beneficiary);
     }
 
+    @Transactional
     public void updateBeneficiary(UUID id, CreateUpdateBeneficiaryRequest request) {
         Beneficiary beneficiary = beneficiaryRepository.findByIdAndActiveTrue(id).
                 orElseThrow(() -> new NotFoundException("Beneficiary not found"));
@@ -49,6 +52,7 @@ public class BeneficiaryService {
         }
     }
 
+    @Transactional
     public void deleteBeneficiary(UUID id) {
         Beneficiary beneficiary = beneficiaryRepository.findByIdAndActiveTrue(id).
                 orElseThrow(() -> new NotFoundException("Beneficiary not found"));

@@ -15,6 +15,7 @@ import com.billkeeper.billkeeperbackend.user.api.model.UserResponse;
 import com.billkeeper.billkeeperbackend.user.persistence.UserRepository;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -45,6 +46,7 @@ public class FamilyService {
                 .build();
     }
 
+    @Transactional
     public void createFamily(CreateUpdateFamilyRequest request, User user) {
         if (user.getFamily() != null) {
             throw new BadRequestException("User already belongs to a family");
@@ -57,6 +59,7 @@ public class FamilyService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void addMemberToFamily(AddMemberToFamilyRequest request, User user) {
         if (user.getFamily() == null) {
             throw new BadRequestException("You must belong to a family to invite members");
@@ -68,6 +71,7 @@ public class FamilyService {
         invitationEmailNotifier.sendJoinFamilyInvitationEmail(invitation, user.getFamily());
     }
 
+    @Transactional
     public void acceptFamilyInvitation(UUID invitationId, User user) {
         Invitation invitation = invitationRepository.findById(invitationId)
                 .orElseThrow(() -> new NotFoundException("Invitation not found"));

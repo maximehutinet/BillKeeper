@@ -5,6 +5,7 @@ import com.billkeeper.billkeeperbackend.settings.api.model.SettingsResponse;
 import com.billkeeper.billkeeperbackend.settings.persistence.SettingsRepository;
 import com.billkeeper.billkeeperbackend.settings.persistence.model.Settings;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 
@@ -23,6 +24,7 @@ public class SettingsService {
                 .orElse(null);
     }
 
+    @Transactional
     public void applySettings(CreateUpdateSettingsRequest request) {
         settingsRepository.findLatestSettings().ifPresent(oldSettings -> oldSettings.setActive(false));
         Settings settings = new Settings();

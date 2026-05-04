@@ -14,6 +14,7 @@ import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import com.billkeeper.billkeeperbackend.utils.currency.BillUtils;
 import com.billkeeper.billkeeperbackend.utils.security.accessmanager.AccessManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -45,6 +46,7 @@ public class InsuranceSubmissionService {
         return buildSubmissionResponse(submission);
     }
 
+    @Transactional
     public void createSubmission(CreateUpdateInsuranceSubmissionRequest request, User user) {
         if (request.getName() == null || request.getName().isEmpty() || request.getBillIds().isEmpty()) {
             throw new BadRequestException("");
@@ -69,6 +71,7 @@ public class InsuranceSubmissionService {
         billRepository.saveAll(bills);
     }
 
+    @Transactional
     public void updateSubmission(UUID id, CreateUpdateInsuranceSubmissionRequest request, User user) {
         InsuranceSubmission submission = getSubmissionForUser(id, user);
         if (request.getName() != null && !request.getName().isEmpty()) {
@@ -86,12 +89,14 @@ public class InsuranceSubmissionService {
         submissionRepository.save(submission);
     }
 
+    @Transactional
     public void deleteSubmission(UUID id, User user) {
         InsuranceSubmission submission = getSubmissionForUser(id, user);
         applySubmissionDeletion(submission);
     }
 
-    private void applySubmissionDeletion(InsuranceSubmission submission) {
+    @Transactional
+    public void applySubmissionDeletion(InsuranceSubmission submission) {
         billRepository.findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(submission.getId())
                 .forEach(this::removeBillFromSubmission);
         submission.setActive(false);
@@ -129,7 +134,8 @@ public class InsuranceSubmissionService {
                 .sum();
     }
 
-    private void updateSubmissionBills(InsuranceSubmission submission, List<UUID> updatedSubmissionBills) {
+    @Transactional
+    public void updateSubmissionBills(InsuranceSubmission submission, List<UUID> updatedSubmissionBills) {
         List<Bill> submissionBills = billRepository.findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(submission.getId());
         List<UUID> submissionsBillIds = submissionBills
                 .stream()
@@ -153,12 +159,14 @@ public class InsuranceSubmissionService {
         billsToRemoveFromSubmission.forEach(this::removeBillFromSubmission);
     }
 
-    private void removeBillFromSubmission(Bill bill) {
+    @Transactional
+    public void removeBillFromSubmission(Bill bill) {
         bill.setSubmission(null);
         bill.setStatus(Bill.Status.TO_FILE);
         billRepository.save(bill);
     }
 
+    @Transactional
     public void updateStatus(InsuranceSubmission submission) {
         List<Bill> bills = billRepository.findBySubmissionIdAndActiveTrueOrderByDateTimeDesc(submission.getId());
         boolean allClosed = bills.stream().allMatch(this::isBillClosed);

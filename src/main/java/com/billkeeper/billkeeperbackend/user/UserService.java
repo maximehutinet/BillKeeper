@@ -14,6 +14,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -39,6 +40,7 @@ public class UserService {
         return new UserResponse(user);
     }
 
+    @Transactional
     public void updateProfilePicture(User user, MultipartFile multipartFile) {
         try {
             String filename = UUID.randomUUID() + "." + FilenameUtils.getExtension(multipartFile.getOriginalFilename());

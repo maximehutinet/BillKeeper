@@ -21,6 +21,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -50,6 +51,7 @@ public class DocumentService {
         this.accessManager = accessManager;
     }
 
+    @Transactional
     public void createDocument(MultipartFile multipartFile, User user) {
         try {
             String filename = UUID.randomUUID() + ".pdf";
@@ -62,6 +64,7 @@ public class DocumentService {
         }
     }
 
+    @Transactional
     public void create(String filename, Bill bill, User user) {
         Document document = new Document();
         document.setActive(true);
@@ -121,6 +124,7 @@ public class DocumentService {
         }
     }
 
+    @Transactional
     public void uploadForBill(Bill bill, MultipartFile multipartFile, User user) {
         try {
             String filename = UUID.randomUUID() + ".pdf";
@@ -133,6 +137,7 @@ public class DocumentService {
         }
     }
 
+    @Transactional
     public void updateDocument(UUID id, UpdateDocumentRequest request, User user) {
         Document document = getDocumentForUser(id, user);
         if (request.getDescription() != null) {
@@ -146,12 +151,14 @@ public class DocumentService {
         documentRepository.save(document);
     }
 
+    @Transactional
     public void deleteDocument(UUID id, User user) {
         Document document = getDocumentForUser(id, user);
         document.setActive(false);
         documentRepository.save(document);
     }
 
+    @Transactional
     public void deactivateForBill(UUID billId) {
         documentRepository.deactivateByBillId(billId);
     }

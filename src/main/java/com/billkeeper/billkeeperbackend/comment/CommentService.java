@@ -10,6 +10,7 @@ import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import com.billkeeper.billkeeperbackend.exception.UnauthorizedException;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -32,6 +33,7 @@ public class CommentService {
         return commentRepository.findByBillIdAndActiveTrueOrderByDateTimeDesc(billId);
     }
 
+    @Transactional
     public void createComment(CreateUpdateCommentRequest request, Bill bill, User user) {
         Comment comment = new Comment();
         comment.setDateTime(OffsetDateTime.now());
@@ -43,6 +45,7 @@ public class CommentService {
         commentEmailNotifier.notifyTaggedUsers(request, comment);
     }
 
+    @Transactional
     public void updateComment(CreateUpdateCommentRequest request, UUID id, User user) {
         Comment comment = getCommentForUser(id, user);
         comment.setDateTime(OffsetDateTime.now());
@@ -50,6 +53,7 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
+    @Transactional
     public void deleteComment(UUID id, User user) {
         Comment comment = getCommentForUser(id, user);
         comment.setActive(false);

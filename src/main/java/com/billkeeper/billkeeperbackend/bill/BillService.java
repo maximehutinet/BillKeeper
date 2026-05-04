@@ -19,6 +19,7 @@ import com.billkeeper.billkeeperbackend.utils.security.accessmanager.AccessManag
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -98,6 +99,7 @@ public class BillService {
         return bill;
     }
 
+    @Transactional
     public void update(Bill bill, UpdateBillRequest request) {
         Optional.ofNullable(request.getBeneficiary())
                 .flatMap(b -> beneficiaryRepository.findById(b.getId()))
@@ -115,6 +117,7 @@ public class BillService {
         }
     }
 
+    @Transactional
     public void updatePayment(Bill bill, OffsetDateTime paymentDateTime) {
         applyPaymentUpdate(bill, paymentDateTime);
         billRepository.save(bill);
@@ -127,6 +130,7 @@ public class BillService {
         }
     }
 
+    @Transactional
     public void updateReimbursement(Bill bill, UpdateBillReimbursementRequest request) {
         bill.setReimbursementDateTime(request.getReimbursementDateTime());
         bill.setReimbursedAmount(request.getReimbursedAmount());
@@ -136,6 +140,7 @@ public class BillService {
         billRepository.save(bill);
     }
 
+    @Transactional
     public void updateStatus(Bill bill, Bill.Status status) {
         if (status != null) {
             bill.setStatus(status);
@@ -146,6 +151,7 @@ public class BillService {
         }
     }
 
+    @Transactional
     public void delete(Bill bill) {
         documentService.deactivateForBill(bill.getId());
         bill.setActive(false);
