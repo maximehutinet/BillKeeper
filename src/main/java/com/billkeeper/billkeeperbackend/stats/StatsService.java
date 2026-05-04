@@ -3,12 +3,12 @@ package com.billkeeper.billkeeperbackend.stats;
 import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.stats.api.model.StatsResponse;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-@Transactional
+@Transactional(readOnly = true)
 @Service
 public class StatsService {
 

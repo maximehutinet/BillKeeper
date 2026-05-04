@@ -14,8 +14,8 @@ import com.billkeeper.billkeeperbackend.invitation.persistence.model.Invitation;
 import com.billkeeper.billkeeperbackend.user.api.model.UserResponse;
 import com.billkeeper.billkeeperbackend.user.persistence.UserRepository;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;

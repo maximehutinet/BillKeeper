@@ -16,10 +16,11 @@ import com.billkeeper.billkeeperbackend.submission.InsuranceSubmissionService;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import com.billkeeper.billkeeperbackend.utils.parsing.BillParsingService;
 import com.billkeeper.billkeeperbackend.utils.security.accessmanager.AccessManager;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -75,6 +76,7 @@ public class BillService {
                 .orElseThrow(() -> new NotFoundException("Bill not found"));
     }
 
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void createBill(MultipartFile multipartFile, User user) {
         try {
             String filename = UUID.randomUUID() + ".pdf";
@@ -83,7 +85,7 @@ public class BillService {
             Bill bill = createEmptyBill(user);
             documentService.create(filename, bill, user);
             ParsingJob parsingJob = parsingJobService.create(bill);
-            billParsingService.parseAndUpdateBill(bill, destination.toFile(), parsingJob);
+            billParsingService.parseAndUpdateBill(bill.getId(), destination.toFile(), parsingJob.getId());
         } catch (IOException | RuntimeException e) {
             logger.error(e.getMessage());
             throw new InternalServerErrorException("Error while uploading file");

@@ -4,8 +4,8 @@ import com.billkeeper.billkeeperbackend.settings.api.model.CreateUpdateSettingsR
 import com.billkeeper.billkeeperbackend.settings.api.model.SettingsResponse;
 import com.billkeeper.billkeeperbackend.settings.persistence.SettingsRepository;
 import com.billkeeper.billkeeperbackend.settings.persistence.model.Settings;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 

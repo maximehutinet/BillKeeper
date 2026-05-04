@@ -9,8 +9,8 @@ import com.billkeeper.billkeeperbackend.comment.persistence.model.Comment;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import com.billkeeper.billkeeperbackend.exception.UnauthorizedException;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;

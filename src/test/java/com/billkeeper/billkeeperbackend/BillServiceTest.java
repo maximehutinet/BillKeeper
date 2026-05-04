@@ -66,7 +66,7 @@ public class BillServiceTest {
         verify(billRepository).save(any(Bill.class));
         verify(documentService).create(anyString(), any(Bill.class), eq(user));
         verify(parsingJobService).create(any(Bill.class));
-        verify(billParsingService).parseAndUpdateBill(any(Bill.class), any(File.class), eq(parsingJob));
+        verify(billParsingService).parseAndUpdateBill(any(), any(File.class), eq(parsingJob.getId()));
     }
 
     @Test

@@ -5,8 +5,8 @@ import com.billkeeper.billkeeperbackend.beneficiary.api.model.CreateUpdateBenefi
 import com.billkeeper.billkeeperbackend.beneficiary.persistence.BeneficiaryRepository;
 import com.billkeeper.billkeeperbackend.beneficiary.persistence.model.Beneficiary;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
