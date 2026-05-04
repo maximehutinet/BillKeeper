@@ -4,11 +4,9 @@ import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
 import com.billkeeper.billkeeperbackend.stats.api.model.StatsResponse;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-@Transactional(readOnly = true)
 @Service
 public class StatsService {
 

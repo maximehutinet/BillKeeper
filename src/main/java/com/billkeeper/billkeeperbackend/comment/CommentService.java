@@ -10,14 +10,12 @@ import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import com.billkeeper.billkeeperbackend.exception.UnauthorizedException;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional
 public class CommentService {
     private final CommentRepository commentRepository;
     private final BillService billService;

@@ -6,7 +6,6 @@ import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import com.billkeeper.billkeeperbackend.user.api.model.UserResponse;
 import com.billkeeper.billkeeperbackend.user.persistence.UserRepository;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
-import jakarta.transaction.Transactional;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
-@Transactional
 @Service
 public class UserService {
     private final UserRepository userRepository;

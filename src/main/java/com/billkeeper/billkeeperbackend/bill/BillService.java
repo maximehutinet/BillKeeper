@@ -19,8 +19,6 @@ import com.billkeeper.billkeeperbackend.utils.security.accessmanager.AccessManag
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -32,7 +30,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@Transactional
 public class BillService {
 
     private final AccessManager accessManager;
@@ -76,7 +73,6 @@ public class BillService {
                 .orElseThrow(() -> new NotFoundException("Bill not found"));
     }
 
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void createBill(MultipartFile multipartFile, User user) {
         try {
             String filename = UUID.randomUUID() + ".pdf";

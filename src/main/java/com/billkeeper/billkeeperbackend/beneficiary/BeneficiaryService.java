@@ -6,12 +6,10 @@ import com.billkeeper.billkeeperbackend.beneficiary.persistence.BeneficiaryRepos
 import com.billkeeper.billkeeperbackend.beneficiary.persistence.model.Beneficiary;
 import com.billkeeper.billkeeperbackend.exception.NotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
-@Transactional
 @Service
 public class BeneficiaryService {
     private final BeneficiaryRepository beneficiaryRepository;

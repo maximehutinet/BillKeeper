@@ -13,14 +13,12 @@ import com.billkeeper.billkeeperbackend.user.api.model.UserResponse;
 import com.billkeeper.billkeeperbackend.user.persistence.model.User;
 import com.billkeeper.billkeeperbackend.utils.currency.BillUtils;
 import com.billkeeper.billkeeperbackend.utils.security.accessmanager.AccessManager;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@Transactional
 @Service
 public class InsuranceSubmissionService {
     private final InsuranceSubmissionRepository submissionRepository;
