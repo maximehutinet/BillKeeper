@@ -1,0 +1,14 @@
+<div id="post-comment-wrapper" class="textarea-wrapper">
+  <div id="wrapper">
+    <textarea pTextarea #commentTextArea (input)="onCommentInputChange($event)" [(ngModel)]="content" rows="5" cols="40" style="resize: none"></textarea>
+    <div id="mirror-text-area" #mirrorTextArea></div>
+    @if (showSuggestedUsers) {
+      <app-suggested-users-menu
+        [users]="suggestedUsers"
+        (onClickUser)="onClickSuggestedUser($event)"
+        [ngStyle]="{ top: suggestedUsersDivPosition.top + 'px', left: suggestedUsersDivPosition.left + 'px' }"
+      ></app-suggested-users-menu>
+    }
+  </div>
+  <p-button [disabled]="content.length === 0" severity="success" label="Add" (click)="addComment()"/>
+</div>

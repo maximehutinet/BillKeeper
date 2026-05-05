@@ -1,0 +1,51 @@
+<app-main-layout>
+  <ng-container main-content>
+    <app-top-bar>
+      @if (totalSelectedSubmissionsValue > 0) {
+        <h1 left>Submissions ({{ totalSelectedSubmissionsValue | currency:'USD':true }})</h1>
+      } @else {
+        <h1 left>Submissions</h1>
+      }
+
+      <div id="submissions-filters-wrapper" right>
+        @if (submissions.length > 0) {
+          <app-submissions-filter
+            [submissions]="submissions"
+            (submissionsChange)="onSubmissionFilterChange($event)"
+          ></app-submissions-filter>
+          <p-floatlabel id="search-bar">
+            <p-iconfield>
+              <p-inputicon class="pi pi-search" />
+              <input pInputText id="input-search" [(ngModel)]="searchKeyword" (keyup)="applySearchFilter()" autocomplete="off" />
+            </p-iconfield>
+            <label for="input-search">Search</label>
+          </p-floatlabel>
+        }
+      </div>
+    </app-top-bar>
+
+    @if (submissions.length > 0) {
+      <app-submissions-table
+        [submissions]="filteredSubmissions"
+        (onMarkAsPaid)="onMarkSubmissionAsPaid($event)"
+        (onMarkAsReimbursementInProgress)="onMarkSubmissionAsReimbursementInProgress($event)"
+        (onMarkAsReimbursed)="onMarkSubmissionAsReimbursed($event)"
+        (onDeleteSubmission)="onDeleteSubmission($event)"
+        (onAddEclaimId)="onAddEclaimId($event)"
+        (onSubmissionCheckboxChange)="onSubmissionCheckboxChange($event)"
+      ></app-submissions-table>
+    }
+
+    <app-edit-name-dialog
+      header="eClaimId"
+      [(showDialog)]="showAddEclaimIdDialog"
+      (onValidate)="onValidateEclaimIdValue($event)"
+    ></app-edit-name-dialog>
+
+    <app-bill-reimbursement-dialog
+      [(showDialog)]="showAddReimbursedAmountDialog"
+      [bills]="dialogReimbursedBills"
+      (onValidateBillsReimbursement)="onValidateBillsReimbursement($event)"
+    ></app-bill-reimbursement-dialog>
+  </ng-container>
+</app-main-layout>

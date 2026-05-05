@@ -1,0 +1,112 @@
+<app-main-layout>
+  <ng-container main-content>
+    <app-top-bar-with-back-button>
+      <p-button right icon="pi pi-save" (onClick)="onSaveBill()" severity="success" label="Save"/>
+    </app-top-bar-with-back-button>
+
+    <div id="edit-bill-wrapper">
+      @if (form) {
+        <form [formGroup]="form" class="edit-form">
+          <p-floatlabel>
+            <input id="bill-name-input" pInputText formControlName="name" />
+            <label for="bill-name-input">Name</label>
+          </p-floatlabel>
+
+          <p-floatlabel>
+            <p-inputmask id="bill-servicedatetime-input" mask="99/99/9999" slotChar="dd/mm/yyyy" formControlName="serviceDateTime" />
+            <label for="bill-servicedatetime-input">Date of service</label>
+          </p-floatlabel>
+
+          <div class="inline-fields-wrapper">
+            <p-floatlabel>
+              <p-inputnumber inputId="bill-amount-input" mode="currency" [currency]="billCurrency?.value ?? 'CHF'" locale="en-US" formControlName="amount" />
+              <label for="bill-amount-input">Amount</label>
+            </p-floatlabel>
+
+            <p-floatlabel>
+              <p-select
+                id="bill-currency-dropdown"
+                [(ngModel)]="billCurrency"
+                [ngModelOptions]="{standalone: true}"
+                [options]="currencyOptions"
+                optionLabel="name"
+                optionValue="currency"
+                [style]="{'width': '8rem'}"
+              />
+              <label for="bill-currency-dropdown">Currency</label>
+            </p-floatlabel>
+
+          </div>
+
+          <p-floatlabel>
+            <p-autocomplete formControlName="provider" [suggestions]="providersOptions" (completeMethod)="onProviderAutocompleteChange($event)" inputId="bill-provider-input" />
+            <label for="bill-provider-input">Provider</label>
+          </p-floatlabel>
+
+          <p-floatlabel>
+            <p-select
+              id="bill-status-dropdown"
+              [(ngModel)]="billStatus"
+              [ngModelOptions]="{standalone: true}"
+              [options]="statusOptions"
+              optionLabel="name"
+              optionValue="billStatus"
+            />
+            <label for="bill-status-dropdown">Status</label>
+          </p-floatlabel>
+
+          @if (this.form.value.paidDateTime) {
+            <div class="inline-fields-wrapper">
+              <p-floatlabel>
+                <p-inputmask id="bill-paiddatetime-input" mask="99/99/9999" slotChar="dd/mm/yyyy" formControlName="paidDateTime" />
+                <label for="bill-paiddatetime-input">Paid on</label>
+              </p-floatlabel>
+
+              <p-button (onClick)="onDeletePaidOn()" severity="danger" icon="pi pi-times"></p-button>
+            </div>
+          }
+
+          <div class="inline-fields-wrapper">
+            @if (this.form.value.reimbursementDateTime && this.form.value.reimbursedAmount) {
+              <p-floatlabel>
+                <p-inputnumber inputId="bill-reimbursedamount-input" mode="currency" currency="USD" locale="en-US" formControlName="reimbursedAmount" />
+                <label for="bill-amount-input">Reimbursed</label>
+              </p-floatlabel>
+
+              <div class="inline-fields-wrapper">
+                <p-floatlabel>
+                  <p-inputmask id="bill-reimbursementdatetime-input" mask="99/99/9999" slotChar="dd/mm/yyyy" formControlName="reimbursementDateTime" />
+                  <label for="bill-reimbursementdatetime-input">On</label>
+                </p-floatlabel>
+
+                <p-button (onClick)="onDeleteReimbursedOn()" severity="danger" icon="pi pi-times"></p-button>
+              </div>
+            }
+          </div>
+
+          <p-floatlabel>
+            <p-select
+              id="bill-beneficiary-dropdown"
+              formControlName="beneficiary"
+              [options]="beneficiaryOptions"
+              optionLabel="name"
+              optionValue="beneficiary"
+              [style]="{'width': '8rem'}"
+            />
+            <label for="bill-beneficiary-dropdown">Beneficiary</label>
+          </p-floatlabel>
+        </form>
+      }
+
+      @if (documents.length > 0) {
+        <p-fieldset legend="Documents">
+          <app-documents-viewer
+            [documents]="documents"
+            [editMode]="false"
+          ></app-documents-viewer>
+        </p-fieldset>
+      }
+
+    </div>
+  </ng-container>
+</app-main-layout>

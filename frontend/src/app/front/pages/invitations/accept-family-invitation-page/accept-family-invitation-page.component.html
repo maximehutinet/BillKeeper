@@ -1,0 +1,10 @@
+<app-main-layout>
+  <ng-container main-content>
+    <app-success-dialog
+      header="You're a new member!"
+      [text]="successDialogMessage"
+      [showDialog]="showSuccessDialog"
+      (showDialogChange)="onValidate()"
+    ></app-success-dialog>
+  </ng-container>
+</app-main-layout>

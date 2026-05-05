@@ -1,0 +1,6 @@
+<p-dialog [header]="header" [modal]="true" [visible]="showDialog" (visibleChange)="showDialogChange.emit($event)">
+  <div class="textarea-wrapper">
+    <p>{{ text }}</p>
+    <p-button severity="success" label="OK" (click)="showDialogChange.emit(false)"/>
+  </div>
+</p-dialog>

@@ -1,0 +1,147 @@
+@use "theme/breakpoints" as *;
+
+#side-menu {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  background-color: var(--app-side-menu-background-color);
+
+  .label-with-icon {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .menu-text {
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    width: unset;
+  }
+
+  &.closed {
+    padding: 0.5rem;
+
+    .menu-text {
+      opacity: 0;
+      width: 0;
+    }
+
+    #menu-header {
+      justify-content: center;
+    }
+
+    #menu-content {
+      .menu-group-title {
+        visibility: hidden;
+      }
+
+      .menu-item {
+        justify-content: center;
+      }
+    }
+  }
+
+  #menu-header {
+    display: flex;
+    justify-content: end;
+
+    i {
+      color: var(--app-white-color);
+      font-size: var(--app-side-menu-item-font-size);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 4px;
+
+      &:hover {
+        background-color: var(--app-black-color);
+      }
+    }
+  }
+
+  #menu-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .menu-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+
+      .menu-group-title {
+        color: var(--app-side-menu-group-title-color);
+        font-size: var(--app-side-menu-title-font-size);
+        font-weight: var(--app-font-medium);
+      }
+
+      .menu-group-items {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+
+        .menu-item {
+          padding: 0.7rem;
+          font-size: var(--app-side-menu-item-font-size);
+          cursor: pointer;
+          border-radius: 4px;
+          font-weight: var(--app-font-regular);
+          display: flex;
+          align-items: center;
+
+          &:hover {
+            background-color: var(--app-black-color);
+          }
+
+          &.active {
+            background-color: var(--app-side-menu-seleted-item-background-color);
+          }
+
+          i {
+            color: var(--app-side-menu-group-title-color);;
+          }
+
+          span {
+            color: var(--app-side-menu-item-color);
+          }
+        }
+      }
+    }
+  }
+
+  #menu-footer {
+    margin-top: auto;
+
+    #log-out-button {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.7rem;
+      cursor: pointer;
+      border-radius: 4px;
+
+      &:hover {
+        background-color: var(--app-black-color);
+      }
+
+      #user-detail {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: var(--app-side-menu-item-font-size);
+        font-weight: var(--app-font-medium);
+        color: var(--app-side-menu-item-color);;
+      }
+
+      i {
+        font-size: var(--app-side-menu-item-font-size);
+        color: var(--app-side-menu-group-title-color);
+      }
+    }
+  }
+}
+
+// Temporary fix so the menu stay at the bottom
+:host ::ng-deep p-menu > p-motion {
+  top: 80vh !important;
+}

@@ -1,0 +1,11 @@
+@if (bill.status !== BillStatus.TO_FILE && bill.submissionId) {
+  <p-badge
+    [routerLink]="'/submissions/' + bill.submissionId"
+    pTooltip="See submission"
+    showDelay="500"
+    hideDelay="300"
+    [value]="billStatusToString(bill.status)"
+    [severity]="billStatusBadge(bill.status)" />
+} @else {
+  <p-badge [value]="billStatusToString(bill.status)" [severity]="billStatusBadge(bill.status)" />
+}

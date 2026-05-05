@@ -1,0 +1,201 @@
+<app-main-layout (drop)="onDrop($event)" (dragenter)="onDragEnter()" (dragleave)="onDragLeave()">
+  <ng-container main-content>
+    <app-top-bar-with-back-button>
+      <div right class="buttons-wrapper">
+        @if (!bill.paidDateTime) {
+          <p-button severity="help"
+                    icon="pi pi-dollar"
+                    (onClick)="onMarkAsPaid()"
+                    pTooltip="Mark as paid"
+                    showDelay="500"
+                    hideDelay="300">
+          </p-button>
+        }
+
+        @if (bill.status?.valueOf() === BillStatus.FILED.valueOf()) {
+          <p-button (onClick)="onMarkAsReimbursementInProgress()"
+                    severity="help"
+                    icon="pi pi-spinner-dotted"
+                    pTooltip="Mark as reimbursement in progress"
+                    showDelay="500"
+                    hideDelay="300"
+          ></p-button>
+        }
+
+        @if (bill.status?.valueOf() === BillStatus.FILED.valueOf()) {
+          <p-button (onClick)="onRejectBill()"
+                    severity="danger"
+                    icon="pi pi-ban"
+                    pTooltip="Mark as rejected"
+                    showDelay="500"
+                    hideDelay="300"
+          ></p-button>
+        }
+
+        @if (bill.status?.valueOf() === BillStatus.REIMBURSEMENT_IN_PROGRESS.valueOf()) {
+          <p-button severity="success"
+                    icon="pi pi-check-circle"
+                    (onClick)="onMarkAsReimbursed()"
+                    pTooltip="Mark as reimbursed"
+                    showDelay="500"
+                    hideDelay="300"
+          ></p-button>
+        }
+
+        <p-button severity="info" icon="pi pi-pencil" [routerLink]="'/bill/' + bill.id + '/edit'"></p-button>
+
+        @if (!bill.submissionId) {
+          <p-button (onClick)="onDeleteBill()" severity="danger" icon="pi pi-trash"></p-button>
+        }
+      </div>
+    </app-top-bar-with-back-button>
+
+    @if (bill.status?.valueOf() === BillStatus.FILED.valueOf()) {
+      <app-bill-reimbursement-dialog
+        [(showDialog)]="showAddReimbursedAmountDialog"
+        [bills]="[bill]"
+        (onValidateBillsReimbursement)="onValidateBillReimbursement($event[0])"
+      ></app-bill-reimbursement-dialog>
+    }
+
+    <p-fieldset legend="Bill detail" [toggleable]="true">
+      <div class="card-body">
+        <div class="card-entry">
+          <label>Name: </label>
+          <span>
+            <app-value-loading-or-ns [value]="bill.name" [loading]="bill.parsingJobStatus === ParsingJobStatus.IN_PROGRESS">
+              {{ bill.name }}
+              <app-copy-to-clipboard-icon [value]="bill.name!"></app-copy-to-clipboard-icon>
+            </app-value-loading-or-ns>
+          </span>
+        </div>
+        <div class="card-entry">
+          <label>Date of service: </label>
+          <span>
+            <app-value-loading-or-ns [value]="bill.serviceDateTime" [loading]="bill.parsingJobStatus === ParsingJobStatus.IN_PROGRESS">
+              {{ bill.serviceDateTime | date: 'longDate'}}
+            </app-value-loading-or-ns>
+          </span>
+        </div>
+        <div class="card-entry">
+          <label>Amount: </label>
+          <span>
+            <app-value-loading-or-ns [value]="bill.amount" [loading]="bill.parsingJobStatus === ParsingJobStatus.IN_PROGRESS">
+              {{ bill.amount | currency:bill.currency }}
+
+              @if (bill.amount) {
+                <app-copy-to-clipboard-icon [value]="bill.amount.toString()"></app-copy-to-clipboard-icon>
+              }
+            </app-value-loading-or-ns>
+          </span>
+        </div>
+        <div class="card-entry">
+          <label>Provider: </label>
+          <span>
+            <app-value-loading-or-ns [value]="bill.provider" [loading]="bill.parsingJobStatus === ParsingJobStatus.IN_PROGRESS">
+              {{ bill.provider }}
+              <app-copy-to-clipboard-icon [value]="bill.provider!"></app-copy-to-clipboard-icon>
+            </app-value-loading-or-ns>
+          </span>
+        </div>
+        <div class="card-entry">
+          <label>Status: </label>
+          <span><app-bill-status-badge [bill]="bill"></app-bill-status-badge></span>
+        </div>
+
+        @if (bill.reimbursementDateTime && bill.reimbursedAmount) {
+          <div class="card-entry">
+            <label>Reimbursed: </label>
+            <span>{{ bill.reimbursedAmount | currency: 'USD' }} on {{ bill.reimbursementDateTime | date: 'longDate' }}</span>
+          </div>
+        }
+
+        @if (bill.paidDateTime) {
+          <div class="card-entry">
+            <label>Paid on: </label>
+            <span>{{ bill.paidDateTime | date: 'longDate' }}</span>
+          </div>
+        }
+
+        <div class="card-entry">
+          <label>Created on: </label>
+          <span>{{ bill.dateTime | date: 'longDate' }}</span>
+
+          @if (bill.user) {
+            <span>by {{ bill.user.firstname }}</span>
+          }
+        </div>
+        <div class="card-entry">
+          <label>Beneficiary: </label>
+          <span>
+            <app-value-loading-or-ns [value]="bill.beneficiary?.firstname" [loading]="bill.parsingJobStatus === ParsingJobStatus.IN_PROGRESS">
+              {{ bill.beneficiary?.firstname }}
+            </app-value-loading-or-ns>
+          </span>
+        </div>
+      </div>
+    </p-fieldset>
+
+    <p-fieldset [legend]="'Comments (' + comments.length + ')'" [toggleable]="true" [collapsed]="false">
+      <div id="comments-wrapper">
+        @for (comment of comments; track comment) {
+          <app-comment
+            [comment]="comment"
+            (onEditEvent)="onShowEditCommentDialog(comment)"
+            (onDeleteEvent)="onDeleteComment(comment.id)"
+          ></app-comment>
+        }
+
+        <app-add-comment-textarea
+          (onAddComment)="onAddComment($event)"
+        ></app-add-comment-textarea>
+      </div>
+    </p-fieldset>
+
+    <app-edit-comment-dialog
+      [comment]="editComment"
+      (onValidateCommentEdit)="onEditComment($event)"
+      [(showDialog)]="editCommentDialogVisible"
+    ></app-edit-comment-dialog>
+
+    <p-fieldset [legend]="'Documents (' + documents.length + ')'" [toggleable]="true">
+      <div id="documents-buttons-wrapper">
+        @if (documents.length > 1) {
+          <p-button (click)="downloadBillDocumentsMerged()"
+                    label="Download {{documents.length}} documents"
+                    icon="pi pi-download"
+                    severity="success"
+          />
+        }
+
+        <div id="upload-file-btn" (click)="uploadInput.click()">
+          <p-button label="Upload documents" icon="pi pi-file-arrow-up"></p-button>
+          <input #uploadInput type="file" accept=".pdf" [multiple]="true" (change)="onUploadDocuments($event)">
+        </div>
+      </div>
+
+      <app-documents-viewer
+        [documents]="documents"
+        [editMode]="true"
+        (onEditDocumentDescription)="onEditDocumentDescription($event)"
+        (onDownloadDocument)="downloadBillDocument($event)"
+        (onDeleteDocument)="onDeleteBillDocument($event)"
+      ></app-documents-viewer>
+
+      <app-edit-name-dialog
+        header="Document description"
+        [value]="editedDocument.description ?? ''"
+        [(showDialog)]="editDocumentDescriptionDialogVisible"
+        (onValidate)="onValidateNewDocumentDescription($event)"
+      ></app-edit-name-dialog>
+    </p-fieldset>
+
+    @if (submissionNavigation) {
+      <app-left-right-navigation-arrows
+        [routerLinks]="submissionNavigation"
+        [navigationIndex]="navigationIndex"
+        [validateLink]="validateLink"
+      ></app-left-right-navigation-arrows>
+    }
+  </ng-container>
+</app-main-layout>

@@ -1,0 +1,9 @@
+<div class="document-card-wrapper">
+  <i class="pi pi-file-pdf"></i>
+  <span>{{ document.dateTime | date: 'mediumDate' }}</span>
+  <div class="buttons-wrapper">
+    <p-button icon="pi pi-eye" (onClick)="onSeeDocumentClick.emit()" [rounded]="true" severity="info"/>
+    <p-button icon="pi pi-link" (onClick)="onLinkDocumentClick.emit()" [rounded]="true" severity="help"/>
+    <p-button icon="pi pi-trash" (onClick)="onDeleteDocumentClick.emit()" [rounded]="true" severity="danger"/>
+  </div>
+</div>

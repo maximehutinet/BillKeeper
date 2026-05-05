@@ -1,0 +1,42 @@
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+#beneficiary-fieldset-content {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  margin-top: 1rem;
+  gap: 1rem;
+
+  #beneficiaries-wrapper {
+    width: 100%;
+  }
+
+  .beneficiary-wrapper {
+    display: flex;
+    flex-grow: 0;
+    align-items: center;
+    font-size: var(--app-comment-text-font-size);
+    justify-content: space-between;
+    padding: 0.5rem;
+    border: 1px solid var(--p-inputtext-border-color);
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+
+    .buttons-wrapper {
+      gap: 0;
+    }
+  }
+}
+
+:host ::ng-deep {
+  --p-button-icon-only-width: 1rem;
+
+  .p-button-sm .p-button-icon {
+    font-size: 0.7rem;
+  }
+}

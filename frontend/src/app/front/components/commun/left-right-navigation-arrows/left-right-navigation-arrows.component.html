@@ -1,0 +1,28 @@
+<div id="navigation-arrows-wrapper">
+  <div>
+    <div [class.invisible]="!routerLinks?.leftRouterLink?.link"
+         class="round-button arrow-button"
+         [routerLink]="routerLinks?.leftRouterLink?.link"
+         [queryParams]="routerLinks?.leftRouterLink?.queryParams"
+    >
+      <i class="pi pi-arrow-left"></i>
+    </div>
+
+    @if (navigationIndex) {
+      <span>{{ navigationIndex.currentPage + '/' + navigationIndex.totalPages }}</span>
+    }
+
+    <div [class.invisible]="!routerLinks?.rightRouterLink?.link"
+         class="round-button arrow-button"
+         [routerLink]="routerLinks?.rightRouterLink?.link"
+         [queryParams]="routerLinks?.rightRouterLink?.queryParams"
+    >
+      <i class="pi pi-arrow-right"></i>
+    </div>
+
+    <div class="round-button p-button-success" [routerLink]="validateLink?.link">
+      <i class="pi pi-check"></i>
+    </div>
+
+  </div>
+</div>

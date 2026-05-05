@@ -1,0 +1,44 @@
+<div id="side-menu" [class.closed]="!open">
+  <div id="menu-header">
+    @if (open) {
+      <i class="pi pi-times" (click)="openChange.emit(false)"></i>
+    } @else {
+      <i class="pi pi-bars" (click)="openChange.emit(true)"></i>
+    }
+  </div>
+  <div id="menu-content">
+    @for (item of items; track item) {
+      <div class="menu-group">
+        <div class="menu-group-title">
+          <span>{{ item.label | uppercase }}</span>
+        </div>
+        <div class="menu-group-items">
+          @for (child of item.items; track child) {
+            <div class="menu-item label-with-icon" [class.active]="isCurrentPage(child.link)" [routerLink]="child.link">
+              @if (child.icon) {
+                <i [class]="child.icon"></i>
+              }
+
+              <span class="menu-text">{{ child.label }}</span>
+
+              @if (child.badgeValue && child.badgeValue > 0) {
+                <span>
+                <p-badge [value]="child.badgeValue" severity="danger" badgeSize="small"></p-badge>
+              </span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+  <div id="menu-footer">
+    <p-menu #menu [model]="profileItems"  [popup]="true" />
+    <div id="log-out-button" (click)="menu.toggle($event)">
+      <div id="user-detail">
+        <p-avatar [image]="userProfilePicture" size="normal" shape="circle"/>
+        <span class="menu-text">{{ userFirstname }}</span>
+      </div>
+    </div>
+  </div>
+</div>

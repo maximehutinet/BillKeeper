@@ -1,0 +1,8 @@
+{
+  "serverUrl": "",
+  "keycloakConfiguration": {
+    "url": "",
+    "realm": "",
+    "clientId": ""
+  }
+}

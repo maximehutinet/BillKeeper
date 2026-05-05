@@ -1,0 +1,24 @@
+p-table {
+  .bill-action {
+    align-items: center;
+
+    i {
+      cursor: pointer;
+    }
+  }
+
+  td:not(.td-checkbox, .bill-action) {
+    cursor: pointer;
+  }
+}
+
+.p-menu-item-label {
+  font-size: 0.9rem;
+}
+
+:host ::ng-deep {
+  .p-sortable-column-icon {
+    height: 0.7rem;
+    width: 0.7rem;
+  }
+}

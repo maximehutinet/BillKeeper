@@ -1,0 +1,25 @@
+<div id="page-wrapper">
+  <div id="side-menu-wrapper" [class.transition-active]="transitionAnimationActive" [class.closed]="!menuOpen">
+      <app-side-menu
+        [(open)]="menuOpen"
+        (openChange)="onMenuOpenChange($event)"
+      ></app-side-menu>
+  </div>
+  <div id="main-content-wrapper" [class.transition-active]="transitionAnimationActive" [class.menu-closed]="!menuOpen">
+    @if (layoutService.pageLoading) {
+      <div id="loading-overlay">
+        <app-progress-spinner></app-progress-spinner>
+      </div>
+    } @else {
+      <ng-content select="[main-content]"></ng-content>
+    }
+
+  </div>
+</div>
+<app-toast-message></app-toast-message>
+<app-validation-dialog></app-validation-dialog>
+
+@if (layoutService.pageFocusing) {
+  <app-full-screen-focusing></app-full-screen-focusing>
+}
+

@@ -1,0 +1,16 @@
+:root {
+  --app-light-grey-color: #F3F4F8;
+  --app-white-color: #FFFFFF;
+  --app-black-color: #000000;
+  --app-dark-grey-color: #292E3D;
+  --app-light-dark-grey-color: #3E435B;
+  --app-turquoise-blue-color: #85a2b6;
+
+  --app-side-menu-background-color: var(--app-dark-grey-color);
+  --app-side-menu-group-title-color: var(--app-turquoise-blue-color);
+  --app-side-menu-item-color: var(--app-white-color);
+  --app-side-menu-seleted-item-color: var(--app-black-color);
+  --app-side-menu-seleted-item-background-color: var(--app-light-dark-grey-color);
+
+  --app-background-color: var(--app-light-grey-color);
+}

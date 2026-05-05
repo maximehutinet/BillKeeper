@@ -1,0 +1,6 @@
+<app-top-bar>
+  <p-button left (onClick)="location.back()" icon="pi pi-arrow-left" [rounded]="true"/>
+  <div right>
+    <ng-content select="[right]"></ng-content>
+  </div>
+</app-top-bar>

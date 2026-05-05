@@ -1,0 +1,31 @@
+@use "theme/breakpoints" as *;
+
+:root {
+  font-family: 'Roboto', serif, sans-serif;
+
+  --app-font-light: 300;
+  --app-font-regular: 400;
+  --app-font-medium: 500;
+  --app-font-bold: 700;
+  --app-font-extra-bold: 800;
+  --app-font-black: 900;
+
+  --app-base-font-size: 1rem;
+  --app-text-font-size: 0.9rem;
+  --app-comment-text-font-size: 0.9rem;
+  --app-comment-datetime-font-size: 0.8rem;
+  --app-side-menu-title-font-size: 0.75rem;
+  --app-side-menu-item-font-size: 0.875rem;
+  --app-stats-card-text-font-size: 1rem;
+  --app-stats-card-value-font-size: 1.8rem;
+
+  @include from($md) {
+    --app-text-font-size: var(--app-base-font-size);
+    --app-comment-text-font-size: 0.9rem;
+    --app-comment-datetime-font-size: 0.8rem;
+    --app-side-menu-title-font-size: 0.75rem;
+    --app-side-menu-item-font-size: 0.875rem;
+    --app-stats-card-text-font-size: 1.2rem;
+    --app-stats-card-value-font-size: 2rem;
+  }
+}

@@ -1,0 +1,64 @@
+<app-main-layout>
+  <ng-container main-content>
+    <app-top-bar>
+      <h1 left>Settings</h1>
+      <p-button right icon="pi pi-save" (onClick)="onSave()" severity="success" label="Save"/>
+    </app-top-bar>
+
+    <p-fieldset legend="Exchange rates" [toggleable]="true">
+      @if (form) {
+        <form [formGroup]="form">
+          <p-floatlabel>
+            <p-inputnumber inputId="euro-usd-input" [minFractionDigits]="1" [min]="0.1" [max]="2"
+                           formControlName="euroToUsdExchangeRate"/>
+            <label for="euro-usd-input">Euro to USD exchange rate</label>
+          </p-floatlabel>
+
+          <p-floatlabel>
+            <p-inputnumber inputId="chf-usd-input" [minFractionDigits]="1" [min]="0.1" [max]="2"
+                           formControlName="chfToUsdExchangeRate"/>
+            <label for="chf-usd-input">CHF to USD exchange rate</label>
+          </p-floatlabel>
+        </form>
+      }
+    </p-fieldset>
+
+    <p-fieldset legend="Beneficiaries" [toggleable]="true">
+      <div id="beneficiary-fieldset-content">
+        <div id="beneficiaries-wrapper">
+          @for (beneficiary of beneficiaries; track beneficiary.id) {
+            <div class="beneficiary-wrapper">
+              <span>{{ beneficiary.firstname }}</span>
+              <div class="buttons-wrapper">
+                <p-button
+                  icon="pi pi-pencil"
+                  size="small"
+                  (onClick)="onEditBeneficiaryName(beneficiary)"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="info"
+                ></p-button>
+                <p-button
+                  icon="pi pi-trash"
+                  size="small"
+                  (onClick)="onDeleteBeneficiary(beneficiary)"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="danger"
+                ></p-button>
+              </div>
+            </div>
+          }
+        </div>
+        <p-button severity="success" label="Add" (click)="onAddBeneficiary()"/>
+      </div>
+    </p-fieldset>
+
+    <app-edit-name-dialog
+      header="Beneficiary name"
+      [value]="editedBeneficiary.firstname"
+      [(showDialog)]="editBeneficiaryNameDialogVisible"
+      (onValidate)="onValidateBeneficiaryName($event)"
+    ></app-edit-name-dialog>
+  </ng-container>
+</app-main-layout>

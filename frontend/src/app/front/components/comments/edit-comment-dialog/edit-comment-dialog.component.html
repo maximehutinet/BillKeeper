@@ -1,0 +1,9 @@
+<p-dialog header="Edit comment" [modal]="true" [visible]="showDialog" (visibleChange)="showDialogChange.emit($event)">
+  <div class="textarea-wrapper">
+    <p-floatlabel>
+      <textarea pTextarea id="bill-comment-edit-input" [(ngModel)]="comment.content" rows="5" cols="40" style="resize: none"></textarea>
+      <label for="bill-comment-edit-input">Comment</label>
+    </p-floatlabel>
+    <p-button [disabled]="comment.content.length === 0" severity="success" label="Edit" (click)="onValidateCommentEdit.emit(comment)"/>
+  </div>
+</p-dialog>

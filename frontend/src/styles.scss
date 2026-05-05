@@ -1,0 +1,10 @@
+@forward "primeicons/primeicons.css";
+@forward "theme/colors";
+@forward "theme/font-import";
+@forward "theme/font";
+@forward "theme/common";
+
+body {
+  background-color: var(--app-background-color);
+  margin: 0;
+}

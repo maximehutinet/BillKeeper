@@ -1,0 +1,11 @@
+<p-dialog [header]="header" [modal]="true" [visible]="showDialog" (visibleChange)="showDialogChange.emit($event)">
+  <div class="textarea-wrapper">
+    @if (form) {
+      <form [formGroup]="form">
+        <input type="email" pInputText formControlName="email"/>
+      </form>
+    }
+
+    <p-button [disabled]="getValue()?.invalid" severity="success" label="Validate" (click)="onValidateButtonClick()"/>
+  </div>
+</p-dialog>

@@ -1,0 +1,8 @@
+.clipboard-icon-button {
+  cursor: pointer;
+  color: var(--app-light-dark-grey-color);
+
+  &:hover {
+    opacity: 0.5;
+  }
+}

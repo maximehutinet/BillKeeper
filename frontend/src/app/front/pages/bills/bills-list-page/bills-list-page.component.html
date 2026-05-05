@@ -1,0 +1,66 @@
+<app-main-layout (dragenter)="onDragEnter()" (dragleave)="onDragLeave()" (drop)="onDrop($event)">
+  <ng-container main-content>
+    <app-top-bar>
+      <div left id="upload-file-btn" (click)="uploadInput.click()">
+        <p-button label="Upload bills" icon="pi pi-file-arrow-up"></p-button>
+        <input #uploadInput type="file" accept=".pdf" [multiple]="true" (change)="onUpload($event)">
+      </div>
+      <div right class="buttons-wrapper">
+        @if (createNewSubmissionButtonVisible) {
+          <p-button (click)="showSubmissionNameDialog = true"
+                    label="Create new submission"
+                    icon="pi pi-folder-plus"
+                    severity="info"
+          />
+        }
+
+        @if (selectedBills.length > 1) {
+          <p-button (click)="downloadMergedBillsDocuments()"
+                    label="Download merge of documents"
+                    icon="pi pi-file-check"
+                    severity="success"
+          />
+        }
+      </div>
+    </app-top-bar>
+
+    @if (bills.length > 0) {
+      <app-bills-filter
+        [bills]="bills"
+        [resetFiltersObservable]="resetFiltersSubject.asObservable()"
+        (billsChange)="onBillFilterChange($event)"
+      ></app-bills-filter>
+    }
+
+    <app-bills-table
+      [bills]="filteredBills"
+      [makeBillSelectable]="true"
+      [(selectedBills)]="selectedBills"
+      (selectedBillsChange)="onSelectedBillChange()"
+      [displayMarkAsPaidButton]="true"
+      [displayMarkAsReimbursedButton]="true"
+      [displayMarkAsReimbursementInProgressButton]="true"
+      [displayDeleteButton]="true"
+      (onMarkBillAsPaid)="onMarkAsPaid($event)"
+      (onMarkBillAsReimbursed)="onMarkAsReimbursed($event)"
+      (onMarkBillAsReimbursementInProgress)="onMarkAsReimbursementInProgress($event)"
+      (onDelete)="onDeleteBill($event)"
+    ></app-bills-table>
+
+    <app-edit-name-dialog
+      header="Submission name"
+      [(showDialog)]="showSubmissionNameDialog"
+      (onValidate)="onValidateNewSubmissionName($event)"
+    ></app-edit-name-dialog>
+
+    @if (billTargetedByAction) {
+      <app-bill-reimbursement-dialog
+        [(showDialog)]="showAddReimbursedAmountDialog"
+        [bills]="[billTargetedByAction]"
+        (onValidateBillsReimbursement)="onValidateBillReimbursement($event[0])"
+      ></app-bill-reimbursement-dialog>
+    }
+
+  </ng-container>
+</app-main-layout>
+

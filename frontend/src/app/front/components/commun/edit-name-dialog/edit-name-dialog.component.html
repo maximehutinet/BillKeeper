@@ -1,0 +1,6 @@
+<p-dialog [header]="header" [modal]="true" [visible]="showDialog" (visibleChange)="showDialogChange.emit($event)">
+  <div class="textarea-wrapper">
+    <input type="text" (keydown.enter)="onValidate.emit(value)" pInputText [(ngModel)]="value" />
+    <p-button [disabled]="value.length === 0" severity="success" label="Validate" (click)="onValidate.emit(value)"/>
+  </div>
+</p-dialog>

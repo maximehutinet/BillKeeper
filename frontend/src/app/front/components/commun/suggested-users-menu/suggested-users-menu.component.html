@@ -1,0 +1,8 @@
+<div id="suggested-users-menu-wrapper">
+  @for (user of users; track user.id) {
+    <div (click)="onClickUser.emit(user)">
+      <app-user-avatar [user]="user"></app-user-avatar>
+      {{ user.firstname }}
+    </div>
+  }
+</div>

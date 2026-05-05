@@ -1,0 +1,35 @@
+@if (activeDocumentId) {
+  <p-tabs [(value)]="activeDocumentId">
+    <p-tablist>
+      @for (document of documents; track document.id; let idx = $index) {
+        @if (document.id) {
+          @if (document.description) {
+            <p-tab (dblclick)="onEditDocumentDescription.emit(document)" [value]="document.id">{{ document.description }}</p-tab>
+          } @else {
+            <p-tab (dblclick)="onEditDocumentDescription.emit(document)" [value]="document.id">Document {{ idx + 1 }}</p-tab>
+          }
+        }
+      }
+    </p-tablist>
+    <p-tabpanels>
+      @for (document of documents; track document.id) {
+        @if (document.id) {
+          <p-tabpanel [value]="document.id">
+            @if (editMode) {
+              <div class="buttons-wrapper">
+                <p-button icon="pi pi-download" (onClick)="onDownloadDocument.emit(document)"></p-button>
+                <p-button severity="info" icon="pi pi-pencil" (onClick)="onEditDocumentDescription.emit(document)"></p-button>
+                <p-button severity="danger" icon="pi pi-trash" (onClick)="onDeleteDocument.emit(document)"></p-button>
+              </div>
+            }
+
+            @if (document.id === activeDocumentId) {
+              <app-document-pdf-viewer [document]="document" [style.display]="document.id === activeDocumentId ? 'block' : 'none'"></app-document-pdf-viewer>
+            }
+          </p-tabpanel>
+        }
+      }
+    </p-tabpanels>
+  </p-tabs>
+}
+

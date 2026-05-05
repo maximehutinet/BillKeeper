@@ -1,0 +1,36 @@
+#documents-buttons-wrapper {
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem 0;
+}
+
+#comments-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 1rem;
+
+  app-comment, app-add-comment-textarea {
+    display: block;
+    width: 100%;
+  }
+
+  app-add-comment-textarea {
+    margin-top: 1rem;
+  }
+}
+
+app-value-loading-or-ns {
+  display: block;
+
+  ::ng-deep p-skeleton {
+    display: block;
+    width: 10rem;
+  }
+}
+
+app-left-right-navigation-arrows {
+  position: sticky;
+  bottom: 3rem;
+}
+

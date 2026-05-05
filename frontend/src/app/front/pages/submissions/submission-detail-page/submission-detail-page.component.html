@@ -1,0 +1,106 @@
+<app-main-layout>
+  <ng-container main-content>
+    <app-top-bar-with-back-button>
+      <div right class="buttons-wrapper">
+        @if (!submission.eClaimId) {
+          <p-button (click)="showAddEclaimIdDialog = true"
+                    label="Add eClaimId"
+                    icon="pi pi-plus"
+                    severity="info"
+          ></p-button>
+        }
+
+        @if (markAsPaidSubmissionButtonVisible(submission)) {
+          <p-button
+            severity="help"
+            icon="pi pi-dollar"
+            (onClick)="onMarkSubmissionAsPaid()"
+            pTooltip="Mark as paid"
+            showDelay="500"
+            hideDelay="300"></p-button>
+        }
+
+        @if (markAsReimbursedSubmissionButtonVisible(submission)) {
+          <p-button
+            severity="success"
+            icon="pi pi-check-circle"
+            (onClick)="onMarkSubmissionAsReimbursed()"
+            pTooltip="Mark as reimbursed"
+            showDelay="500"
+            hideDelay="300"></p-button>
+        }
+
+        <p-button severity="info" icon="pi pi-pencil" [routerLink]="'/submissions/' + submission.id + '/edit'"></p-button>
+
+        @if (!submission.eClaimId) {
+          <p-button severity="danger" icon="pi pi-trash" (onClick)="onDeleteSubmission()"></p-button>
+        }
+      </div>
+    </app-top-bar-with-back-button>
+
+    <p-fieldset legend="Submission detail" [toggleable]="true">
+      <div class="card-body">
+        <div class="card-entry">
+          <label>Name: </label>
+          <span>{{ submission.name }}</span>
+
+          @if (submission.name) {
+            <app-copy-to-clipboard-icon [value]="submission.name"></app-copy-to-clipboard-icon>
+          }
+        </div>
+
+        @if (submission.totalUsdAmount) {
+          <div class="card-entry">
+            <label>Amount: </label>
+            <span>{{ submission.totalUsdAmount | currency }}</span>
+          </div>
+        }
+
+        @if (submission.reimbursedAmount) {
+          <div class="card-entry">
+            <label>Reimbursed: </label>
+            <span>{{ submission.reimbursedAmount | currency: 'USD' }}</span>
+          </div>
+        }
+
+        <div class="card-entry">
+          <label>eClaimId: </label>
+          <span>
+            <app-value-loading-or-ns [value]="submission.eClaimId" [loading]="false">
+              {{ submission.eClaimId }}
+            </app-value-loading-or-ns>
+          </span>
+          @if (submission.eClaimId) {
+            <app-copy-to-clipboard-icon [value]="submission.eClaimId"></app-copy-to-clipboard-icon>
+          }
+        </div>
+        <div class="card-entry">
+          <label>Status: </label>
+          @if (submission.status) {
+            <p-badge [value]="submissionStatusToString(submission.status)" [severity]="submissionStatusBadge(submission.status)" />
+          }
+        </div>
+        <div class="card-entry">
+          <label>Created on: </label>
+          <span>{{ submission.dateTime | date: 'longDate' }}</span>
+          @if (submission.user) {
+            <span>by {{ submission.user.firstname }}</span>
+          }
+        </div>
+      </div>
+    </p-fieldset>
+
+    <app-bills-table
+      [bills]="submission.bills"
+      [displayDeleteButton]="true"
+      (onDelete)="onRemoveBillFromSubmission($event)"
+      [submissionViewParamActive]="true"
+    ></app-bills-table>
+
+    <app-edit-name-dialog
+      header="eClaimId"
+      [(showDialog)]="showAddEclaimIdDialog"
+      (onValidate)="onValidateEclaimIdValue($event)"
+    ></app-edit-name-dialog>
+  </ng-container>
+</app-main-layout>

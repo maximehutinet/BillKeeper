@@ -1,0 +1,14 @@
+@use "theme/breakpoints" as *;
+
+#submissions-filters-wrapper  {
+  display: flex;
+  gap: 1rem;
+
+  #search-bar {
+    display: none;
+
+    @include from($md) {
+      display: block;
+    }
+  }
+}

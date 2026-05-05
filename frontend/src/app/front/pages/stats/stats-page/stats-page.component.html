@@ -1,0 +1,32 @@
+<app-main-layout>
+  <ng-container main-content>
+    <app-top-bar>
+      <h1 left>Stats</h1>
+    </app-top-bar>
+
+    <div id="stats-card-wrapper">
+      <app-stats-card
+        text="To be reimbursed"
+        [value]="stats.totalUsdAmountToBeReimbursed"
+        [isCurrency]="true"
+      ></app-stats-card>
+
+      <app-stats-card
+        text="To pay"
+        [value]="stats.totalUsdAmountToPay"
+        [isCurrency]="true"
+      ></app-stats-card>
+
+      <app-stats-card
+        text="Bills to file"
+        [value]="stats.billToFileCount"
+      ></app-stats-card>
+
+      <app-stats-card
+        text="Bills in progress"
+        [value]="stats.billInProgressCount"
+      ></app-stats-card>
+    </div>
+
+  </ng-container>
+</app-main-layout>

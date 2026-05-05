@@ -1,0 +1,102 @@
+@use "theme/breakpoints" as *;
+
+:root {
+  --app-side-menu-width: 15rem;
+  --app-side-menu-closed-width: 4rem;
+  --app-content-padding-x: 1.5rem;
+  --app-content-padding-y: 1rem;
+
+  @include from($md) {
+    --app-content-padding-x: 3rem;
+    --app-content-padding-y: 2rem;
+  }
+}
+
+body {
+  font-size: var(--app-text-font-size);
+}
+
+h1 {
+  margin: 0;
+  font-weight: var(--app-font-medium);
+}
+
+.buttons-wrapper {
+  display: flex;
+  gap: 0.5rem;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.textarea-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 1rem;
+}
+
+p-fieldset {
+  display: block;
+  margin-top: 1rem;
+
+  .card-body {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .card-entry {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+
+      label {
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 2rem;
+
+  .inline-fields-wrapper {
+    display: flex;
+    gap: 1rem;
+  }
+}
+
+.not-specified-warning {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+
+  i {
+    color: red;
+  }
+}
+
+.menu-warning {
+  a > * {
+    color: red !important;
+  }
+}
+
+.p-menu {
+  .p-menu-item-label {
+    font-size: 0.8rem;
+  }
+
+  .p-menu-submenu-label {
+    font-size: 0.9rem;
+  }
+
+  .p-menu-item-icon {
+    --p-icon-size: 0.7rem;
+  }
+}

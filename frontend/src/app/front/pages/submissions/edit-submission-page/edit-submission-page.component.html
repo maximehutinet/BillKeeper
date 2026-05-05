@@ -1,0 +1,21 @@
+<app-main-layout>
+  <ng-container main-content>
+    <app-top-bar-with-back-button>
+      <p-button right icon="pi pi-save" (onClick)="onSaveSubmission()" severity="success" label="Save"/>
+    </app-top-bar-with-back-button>
+
+    @if (form) {
+      <form [formGroup]="form" class="edit-form">
+        <p-floatlabel>
+          <input id="submission-name-input" pInputText formControlName="name" />
+          <label for="submission-name-input">Name</label>
+        </p-floatlabel>
+
+        <p-floatlabel>
+          <input id="submission-eclaimid-input" pInputText formControlName="eClaimId" />
+          <label for="submission-eclaimid-input">eClaimId</label>
+        </p-floatlabel>
+      </form>
+    }
+  </ng-container>
+</app-main-layout>

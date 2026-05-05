@@ -1,0 +1,36 @@
+<div class="comment">
+  <div class="comment-header">
+    @if (comment.user) {
+      <div class="user-wrapper">
+        <app-user-avatar [user]="comment.user"></app-user-avatar>
+        <span>{{ comment.user.firstname }}</span>
+        <span class="comment-datetime">• {{ comment.dateTime | date: 'longDate' }}</span>
+      </div>
+
+      @if (currentUser && comment.user.id === currentUser.id) {
+        <div class="comment-actions">
+          <p-button
+            icon="pi pi-pencil"
+            (onClick)="onEditEvent.emit()"
+            size="small"
+            [rounded]="true"
+            [text]="true"
+            severity="info"
+          >
+          </p-button>
+          <p-button
+            icon="pi pi-trash"
+            (onClick)="onDeleteEvent.emit()"
+            size="small"
+            [rounded]="true"
+            [text]="true"
+            severity="danger"
+          ></p-button>
+        </div>
+      }
+    }
+  </div>
+  <div class="comment-content">
+    {{ comment.content }}
+  </div>
+</div>

@@ -1,0 +1,96 @@
+<app-main-layout>
+  <ng-container main-content>
+    <app-top-bar>
+      <h1 left>Profile</h1>
+    </app-top-bar>
+
+    @if (currentUser) {
+      <p-fieldset legend="Detail" [toggleable]="true">
+        <div id="profile-picture-wrapper">
+          <p-avatar [image]="profilePicture" size="xlarge" shape="circle" />
+          <div id="upload-file-btn" (click)="uploadInput.click()">
+            <p-button icon="pi pi-pencil" size="small" [text]="true" severity="info" [rounded]="true"></p-button>
+            <input #uploadInput type="file" accept="image/*" (change)="onUploadProfilePicture($event)">
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-entry">
+            <label>Firstname: </label>
+            <span>{{ currentUser.firstname }}</span>
+          </div>
+          <div class="card-entry">
+            <label>Email: </label>
+            <span>{{ currentUser.email }}</span>
+          </div>
+        </div>
+      </p-fieldset>
+    }
+
+    <p-fieldset legend="Family" [toggleable]="true">
+      @if (!family) {
+        <p>You're not yet part of a family, create one to share your bills with other members</p>
+        <p-button label="Create family" icon="pi pi-plus" (onClick)="showFamilyNameDialog = true"></p-button>
+      } @else {
+        <div id="family-detail-wrapper">
+          <div class="card-body">
+            <div class="card-entry">
+              <label>Name: </label>
+              <span>{{ family.name }}</span>
+            </div>
+            <div class="card-entry">
+              <label>Owner: </label>
+              @if (family.owner.id === currentUser?.id) {
+                <app-user-avatar [user]="family.owner"></app-user-avatar>
+                <span>{{ family.owner.firstname }} (me)</span>
+              } @else {
+                <span>{{ family.owner.firstname }}</span>
+              }
+            </div>
+            <div class="card-entry">
+              <label>Members: </label>
+            </div>
+
+            @for (member of family.members; track member) {
+              <div class="member-wrapper">
+                @if (member.id === currentUser?.id) {
+                  <app-user-avatar [user]="member"></app-user-avatar>
+                  <span>{{ member.firstname }} (me)</span>
+                } @else {
+                  <app-user-avatar [user]="member"></app-user-avatar>
+                  <span>{{ member.firstname }}</span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        @if (family.members.length > 0) {
+          <p-button
+            id="add-member-button"
+            label="Add member"
+            icon="pi pi-plus"
+            (onClick)="showAddMemberDialog = true"
+          ></p-button>
+        }
+      }
+    </p-fieldset>
+
+    <app-edit-name-dialog
+      header="Family name"
+      [(showDialog)]="showFamilyNameDialog"
+      (onValidate)="onValidateFamilyName($event)"
+    ></app-edit-name-dialog>
+
+    <app-edit-email-dialog
+      header="Email address"
+      [(showDialog)]="showAddMemberDialog"
+      (onValidate)="onValidateAddMemberEmail($event)"
+    ></app-edit-email-dialog>
+
+    <app-success-dialog
+      header="Operation in progress"
+      [text]="addMemberSuccessDialogText"
+      [(showDialog)]="showAddMemberSuccessDialog"
+    ></app-success-dialog>
+  </ng-container>
+</app-main-layout>

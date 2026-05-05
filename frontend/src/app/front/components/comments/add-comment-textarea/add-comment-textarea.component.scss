@@ -1,0 +1,26 @@
+#wrapper {
+  position: relative;
+  width: 100%;
+
+  textarea {
+    width: 100%;
+  }
+
+  #mirror-text-area {
+    position: absolute;
+    top: 2px;
+    left: 1px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow: hidden;
+    visibility: hidden;
+    pointer-events: none;
+    margin: var(--p-textarea-padding-y) var(--p-textarea-padding-x);
+  }
+
+  app-suggested-users-menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}

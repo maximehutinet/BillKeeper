@@ -1,0 +1,22 @@
+#suggested-users-menu-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-menu-list-gap);
+  padding: 0.25rem;
+  border-radius: 6px;
+  box-shadow: var(--p-menu-shadow);
+  background-color: var(--app-white-color);
+
+  div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+
+    &:hover {
+      cursor: pointer;
+      background-color: var(--p-form-field-filled-hover-background);
+      border-radius: 3px;
+    }
+  }
+}

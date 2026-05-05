@@ -1,0 +1,12 @@
+@if (loading) {
+  <p-skeleton height="1rem" styleClass="mb-2" />
+} @else {
+  @if (value) {
+    <ng-content></ng-content>
+  } @else {
+    <span class="not-specified-warning">
+      <i class="pi pi-exclamation-triangle"></i>
+      N/S
+    </span>
+  }
+}

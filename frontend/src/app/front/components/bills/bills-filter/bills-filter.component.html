@@ -1,0 +1,27 @@
+<div id="bill-filters-wrapper">
+  @if (beneficiaryOptions.length > 1) {
+    <p-multiselect
+      [options]="beneficiaryOptions"
+      [(ngModel)]="selectedBeneficiaries"
+      (onChange)="onSelectChange()"
+      placeholder="Select beneficiaries"
+      optionLabel="name"
+      display="chip">
+    </p-multiselect>
+  }
+
+  @if (statusOptions.length > 1) {
+    <p-multiselect
+      [options]="statusOptions"
+      [(ngModel)]="selectedStatus"
+      (onChange)="onSelectChange()"
+      placeholder="Select status"
+      optionLabel="name"
+      display="chip">
+    </p-multiselect>
+  }
+
+  @if (selectedBeneficiaries.length > 1 || selectedStatus.length > 1) {
+    <p-button icon="pi pi-times" (onClick)="resetFilters()"></p-button>
+  }
+</div>

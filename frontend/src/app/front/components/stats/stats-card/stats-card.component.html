@@ -1,0 +1,9 @@
+<div class="stats-card-wrapper">
+  @if (text) {
+    <span class="stats-text">{{ text }}</span>
+  }
+
+  @if (value !== undefined) {
+    <span class="stats-value">{{ isCurrency ? (value | currency) : value }}</span>
+  }
+</div>
