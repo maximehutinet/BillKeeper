@@ -18,7 +18,9 @@ public class AppConfig {
     private String frontUrl;
     private String documentsDirectory;
     private String tesseractDataDirectory;
+    private String tesseractLanguage;
     private String usersDirectory;
+    private Boolean ocrEnabled;
 
     @PostConstruct
     public void init() {

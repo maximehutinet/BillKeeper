@@ -16,14 +16,15 @@ public class PDFParser {
     private final ITesseract tesseract;
     private final int TESSERACT_PAGE_SEG_MODE = 6;
     private final int TESSERACT_OCR_ENGINE_MODE = 1;
-    private final String TESSERACT_LANGUAGE = "fra";
     private final Logger logger = LoggerFactory.getLogger(PDFParser.class);
 
     public PDFParser(AppConfig appConfig) {
         this.appConfig = appConfig;
         this.tesseract = new Tesseract();
         this.tesseract.setDatapath(this.appConfig.getTesseractDataDirectory());
-        this.tesseract.setLanguage(TESSERACT_LANGUAGE);
+        if (this.appConfig.getTesseractLanguage() != null) {
+            this.tesseract.setLanguage(this.appConfig.getTesseractLanguage());
+        }
         this.tesseract.setPageSegMode(TESSERACT_PAGE_SEG_MODE);
         this.tesseract.setOcrEngineMode(TESSERACT_OCR_ENGINE_MODE);
     }

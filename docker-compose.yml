@@ -1,0 +1,60 @@
+services:
+  billkeeper-db:
+    image: postgres:17
+    container_name: billkeeper-db
+    volumes:
+      - './data/db/data:/var/lib/postgresql/data'
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "10490:5432"
+    networks:
+      - billkeeper-network
+
+  billkeeper-keycloak-db:
+    image: postgres:17
+    container_name: billkeeper-keycloak-db
+    volumes:
+      - './data/keycloak-db/data:/var/lib/postgresql/data'
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "10492:5432"
+    networks:
+      - billkeeper-network
+
+  billkeeper-keycloak:
+    image: quay.io/keycloak/keycloak:26.5.0
+    container_name: billkeeper-keycloak
+    depends_on:
+      - billkeeper-keycloak-db
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://billkeeper-keycloak-db/postgres
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+    volumes:
+      - "./keycloak:/opt/keycloak/data/import"
+    command: [ "start-dev", "--import-realm"]
+    ports:
+      - "10491:8080"
+    networks:
+      - billkeeper-network
+
+  billkeeper-smtp4dev:
+    image: rnwood/smtp4dev:latest
+    container_name: billkeeper-smtp4dev
+    ports:
+      - "10493:80"
+      - "10494:25"
+    networks:
+      - billkeeper-network
+
+networks:
+  billkeeper-network:
+    driver: bridge

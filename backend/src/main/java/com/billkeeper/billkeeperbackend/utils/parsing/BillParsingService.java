@@ -1,5 +1,6 @@
 package com.billkeeper.billkeeperbackend.utils.parsing;
 
+import com.billkeeper.billkeeperbackend.AppConfig;
 import com.billkeeper.billkeeperbackend.beneficiary.persistence.BeneficiaryRepository;
 import com.billkeeper.billkeeperbackend.beneficiary.persistence.model.Beneficiary;
 import com.billkeeper.billkeeperbackend.bill.persistence.BillRepository;
@@ -27,6 +28,7 @@ import java.util.UUID;
 
 @Service
 public class BillParsingService {
+    private final AppConfig appConfig;
     private final PDFParser pdfParser;
     private final BeneficiaryRepository beneficiaryRepository;
     private final BillRepository billRepository;
@@ -34,7 +36,8 @@ public class BillParsingService {
     private final Logger logger = LoggerFactory.getLogger(BillParsingService.class);
 
 
-    public BillParsingService(PDFParser pdfParser, BeneficiaryRepository beneficiaryRepository, BillRepository billRepository, ParsingJobRepository parsingJobRepository) {
+    public BillParsingService(AppConfig appConfig, PDFParser pdfParser, BeneficiaryRepository beneficiaryRepository, BillRepository billRepository, ParsingJobRepository parsingJobRepository) {
+        this.appConfig = appConfig;
         this.pdfParser = pdfParser;
         this.beneficiaryRepository = beneficiaryRepository;
         this.billRepository = billRepository;
@@ -53,12 +56,12 @@ public class BillParsingService {
             BufferedImage firstPageImage = renderer.renderImageWithDPI(0, 200, ImageType.GRAY);
             String qrCodeContent = QRCodeDecoder.decode(firstPageImage);
 
-            if (qrCodeContent.isEmpty()) {
-                String text = pdfParser.extractTextFromImage(firstPageImage);
-                updateBillValues(bill, text);
-            } else {
+            if (!qrCodeContent.isEmpty()) {
                 net.codecrete.qrbill.generator.Bill QRBill = QRCodeText.decode(qrCodeContent);
                 updateBillFromQRBill(bill, QRBill);
+            } else if (appConfig.getOcrEnabled()) {
+                String text = pdfParser.extractTextFromImage(firstPageImage);
+                updateBillValues(bill, text);
             }
 
             parsingJob.setStatus(ParsingJob.Status.SUCCESS);

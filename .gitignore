@@ -1,0 +1,32 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.idea/
+*.iws
+*.iml
+*.ipr
+.project
+.classpath
+.factorypath
+.settings/
+*.launch
+*.sublime-workspace
+.apt_generated
+.springBeans
+.sts4-cache
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log

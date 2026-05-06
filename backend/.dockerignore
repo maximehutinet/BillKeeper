@@ -1,1 +1,35 @@
-target
+# Maven
+target/
+
+# IDE files
+.idea/
+*.iws
+*.iml
+*.ipr
+.project
+.classpath
+.settings/
+.vscode/
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.*
+
+# Documentation
+*.md
+HELP.md
+
+# Docker
+Dockerfile
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db

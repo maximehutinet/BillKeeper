@@ -1,8 +1,8 @@
 {
-  "serverUrl": "",
+  "serverUrl": "http://localhost:8080",
   "keycloakConfiguration": {
-    "url": "",
-    "realm": "",
-    "clientId": ""
+    "url": "http://localhost:10491",
+    "realm": "billkeeper",
+    "clientId": "billkeeper-frontend"
   }
 }
