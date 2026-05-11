@@ -22,7 +22,8 @@ jobs:
           cache: 'maven'
 
       - name: Run tests
-        run: ./backend/mvnw test
+        working-directory: ./backend
+        run: ./mvnw test
 
   backend-build-and-push-image:
     runs-on: ubuntu-latest
