@@ -1,13 +1,13 @@
 # Bill Keeper
 
-Bill Keeper is a medical bill management tool that integrates a web-app 💻 and an iOS app 📱 allowing users to scan, organize, and track medical bills and insurance claims.
+Bill Keeper is a medical bill management tool that integrates a web-app 💻 and an [iOS app](https://github.com/maximehutinet/BillKeeper-iOS) 📱 allowing users to scan, organize, and track medical bills and insurance claims.
 
 ![Sneakpeek](/sneakpeek.gif)
 
 ## Main features
 
-* 📷 Scanning bills and sending them automatically to the server (iOS app)
-* 📄 Adding documents to bills via the web-app or iOS app
+* 📷 Scanning bills and sending them automatically to the server ([iOS app](https://github.com/maximehutinet/BillKeeper-iOS))
+* 📄 Adding documents to bills via the web-app or [iOS app](https://github.com/maximehutinet/BillKeeper-iOS)
 * 📂 Merging documents
 * 🔎 Keeping track of bills and their status
 * 💬 Collaborating on bills via comments
